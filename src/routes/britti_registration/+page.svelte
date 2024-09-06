@@ -80,6 +80,7 @@ appId: "1:973839955936:web:eefd07d1a4b7be73b91d85"
   
       submitting = false;
     }
+    import { fly } from 'svelte/transition';
   </script>
   
   <svelte:head>
@@ -94,6 +95,24 @@ appId: "1:973839955936:web:eefd07d1a4b7be73b91d85"
       <h2 class="text-xl font-semibold text-center text-cyan-600 mb-4">
         আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
       </h2>
+      <div class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-6 rounded-lg mb-8 shadow-md">
+        <h3 class="text-2xl font-bold mb-4 text-center">রেজিস্ট্রেশন ফি জমা দিন</h3>
+        <div class="grid md:grid-cols-2 gap-4">
+          <div in:fly="{{ y: 50, duration: 500 }}" class="bg-white bg-opacity-20 p-4 rounded-lg">
+            <p class="text-lg font-semibold mb-2">রেজিস্ট্রেশন ফিঃ</p>
+            <p class="text-3xl font-bold">২০০/- টাকা</p>
+          </div>
+          <div in:fly="{{ y: 50, duration: 500, delay: 200 }}" class="bg-white bg-opacity-20 p-4 rounded-lg">
+            <p class="text-lg font-semibold mb-2">বিকাশ নাম্বার:</p>
+            <p class="text-3xl font-bold">01771144308</p>
+            <p class="text-sm">(Personal, Send Money)</p>
+          </div>
+        </div>
+        <div in:fly="{{ y: 50, duration: 500, delay: 400 }}" class="mt-4 text-center">
+          <p class="text-lg">বিকাশে টাকা পাঠানোর পর ফিরতি মেসেজে প্রাপ্ত <span class="font-bold">Transaction ID/Trx ID</span> নিচের ফর্মে দিতে হবে।</p>
+          <p class="text-sm mt-2 text-yellow-200">সতর্কতা: আইডি না থাকলে অথবা ভুল আইডি দিলে রেজিস্ট্রেশন বাতিল হবে।</p>
+        </div>
+      </div>
       <h3 class="text-2xl font-bold text-center text-cyan-800 mb-6">রেজিস্ট্রেশন ফরম</h3>
   
       <form on:submit|preventDefault={handleSubmit} class="space-y-4">
@@ -203,7 +222,7 @@ appId: "1:973839955936:web:eefd07d1a4b7be73b91d85"
             <input type="tel" bind:value={formData.guardianMobile} class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700">সিরিয়াল নাম্বার</label>
+            <label class="block text-sm font-medium text-gray-700">ট্রান্সেকশন আইডি (উপরে পেমেন্টের নিয়মাবলী দেখুন)</label>
             <input type="text" bind:value={formData.serialNo} class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
           </div>
         </div>
