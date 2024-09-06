@@ -105,12 +105,12 @@ appId: "1:973839955936:web:eefd07d1a4b7be73b91d85"
               <input type="checkbox" class="form-checkbox"> মাদরাসা
             </div>
           </div>
-          <div class="w-1/3">
+          <!-- <div class="w-1/3">
             <label class="block text-sm font-medium text-gray-700">পাসপোর্ট সাইজ ছবি</label>
             <div class="border-2 border-dashed border-gray-300 p-4 text-center">
               ছবি আপলোড করুন
             </div>
-          </div>
+          </div> -->
         </div>
   
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
