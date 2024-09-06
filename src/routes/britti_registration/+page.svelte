@@ -1,5 +1,36 @@
 <!-- src/routes/britti_registration/+page.svelte -->
+<!-- src/routes/britti_registration/+page.svelte -->
 <script>
+    import { onMount } from 'svelte';
+    import { initializeApp } from 'firebase/app';
+    import { getFirestore, collection, addDoc } from 'firebase/firestore';
+  
+    // Your Firebase configuration
+    const firebaseConfig = {
+
+apiKey: "AIzaSyBy8i9BLWzUMulNQJkJsbDX8m6MFYz6T_k",
+
+authDomain: "kkrf-sylhet.firebaseapp.com",
+
+projectId: "kkrf-sylhet",
+
+storageBucket: "kkrf-sylhet.appspot.com",
+
+messagingSenderId: "973839955936",
+
+appId: "1:973839955936:web:eefd07d1a4b7be73b91d85"
+
+};
+
+  
+    let app;
+    let db;
+  
+    onMount(() => {
+      app = initializeApp(firebaseConfig);
+      db = getFirestore(app);
+    });
+  
     let formData = {
       regNo: '',
       examCenter: '',
@@ -27,10 +58,27 @@
       serialNo: ''
     };
   
-    function handleSubmit() {
-      // Handle form submission here
-      console.log(formData);
-      // You would typically send this data to your server
+    let submitting = false;
+    let submitSuccess = false;
+    let submitError = '';
+  
+    async function handleSubmit() {
+      submitting = true;
+      submitSuccess = false;
+      submitError = '';
+  
+      try {
+        const docRef = await addDoc(collection(db, "scholarshipApplications"), formData);
+        console.log("Document written with ID: ", docRef.id);
+        submitSuccess = true;
+        // Reset form after successful submission
+        formData = {...formData, name: '', nameEnglish: '', fatherName: '', motherName: '', institution: '', class: '', section: '', classRoll: '', birthDate: '', religion: '', mobile: '', permanentAddress: {village: '', postOffice: '', upazila: '', district: ''}, presentAddress: '', guardianName: '', relation: '', guardianMobile: '', serialNo: ''};
+      } catch (e) {
+        console.error("Error adding document: ", e);
+        submitError = 'An error occurred while submitting the form. Please try again.';
+      }
+  
+      submitting = false;
     }
   </script>
   
@@ -161,14 +209,25 @@
         </div>
   
         <div class="text-center">
-          <button type="submit" class="bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors">
-            নিবন্ধন সম্পন্ন করুন
-          </button>
-        </div>
+            <button type="submit" class="bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors" disabled={submitting}>
+              {submitting ? 'Submitting...' : 'নিবন্ধন সম্পন্ন করুন'}
+            </button>
+          </div>
       </form>
-  
+      {#if submitSuccess}
+      <div class="mt-4 p-2 bg-green-100 text-green-700 rounded">
+        Your application has been successfully submitted!
+      </div>
+    {/if}
+
+    {#if submitError}
+      <div class="mt-4 p-2 bg-red-100 text-red-700 rounded">
+        {submitError}
+      </div>
+    {/if}
+
       <div class="mt-8 text-sm text-gray-600 text-center">
-        বিস্তারিত তথ্যের জন্য: www.kishorkhantasylhet.org
+        বিস্তারিত তথ্যের জন্য: www.kkrfsylhet.org
       </div>
     </div>
   </div>
