@@ -64,7 +64,7 @@
 
   const members = [
     { id: 1, name: "আফসার উদ্দীন কামরান", role: "পরিচালক", image: "kamran.png", phone: "০১৭৪৩৮৮৭৭০৭" },
-    { id: 2, name: "নাবিল মাহমুদ নিলয়", role: "সহকারী পরিচালক", image: "/member-2.jpg", phone: "০১৭০১৪৫৯৮৮১" },
+    { id: 2, name: "নাবিল মাহমুদ নিলয়", role: "সহকারী পরিচালক", image: "niloy.jpg", phone: "০১৭০১৪৫৯৮৮১" },
     { id: 3, name: "মুফাসসির আহমদ চৌধুরী", role: "সহকারী পরিচালক", image: "mufassir.jpg", phone: "০১৭৭১১৪৪৩০৮" },
   ];
 
