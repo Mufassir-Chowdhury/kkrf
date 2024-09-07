@@ -87,35 +87,36 @@ appId: "1:973839955936:web:eefd07d1a4b7be73b91d85"
     <title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪ - নিবন্ধন ফরম</title>
   </svelte:head>
   
-  <div class="min-h-screen bg-cyan-100 p-4">
-    <div class="max-w-4xl mx-auto bg-white rounded-lg shadow-lg p-6">
-      <h1 class="text-3xl font-bold text-center text-cyan-700 mb-6">
-        কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪
-      </h1>
-      <h2 class="text-xl font-semibold text-center text-cyan-600 mb-4">
-        আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
-      </h2>
-      <div class="bg-gradient-to-r from-cyan-500 to-blue-500 text-white p-6 rounded-lg mb-8 shadow-md">
-        <h3 class="text-2xl font-bold mb-4 text-center">রেজিস্ট্রেশন ফি জমা দিন</h3>
-        <div class="grid md:grid-cols-2 gap-4">
-          <div in:fly="{{ y: 50, duration: 500 }}" class="bg-white bg-opacity-20 p-4 rounded-lg">
-            <p class="text-lg font-semibold mb-2">রেজিস্ট্রেশন ফিঃ</p>
-            <p class="text-3xl font-bold">২০০/- টাকা</p>
-          </div>
-          <div in:fly="{{ y: 50, duration: 500, delay: 200 }}" class="bg-white bg-opacity-20 p-4 rounded-lg">
-            <p class="text-lg font-semibold mb-2">বিকাশ নাম্বার:</p>
-            <p class="text-3xl font-bold">01771144308</p>
-            <p class="text-sm">(Personal, Send Money)</p>
-          </div>
-        </div>
-        <div in:fly="{{ y: 50, duration: 500, delay: 400 }}" class="mt-4 text-center">
-          <p class="text-lg">বিকাশে টাকা পাঠানোর পর ফিরতি মেসেজে প্রাপ্ত <span class="font-bold">Transaction ID/Trx ID</span> নিচের ফর্মে দিতে হবে।</p>
-          <p class="text-sm mt-2 text-yellow-200">সতর্কতা: আইডি না থাকলে অথবা ভুল আইডি দিলে রেজিস্ট্রেশন বাতিল হবে।</p>
-        </div>
-      </div>
-      <h3 class="text-2xl font-bold text-center text-cyan-800 mb-6">রেজিস্ট্রেশন ফরম</h3>
+<div class="space-y-8">
+  <h1 class="text-3xl font-bold text-center text-teal-700">
+    কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪
+  </h1>
+  <h2 class="text-xl font-semibold text-center text-teal-600">
+    আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
+  </h2>
   
-      <form on:submit|preventDefault={handleSubmit} class="space-y-4">
+  <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
+    <h3 class="text-2xl font-bold mb-4 text-center">রেজিস্ট্রেশন ফি জমা দিন</h3>
+    <div class="grid md:grid-cols-2 gap-4">
+      <div in:fly="{{ y: 50, duration: 500 }}" class="bg-white bg-opacity-20 p-4 rounded-lg">
+        <p class="text-lg font-semibold mb-2">রেজিস্ট্রেশন ফিঃ</p>
+        <p class="text-3xl font-bold">২০০/- টাকা</p>
+      </div>
+      <div in:fly="{{ y: 50, duration: 500, delay: 200 }}" class="bg-white bg-opacity-20 p-4 rounded-lg">
+        <p class="text-lg font-semibold mb-2">বিকাশ নাম্বার:</p>
+        <p class="text-3xl font-bold">01771144308</p>
+        <p class="text-sm">(Personal, Send Money)</p>
+      </div>
+    </div>
+    <div in:fly="{{ y: 50, duration: 500, delay: 400 }}" class="mt-4 text-center">
+      <p class="text-lg">বিকাশে টাকা পাঠানোর পর ফিরতি মেসেজে প্রাপ্ত <span class="font-bold">Transaction ID/Trx ID</span> নিচের ফর্মে দিতে হবে।</p>
+      <p class="text-sm mt-2 text-yellow-200">সতর্কতা: আইডি না থাকলে অথবা ভুল আইডি দিলে রেজিস্ট্রেশন বাতিল হবে।</p>
+    </div>
+  </div>
+
+  <h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন ফরম</h3>
+
+      <form on:submit|preventDefault={handleSubmit} class="space-y-6">
         <div class="flex justify-between">
           <div class="w-1/2">
             <label class="block text-sm font-medium text-gray-700">রেজিঃ নং DA-3075</label>
@@ -234,19 +235,30 @@ appId: "1:973839955936:web:eefd07d1a4b7be73b91d85"
           </div>
       </form>
       {#if submitSuccess}
-      <div class="mt-4 p-2 bg-green-100 text-green-700 rounded">
-        Your application has been successfully submitted!
-      </div>
-    {/if}
+    <div class="mt-4 p-2 bg-green-100 text-green-700 rounded">
+      Your application has been successfully submitted!
+    </div>
+  {/if}
 
-    {#if submitError}
-      <div class="mt-4 p-2 bg-red-100 text-red-700 rounded">
-        {submitError}
-      </div>
-    {/if}
+  {#if submitError}
+    <div class="mt-4 p-2 bg-red-100 text-red-700 rounded">
+      {submitError}
+    </div>
+  {/if}
 
-      <div class="mt-8 text-sm text-gray-600 text-center">
-        বিস্তারিত তথ্যের জন্য: www.kkrfsylhet.org
-      </div>
+  <div class="mt-8 space-y-4">
+    <div class="bg-amber-50 p-6 rounded-lg shadow-md">
+      <h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
+      <ul class="space-y-2 text-gray-700">
+        <li>০১৯৭৩৮৮১৪৯৮ (আহসান হাবীব)</li>
+        <li>০১৯০৮৩০৩৮২৬ (রফিকুল ইসলাম)</li>
+        <li>০১৮৭৭৪৩৮৫৪৮ (ছফির উদ্দীন)</li>
+        <li>০১৩০৬৩২১০৫২ (আবুল হাসান রিয়াদ)</li>
+      </ul>
+    </div>
+
+    <div class="text-sm text-gray-600 text-center">
+      বিস্তারিত তথ্যের জন্য: <a href="http://www.kkrfsylhet.org" class="text-teal-600 hover:underline">www.kkrfsylhet.org</a>
     </div>
   </div>
+</div>
