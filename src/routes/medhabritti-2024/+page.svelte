@@ -61,6 +61,12 @@
           সাধারণ জ্ঞানের জন্য (জানুয়ারি-আগস্ট'২৪) কিশোরকণ্ঠ এবং বিশেষ সংকলন "অন্বেষণ" সংগ্রহ করতে হবে।
         </p>
       </div>
+      <div in:fly="{{ y: 50, duration: 500, delay: 1000 }}" class="bg-white p-6 rounded-lg shadow-md text-center">
+        <h3 class="text-xl font-semibold text-teal-700 mb-4">পরীক্ষার সিলেবাস</h3>
+        <a href="/medhabritti-2024/syllabus" class="bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
+          সিলেবাস দেখুন
+        </a>
+      </div>
   
       <div in:fly="{{ y: 50, duration: 500, delay: 600 }}" class="bg-teal-100 p-6 rounded-lg shadow-md text-center">
         <h3 class="text-xl font-semibold text-teal-700 mb-4">রেজিস্ট্রেশন করুন</h3>
