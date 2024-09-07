@@ -17,13 +17,13 @@
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
           <a href="/" class="flex-shrink-0">
-            <img class="h-8 w-8" src="/logo.png" alt="কিশোরকণ্ঠ Logo">
+            <img class="h-8 w-8" src="/favicon.png" alt="কিশোরকণ্ঠ Logo">
           </a>
           <div class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
               <a href="/" class="text-white hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded-md text-sm font-medium">Home</a>
               <a href="/about" class="text-white hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded-md text-sm font-medium">About</a>
-              <a href="/britti_registration" class="text-white hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded-md text-sm font-medium">Registration</a>
+              <a href="/medhabritti-2024" class="text-white hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded-md text-sm font-medium">মেধাবৃত্তি - ২০২৪</a>
               <a href="/contact" class="text-white hover:bg-white hover:bg-opacity-20 px-3 py-2 rounded-md text-sm font-medium">Contact</a>
             </div>
           </div>
