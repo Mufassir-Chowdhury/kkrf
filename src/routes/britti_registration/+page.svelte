@@ -1,5 +1,3 @@
-<!-- src/routes/britti_registration/+page.svelte -->
-<!-- src/routes/britti_registration/+page.svelte -->
 <script>
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
@@ -50,25 +48,26 @@
 		relation: '',
 		guardianMobile: '',
 		transactionID: '',
-    creationTime: ''
+		creationTime: '',
+		confirmed: false  // Add the confirmed field, default to false
 	};
-  let formErrors = {};
+	let formErrors = {};
 	let submitting = false;
 	let submitSuccess = false;
 	let submitError = '';
 
-  
 	async function handleSubmit() {
 		submitting = true;
 		submitSuccess = false;
 		submitError = '';
 
 		try {
-      formData.creationTime = new Date().toISOString();
+			formData.creationTime = new Date().toISOString();
+			formData.confirmed = false;  // Ensure confirmed is set to false
 			const docRef = await addDoc(collection(db, 'scholarshipApplications'), formData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
-      goto('/britti_registration/successful');
+			goto('/britti_registration/successful');
 			// Reset form after successful submission
 			formData = {
 				...formData,
@@ -90,9 +89,10 @@
 				guardianName: '',
 				relation: '',
 				guardianMobile: '',
-				transactionID: ''
+				transactionID: '',
+				confirmed: false
 			};
-      formErrors = {};
+			formErrors = {};
 		} catch (e) {
 			console.error('Error adding document: ', e);
 			submitError = 'An error occurred while submitting the form. Please try again.';
@@ -100,16 +100,17 @@
 
 		submitting = false;
 	}
-  let classOptions = [
-    { value: '৪র্থ', label: '৪র্থ শ্রেণি' },
-    { value: '৫ম', label: '৫ম শ্রেণি' },
-    { value: '৬ষ্ঠ', label: '৬ষ্ঠ শ্রেণি' },
-    { value: '৭ম', label: '৭ম শ্রেণি' },
-    { value: '৮ম', label: '৮ম শ্রেণি' },
-    { value: '৯ম', label: '৯ম শ্রেণি' },
-    { value: '১০ম', label: '১০ম শ্রেণি' }
-  ];
+	let classOptions = [
+		{ value: '৪র্থ', label: '৪র্থ শ্রেণি' },
+		{ value: '৫ম', label: '৫ম শ্রেণি' },
+		{ value: '৬ষ্ঠ', label: '৬ষ্ঠ শ্রেণি' },
+		{ value: '৭ম', label: '৭ম শ্রেণি' },
+		{ value: '৮ম', label: '৮ম শ্রেণি' },
+		{ value: '৯ম', label: '৯ম শ্রেণি' },
+		{ value: '১০ম', label: '১০ম শ্রেণি' }
+	];
 </script>
+
 
 <svelte:head>
 	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪ - নিবন্ধন ফরম</title>
