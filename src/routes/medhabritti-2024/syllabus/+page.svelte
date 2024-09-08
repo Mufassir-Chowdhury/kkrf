@@ -254,6 +254,12 @@
     </h1>
   
     {#if mounted}
+      <div in:fly="{{ y: 50, duration: 500, delay: syllabusData.length * 100 }}" class="bg-amber-50 p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold text-teal-700 mb-4">বিশেষ দ্রষ্টব্য</h3>
+        <p class="text-gray-700">
+          সাধারণ জ্ঞানের জন্য (জানুয়ারি-আগস্ট'২৪) কিশোরকণ্ঠ এবং বিশেষ সংকলন "অন্বেষণ" সংগ্রহ করতে হবে।
+        </p>
+      </div>
       {#each syllabusData as classData, index}
         <div in:fly="{{ y: 50, duration: 500, delay: index * 100 }}" class="bg-white p-6 rounded-lg shadow-md">
           <h2 class="text-2xl font-semibold text-teal-600 mb-4">{classData.class}</h2>
@@ -270,11 +276,6 @@
         </div>
       {/each}
   
-      <div in:fly="{{ y: 50, duration: 500, delay: syllabusData.length * 100 }}" class="bg-amber-50 p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">বিশেষ দ্রষ্টব্য</h3>
-        <p class="text-gray-700">
-          সাধারণ জ্ঞানের জন্য (জানুয়ারি-আগস্ট'২৪) কিশোরকণ্ঠ এবং বিশেষ সংকলন "অন্বেষণ" সংগ্রহ করতে হবে।
-        </p>
-      </div>
+      
     {/if}
   </div>
