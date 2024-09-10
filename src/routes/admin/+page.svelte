@@ -14,6 +14,8 @@ let isLoggedIn = false;
 let loading = true;
 let error = null;
 let selectedRegistration = null;
+let smsModalOpen = false;
+    let selectedUnconfirmedReg = null;
 
 onMount(() => {
   if (browser) {
@@ -206,6 +208,40 @@ function showConfirmationDetails(registration) {
             error = "Failed to cancel confirmation. Please try again.";
         }
     }
+    function openSmsModal(registration) {
+        selectedUnconfirmedReg = registration;
+        smsModalOpen = true;
+    }
+
+    async function sendIncompleteRegistrationSMS() {
+        if (!selectedUnconfirmedReg) return;
+
+        const url = "https://api.bdbulksms.net/api.php?json";
+        const t1 = "59702300401725";
+        const t2 = "814840c01d5e52";
+        const t3 = "79bac7dda539127ec4a9f539";
+        const SMS_API_TOKEN = `${t1}${t2}${t3}`;
+        const data = new FormData();
+        data.set('token', SMS_API_TOKEN);
+        data.set('message', 'আপনার রেজিস্ট্রেশন সম্পূর্ণ হয়নি। অনুগ্রহ করে পেমেন্ট সম্পন্ন করে আমাদের সাথে যোগাযোগ করুন। - কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪');
+        data.set('to', selectedUnconfirmedReg.mobile);
+
+        try {
+            const response = await fetch(url, {
+                method: "POST",
+                body: data
+            });
+            const result = await response.json();
+            console.log('SMS sent successfully:', result);
+            // You might want to update the UI to show a success message
+        } catch (error) {
+            console.error('Error sending SMS:', error);
+            // Handle error (e.g., show error message to user)
+        } finally {
+            smsModalOpen = false;
+            selectedUnconfirmedReg = null;
+        }
+    }
 </script>
 <svelte:head>
   <title>Admin Dashboard - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪</title>
@@ -281,6 +317,14 @@ function showConfirmationDetails(registration) {
                     </span>
                 </td>
                 <td class="px-6 py-4 space-x-2">
+                  {#if !registration.confirmed}
+                        <button 
+                            on:click={() => openSmsModal(registration)}
+                            class="font-medium text-yellow-600 hover:underline"
+                        >
+                            📩 <!-- SMS icon -->
+                        </button>
+                    {/if}  
                     <button 
                         on:click={() => showConfirmationDetails(registration)} 
                         class="font-medium text-purple-600 hover:underline"
@@ -346,3 +390,35 @@ function showConfirmationDetails(registration) {
         </div>
     </div>
 {/if}
+{#if smsModalOpen}
+    <div class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full" id="sms-modal">
+        <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+            <div class="mt-3 text-center">
+                <h3 class="text-lg leading-6 font-medium text-gray-900">Send Incomplete Registration SMS</h3>
+                <div class="mt-2 px-7 py-3">
+                    <p class="text-sm text-gray-500">
+                        Are you sure you want to send an SMS to {selectedUnconfirmedReg.name} ({selectedUnconfirmedReg.mobile}) about their incomplete registration?
+                    </p>
+                </div>
+                <div class="items-center px-4 py-3">
+                    <button
+                        on:click={sendIncompleteRegistrationSMS}
+                        class="px-4 py-2 bg-yellow-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-300"
+                    >
+                        Send SMS
+                    </button>
+                    <button
+                        on:click={() => { smsModalOpen = false; selectedUnconfirmedReg = null; }}
+                        class="mt-3 px-4 py-2 bg-gray-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    >
+                        Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{/if}
+<!-- <script>
+  import Dashboard from "./Dashboard.svelte";
+</script>
+<Dashboard /> -->
