@@ -19,6 +19,44 @@
       "ট্যালেন্টপুল, সাধারণ ও বিশেষ এই তিনটি গ্রেডে বৃত্তিপ্রাপ্ত ছাত্র-ছাত্রীদের এককালীন শিক্ষা ব্যয় বাবদ নগদ অর্থ, সনদপত্র ও আকর্ষণীয় পুরষ্কার প্রদান করা হবে।",
       "৪র্থ থেকে ১০ম শ্রেণি পর্যন্ত সকল রেজিস্ট্রেশন ফি ২০০/- (দুইশত টাকা)।"
     ];
+
+    const offices = [
+      {
+        name: "পপি লাইব্রেরি",
+        address: "রাজা ম্যানশন, জিন্দাবাজার",
+        phone: "০১৭৫২৮৩১১৮৪"
+      },
+      {
+        name: "স্বাধীনতা লাইব্রেরি",
+        address: "শাহজালাল জামেয়ার পাশে, মদিনা মার্কেট",
+        phone: "০১৭৫২৮৩১১৮৪"
+      },
+      {
+        name: "সৌম্য এন্টারপ্রাইজ",
+        address: "ব্লু-বার্ড জুনিয়র স্কুলের বিপরীতে, মিরের ময়দান",
+        phone: "০১৯৭৩৮৮১৪৯৮"
+      },
+      {
+        name: "ইফরাজ সাইন প্রিন্টার্স",
+        address: "পাইলট স্কুলের পেছনের গেইট, নিউ মার্কেট, লালদিঘীরপাড়",
+        phone: "০১৩০৬৩১৮৭৭৩"
+      },
+      {
+        name: "প্রভিন্সিয়াল লাইব্রেরি",
+        address: "আহমদ ম্যানশন, জিন্দাবাজার",
+        phone: "০১৭৫২৮৩১১৮৪"
+      },
+      {
+        name: "মনোরম লাইব্রেরি",
+        address: "ইবনে সিনার পাশে, রিকাবীবাজার",
+        phone: "০১৯০৮৩০৩৮২৬"
+      },
+      {
+        name: "ফ্রেন্ডস লাইব্রেরি",
+        address: "আম্বরখানা গার্লস এর বিপরীতে, হাউজিং স্টেট",
+        phone: "০১৭৫২৮৩১১৮৪"
+      }
+    ]
   </script>
   
   <svelte:head>
@@ -76,6 +114,21 @@
         <p class="mt-2 text-sm text-gray-600">
           অথবা স্কুল প্রতিনিধির সাথে যোগাযোগ করুন।
         </p>
+      </div>
+      <div in:fly="{{ y: 50, duration: 500, delay: 600 }}" class="bg-white p-6 rounded-lg shadow-md">
+        <h3 class="text-xl font-semibold text-teal-700 mb-4 text-center">অফলাইনে ফর্ম প্রাপ্তি ও জমা দেওয়ার ঠিকানা</h3>
+        
+        {#each offices as office}
+          <div class="py-4 border-b">
+            <h4 class="text-lg font-semibold text-teal-700">{office.name}</h4>
+            <p class="text-gray-700 mb-2">
+              {office.address}
+            </p>
+            <p class="text-gray-700">
+              ফোন: {office.phone}
+            </p>
+          </div>
+        {/each}
       </div>
   
       <div in:fly="{{ y: 50, duration: 500, delay: 800 }}" class="bg-amber-50 p-6 rounded-lg shadow-md">
