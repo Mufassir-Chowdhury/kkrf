@@ -1,187 +1,56 @@
 <script>
     import { onMount } from 'svelte';
-import { goto } from '$app/navigation';
-import { auth, db } from '$lib/firebase';
-import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc } from 'firebase/firestore';
-import { browser } from '$app/environment';
-import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+    import { goto } from '$app/navigation';
+    import { db } from '$lib/firebase';
+    import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc } from 'firebase/firestore';
 
-let registrations = [];
-let filteredRegistrations = [];
-let searchTerm = '';
-let isLoggedIn = false;
-let loading = true;
-let error = null;
-let selectedRegistration = null;
-let smsModalOpen = false;
+    import { sendConfirmationSMS, handleExportCSV, handleExportPDF } from './util';
+    import { loadRegistrations, deleteRegistration } from './db';
+    let registrations = [];
+    let filteredRegistrations = [];
+    let searchTerm = '';
+    let loading = true;
+    let error = null;
+    let selectedRegistration = null;
+    let smsModalOpen = false;
     let selectedUnconfirmedReg = null;
 
-onMount(() => {
-  if (browser) {
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (!user) {
-        goto('/login');
-      }
-      isLoggedIn = true;
-      loading = false;
-      await loadRegistrations();
+    onMount(async () => {
+          await handleLoad();
     });
-
-    return () => unsubscribe();
-  }
-});
-async function sendConfirmationSMS(phoneNumber) {
-        const url = "https://api.bdbulksms.net/api.php?json";
-        const t1 = "59702300401725";
-        const t2 = "814840c01d5e52";
-        const t3 = "79bac7dda539127ec4a9f539";
-        const SMS_API_TOKEN = `${t1}${t2}${t3}`;
-        const data = new FormData();
-        data.set('token', SMS_API_TOKEN);
-        data.set('message', 'আপনার রেজিস্ট্রেশন কনফার্ম হয়েছে। কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪');
-        data.set('to', phoneNumber);
-
-        try {
-            const response = await fetch(url, {
-                method: "POST",
-                body: data
-            });
-            const result = await response.json();
-            console.log('SMS sent successfully:', result);
-        } catch (error) {
-            console.error('Error sending SMS:', error);
-        }
+    async function handleLoad() {
+        loading = true;
+        registrations = await loadRegistrations();
+        filterRegistrations();
+        loading = false;
     }
-async function loadRegistrations() {
-  try {
-    loading = true;
-    const q = query(collection(db, 'scholarshipApplications'), orderBy('creationTime', 'desc'));
-    const querySnapshot = await getDocs(q);
-    registrations = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
-    filterRegistrations();
-  } catch (err) {
-    console.error("Error loading registrations:", err);
-    error = "Failed to load registrations. Please try again.";
-  } finally {
-    loading = false;
-  }
-}
 
-function filterRegistrations() {
-  filteredRegistrations = registrations.filter(reg => 
-    reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.institution.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    reg.mobile.includes(searchTerm)
-  );
-}
 
-function handleSearch() {
-  filterRegistrations();
-}
 
-async function handleDelete(id) {
-  if (confirm('Are you sure you want to delete this registration?')) {
-    try {
-      await deleteDoc(doc(db, 'scholarshipApplications', id));
-      await loadRegistrations();
-    } catch (err) {
-      console.error("Error deleting registration:", err);
-      error = "Failed to delete registration. Please try again.";
+    function filterRegistrations() {
+      filteredRegistrations = registrations.filter(reg => 
+        reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.institution.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        reg.mobile.includes(searchTerm)
+      );
     }
-  }
-}
 
-function handleEdit(id) {
-  goto(`/edit-registration/${id}`);
-}
+    function handleSearch() {
+      filterRegistrations();
+    }
 
-async function handleLogout() {
-  try {
-    await auth.signOut();
-    isLoggedIn = false;
-    goto('/login');
-  } catch (err) {
-    console.error("Error signing out:", err);
-    error = "Failed to sign out. Please try again.";
-  }
-}
+    async function handleDelete(id) {
+      await deleteRegistration(id);
+        await handleLoad();
+    }
 
-function handleExportCSV() {
-  const headers = [
-    'Name', 'Name (English)', 'Father\'s Name', 'Mother\'s Name', 'Institution', 'Class',
-    'Section', 'Class Roll', 'Birth Date', 'Religion', 'Mobile', 'Village', 'Post Office',
-    'Upazila', 'District', 'Present Address', 'Guardian Name', 'Relation', 'Guardian Mobile',
-    'Transaction ID', 'Creation Time'
-  ];
+    function handleEdit(id) {
+      goto(`/edit-registration/${id}`);
+    }
 
-  const csvContent = [
-    headers.join(','),
-    ...registrations.map(reg => [
-      reg.name,
-      reg.nameEnglish,
-      reg.fatherName,
-      reg.motherName,
-      reg.institution,
-      reg.class,
-      reg.section,
-      reg.classRoll,
-      reg.birthDate,
-      reg.religion,
-      reg.mobile,
-      reg.permanentAddress.village,
-      reg.permanentAddress.postOffice,
-      reg.permanentAddress.upazila,
-      reg.permanentAddress.district,
-      reg.presentAddress,
-      reg.guardianName,
-      reg.relation,
-      reg.guardianMobile,
-      reg.transactionID,
-      reg.creationTime
-    ].map(field => `"${field}"`).join(','))
-  ].join('\n');
 
-  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement("a");
-  if (link.download !== undefined) {
-    const url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
-    link.setAttribute("download", "scholarship_applications.csv");
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  }
-}
 
-function handleExportPDF() {
-  const doc = new jsPDF();
-
-  doc.setFontSize(18);
-  doc.text("Scholarship Applications", 14, 22);
-
-  const headers = [['Name', 'Institution', 'Class', 'Mobile']];
-  const data = filteredRegistrations.map(reg => [
-    reg.name,
-    reg.institution,
-    reg.class,
-    reg.mobile
-  ]);
-
-  doc.autoTable({
-    startY: 30,
-    head: headers,
-    body: data,
-    theme: 'grid',
-    styles: { fontSize: 8, cellPadding: 2 },
-    headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-    alternateRowStyles: { fillColor: [242, 242, 242] },
-  });
-
-  doc.save("scholarship_applications.pdf");
-}
-function showConfirmationDetails(registration) {
+    function showConfirmationDetails(registration) {
         selectedRegistration = registration;
     }
     async function confirmRegistration(id) {
@@ -190,7 +59,7 @@ function showConfirmationDetails(registration) {
             const registrationDoc = await getDoc(doc(db, 'scholarshipApplications', id));
             const registrationData = registrationDoc.data();
             await sendConfirmationSMS(registrationData.mobile);
-            await loadRegistrations();
+            await handleLoad();
             selectedRegistration = null;
         } catch (err) {
             console.error("Error confirming registration:", err);
@@ -201,7 +70,7 @@ function showConfirmationDetails(registration) {
     async function cancelConfirmation(id) {
         try {
             await updateDoc(doc(db, 'scholarshipApplications', id), { confirmed: false });
-            await loadRegistrations();
+            await handleLoad();
             selectedRegistration = null;
         } catch (err) {
             console.error("Error canceling confirmation:", err);
@@ -255,9 +124,9 @@ function showConfirmationDetails(registration) {
   <div class="text-red-500 text-center p-4">
     {error}
   </div>
-{:else if isLoggedIn}
+{:else}
   <div class="space-y-6 p-6">
-    <h1 class="text-3xl font-bold text-center text-teal-700">Admin Dashboard</h1>
+    <h2 class="text-2xl font-bold text-center text-teal-700">Registrations</h2>
 
     <div class="flex justify-between items-center">
       <input 
@@ -269,22 +138,16 @@ function showConfirmationDetails(registration) {
       />
       <div class="space-x-2">
         <button 
-          on:click={handleExportCSV}
+          on:click={() => handleExportCSV(registrations)}
           class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
         >
           Export CSV
         </button>
         <button 
-          on:click={handleExportPDF}
+          on:click={() => handleExportPDF(filteredRegistrations)}
           class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
         >
           Export PDF
-        </button>
-        <button 
-          on:click={handleLogout}
-          class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-        >
-          Logout
         </button>
       </div>
     </div>
@@ -418,7 +281,3 @@ function showConfirmationDetails(registration) {
         </div>
     </div>
 {/if}
-<!-- <script>
-  import Dashboard from "./Dashboard.svelte";
-</script>
-<Dashboard /> -->
