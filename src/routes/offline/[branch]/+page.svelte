@@ -122,7 +122,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label class="block text-sm font-medium text-gray-700">সিরিয়াল</label>
-        <input type="text" bind:value={formData.serial} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <input type="text" pattern="\d{4,5}" maxlength="5" bind:value={formData.serial} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
         </div>
       <div>
         <label class="block text-sm font-medium text-gray-700">পরীক্ষার্থীর নাম (বাংলায়)</label>
@@ -162,7 +162,7 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700">মোবাইল</label>
-        <input type="tel" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <input type="tel" pattern="\d{11}" maxlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
       </div>
     </div>
   
