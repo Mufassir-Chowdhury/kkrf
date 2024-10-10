@@ -38,6 +38,8 @@ export function handleExportCSV(registrations) {
         reg.nameEnglish,
         reg.fatherName,
         reg.motherName,
+        reg.institutionType,
+        reg.gender,
         reg.institution,
         reg.class,
         reg.section,

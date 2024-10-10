@@ -126,7 +126,7 @@
   </div>
 {:else}
   <div class="space-y-6 p-6">
-    <h2 class="text-2xl font-bold text-center text-teal-700">Registrations</h2>
+    <h2 class="text-2xl font-bold text-center text-teal-700">Registrations [{registrations.length}]</h2>
 
     <div class="flex justify-between items-center">
       <input 
