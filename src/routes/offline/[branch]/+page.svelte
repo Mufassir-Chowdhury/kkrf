@@ -3,6 +3,7 @@
 	import { onMount } from 'svelte';
 	import { initializeApp } from 'firebase/app';
 	import { getFirestore, collection, addDoc } from 'firebase/firestore';
+    import { page } from '$app/stores';
 
 	// Your Firebase configuration
 	const firebaseConfig = {
@@ -36,13 +37,12 @@
 		presentAddress: '',
 		creationTime: '',
         branch: '',
-		confirmed: false  // Add the confirmed field, default to false
 	};
 	let formErrors = {};
 	let submitting = false;
 	let submitSuccess = false;
 	let submitError = '';
-    let branch = $branch;
+    let branch = $page.params.branch;
 	async function handleSubmit() {
 		submitting = true;
 		submitSuccess = false;
@@ -51,12 +51,10 @@
 		try {
 			formData.creationTime = new Date().toISOString();
             formData.branch = branch;
-			formData.confirmed = false;  // Ensure confirmed is set to false
-			// const docRef = await addDoc(collection(db, `offline-${branch}`), formData);
-            console.log(formData);
-			// console.log('Document written with ID: ', docRef.id);
+			const docRef = await addDoc(collection(db, `offline`), formData);
+			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
-			// goto(`/${branch}/successful`);
+			goto(`/offline/${branch}/successful`);
 			
 			formErrors = {};
 		} catch (e) {
