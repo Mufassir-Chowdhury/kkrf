@@ -30,7 +30,7 @@
     <h1>Offline Registrations {total}</h1>
     <div class="grid">
         {#each thanaWithCounts as { key, value, count }}
-            <a href={`/offline/${key}`} class="grid-item">
+            <a href={`/offline/${key}/list`} class="grid-item">
                 {value}
                 <br>
                 Count: {count}
