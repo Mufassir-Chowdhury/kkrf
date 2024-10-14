@@ -92,7 +92,6 @@
 	<form on:submit|preventDefault={handleSubmit} class="space-y-6">
     <div class="flex justify-between">
       <div class="w-1/2">
-        <label class="block text-sm font-medium text-gray-700">রেজিঃ নং DA-3075</label>
         <div class="flex space-x-4">
           <label class="inline-flex items-center">
             <input type="radio" bind:group={formData.institutionType} value="school" required class="form-radio">
@@ -121,8 +120,8 @@
   
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700">সিরিয়াল</label>
-        <input type="text" pattern="\d{4,5}" maxlength="5" bind:value={formData.serial} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <label class="block text-sm font-medium text-gray-700">সিরিয়াল </label>
+        <input type="text" maxlength="5" bind:value={formData.serial} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
         </div>
       <div>
         <label class="block text-sm font-medium text-gray-700">পরীক্ষার্থীর নাম (বাংলায়)</label>
