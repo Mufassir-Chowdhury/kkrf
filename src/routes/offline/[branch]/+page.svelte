@@ -119,7 +119,7 @@
   
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700">সিরিয়াল </label>
+        <label class="block text-sm font-medium text-gray-700">সিরিয়াল ({branch}001 থেকে শুরু হবে <br/> ইংরেজিতে লিখবেন <br/> আপনার ফর্মের কপিতেও হাতে লিখে রাখবেন সিরিয়াল নাম্বারের ঘরে)</label>
         <input type="text" maxlength="5" bind:value={formData.serial} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
         </div>
       <div>
@@ -150,7 +150,7 @@
           </select>
         </div>
         <div>
-          <label class="block text-sm font-medium text-gray-700">শাখা</label>
+          <label class="block text-sm font-medium text-gray-700">শাখা (না থাকলে নাই লিখবেন)</label>
           <input type="text" bind:value={formData.section} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
         </div>
         <div>
@@ -159,7 +159,7 @@
         </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">মোবাইল</label>
+        <label class="block text-sm font-medium text-gray-700">মোবাইল (ইংরেজিতে ১১ ডিজিট, ডাবল চেক করবেন)</label>
         <input type="tel" maxlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
       </div>
     </div>
