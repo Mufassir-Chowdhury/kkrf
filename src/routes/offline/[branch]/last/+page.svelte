@@ -4,7 +4,6 @@
     import { initializeApp } from 'firebase/app';
     import { getFirestore, collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
     import { page } from '$app/stores';
-    
     const firebaseConfig = {
         apiKey: 'AIzaSyBy8i9BLWzUMulNQJkJsbDX8m6MFYz6T_k',
         authDomain: 'kkrf-sylhet.firebaseapp.com',

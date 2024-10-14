@@ -5,6 +5,7 @@
 	import { getFirestore, collection, addDoc } from 'firebase/firestore';
     import { page } from '$app/stores';
 
+	export let data;
 	// Your Firebase configuration
 	const firebaseConfig = {
 		apiKey: 'AIzaSyBy8i9BLWzUMulNQJkJsbDX8m6MFYz6T_k',
@@ -81,10 +82,8 @@
 </svelte:head>
 
 <div class="space-y-8">
-	<h1 class="text-3xl font-bold text-center text-teal-700">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪</h1>
-	<h2 class="text-xl font-semibold text-center text-teal-600">
-		আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
-	</h2>
+	<h1 class="text-3xl font-bold text-center text-teal-700">শাখাঃ {data.thana[branch]}</h1>
+	
 
 
 	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>
