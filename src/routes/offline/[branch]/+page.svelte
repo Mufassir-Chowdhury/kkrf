@@ -161,7 +161,7 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700">মোবাইল</label>
-        <input type="tel" pattern="\d{11}" maxlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <input type="tel" maxlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
       </div>
     </div>
   
