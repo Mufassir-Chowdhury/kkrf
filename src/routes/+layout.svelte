@@ -18,7 +18,7 @@
 </script>
 
 <div class="min-h-screen bg-gradient-to-br from-teal-50 to-amber-50">
-  <header class="bg-teal-600 text-white shadow-lg">
+  <header class="bg-teal-600 text-white shadow-lg print:hidden">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">
         <div class="flex items-center">
@@ -58,7 +58,7 @@
   </header>
   
 
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 print:m-0 print:p-0 print:max-w-none">
     {#if mounted}
       <div in:fly="{{ y: 50, duration: 500, delay: 300 }}">
         <slot></slot>
@@ -66,7 +66,7 @@
     {/if}
   </main>
 
-  <footer class="bg-amber-100 text-teal-800">
+  <footer class="bg-amber-100 text-teal-800 print:hidden">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <div class="flex justify-between items-center">
         <p class=" text-sm">© 2024 কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর। সর্বস্বত্ব সংরক্ষিত।</p>
