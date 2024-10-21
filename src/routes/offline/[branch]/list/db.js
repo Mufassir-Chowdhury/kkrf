@@ -21,7 +21,7 @@ export async function loadRegistrations(branch) {
 export async function deleteRegistration(id) {
     if (confirm('Are you sure you want to delete this registration?')) {
         try {
-          await deleteDoc(doc(db, 'scholarshipApplications', id));
+          await deleteDoc(doc(db, 'offline', id));
         } catch (err) {
           console.error("Error deleting registration:", err);
           throw err;

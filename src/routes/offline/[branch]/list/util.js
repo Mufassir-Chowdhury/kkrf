@@ -24,8 +24,9 @@ export function handleExportCSV(registrations) {
         reg.branch,
       ].map(field => `"${field}"`).join(','))
     ].join('\n');
-  
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-16;' });
+    const BOM = "\uFEFF";
+    const csvContentWithBOM = BOM + csvContent;
+    const blob = new Blob([csvContentWithBOM], { type: 'text/csv;charset=utf-8;' });
     const link = document.createElement("a");
     if (link.download !== undefined) {
       const url = URL.createObjectURL(blob);

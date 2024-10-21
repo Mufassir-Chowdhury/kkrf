@@ -173,6 +173,10 @@
                 <label class="block text-sm font-medium text-gray-700">বর্তমান ঠিকানা</label>
                 <input type="text" bind:value={formData.presentAddress} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
             </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">থানা</label>
+                <input type="text" bind:value={formData.branch} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+            </div>
 
             <div class="flex justify-center space-x-4">
                 <button 

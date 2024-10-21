@@ -2,10 +2,11 @@
     import { onMount } from 'svelte';
     import { goto } from '$app/navigation';
     import { db } from '$lib/firebase';
-    import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc } from 'firebase/firestore';
-
+    import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc, limit, startAfter, getCountFromServer } from 'firebase/firestore';
+    import { page } from '$app/stores';
     import { sendConfirmationSMS, handleExportCSV, handleExportPDF } from './util';
     import { loadRegistrations, deleteRegistration } from './db';
+    
     let registrations = [];
     let filteredRegistrations = [];
     let searchTerm = '';
@@ -15,24 +16,81 @@
     let smsModalOpen = false;
     let selectedUnconfirmedReg = null;
 
-    onMount(async () => {
-          await handleLoad();
-    });
-    async function handleLoad() {
-        loading = true;
-        registrations = await loadRegistrations();
-        filterRegistrations();
-        loading = false;
+    // Pagination variables
+    let currentPage = 1;
+    let itemsPerPage = 10;
+    let totalPages = 1;
+    let totalItems = 0;
+    let lastVisible = null;
+    $: {
+        const urlParams = new URLSearchParams($page.url.searchParams);
+        const pageFromUrl = parseInt(urlParams.get('page') || '1', 10);
+        if (pageFromUrl !== currentPage) {
+            currentPage = pageFromUrl;
+            handleLoad();
+        }
     }
 
+    onMount(async () => {
+        await handleLoad();
+    });
 
+    async function handleLoad() {
+        loading = true;
+        
+        try {
+            const { items, total, last } = await loadPaginatedRegistrations(currentPage);
+            registrations = items;
+            totalItems = total;
+            totalPages = Math.ceil(total / itemsPerPage);
+            lastVisible = last;
+            filterRegistrations();
+        } catch (err) {
+            console.error("Error loading registrations:", err);
+            error = "Failed to load registrations. Please try again.";
+        } finally {
+            loading = false;
+        }
+    }
+
+    async function loadPaginatedRegistrations(page) {
+        const registrationsRef = collection(db, 'scholarshipApplications');
+        let q;
+
+        if (page === 1) {
+            q = query(registrationsRef, orderBy('creationTime', 'desc'), limit(itemsPerPage));
+        } else {
+            q = query(registrationsRef, orderBy('creationTime', 'desc'), startAfter(lastVisible), limit(itemsPerPage));
+        }
+
+        const documentSnapshots = await getDocs(q);
+        
+        const items = documentSnapshots.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+        
+        const last = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+
+        // Get total count using count() method
+        const countSnapshot = await getCountFromServer(registrationsRef);
+        const total = countSnapshot.data().count;
+        
+        return { items, total, last };
+    }
 
     function filterRegistrations() {
-      filteredRegistrations = registrations.filter(reg => 
-        reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.institution.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        reg.mobile.includes(searchTerm)
-      );
+        filteredRegistrations = registrations.filter(reg => 
+            reg.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reg.institution.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            reg.mobile.includes(searchTerm)
+        );
+    }
+
+    function changePage(newPage) {
+        if (newPage >= 1 && newPage <= totalPages) {
+            goto(`?page=${newPage}`);
+        }
     }
 
     function handleSearch() {
@@ -59,7 +117,9 @@
             const registrationDoc = await getDoc(doc(db, 'scholarshipApplications', id));
             const registrationData = registrationDoc.data();
             await sendConfirmationSMS(registrationData.mobile);
-            await handleLoad();
+            const { items, total, last } = await loadPaginatedRegistrations(currentPage);
+            registrations = items;
+            totalItems = total;
             selectedRegistration = null;
         } catch (err) {
             console.error("Error confirming registration:", err);
@@ -126,7 +186,7 @@
   </div>
 {:else}
   <div class="space-y-6 p-6">
-    <h2 class="text-2xl font-bold text-center text-teal-700">Registrations [{registrations.length}]</h2>
+    <h2 class="text-2xl font-bold text-center text-teal-700">Registrations [{totalItems}]</h2>
 
     <div class="flex justify-between items-center">
       <input 
@@ -211,6 +271,25 @@
             {/each}
           </tbody>
         </table>
+      </div>
+      <div class="flex justify-center items-center mt-4 space-x-2">
+        <button
+          on:click={() => changePage(currentPage - 1)}
+          class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+          disabled={currentPage === 1}
+        >
+          Previous
+        </button>
+        <span class="text-sm text-gray-600">
+          Page {currentPage} of {totalPages}
+        </span>
+        <button
+          on:click={() => changePage(currentPage + 1)}
+          class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
+          disabled={currentPage === totalPages}
+        >
+          Next
+        </button>
       </div>
     {/if}
   </div>
