@@ -18,7 +18,7 @@
 
     // Pagination variables
     let currentPage = 1;
-    let itemsPerPage = 10;
+    let itemsPerPage = 300;
     let totalPages = 1;
     let totalItems = 0;
     let lastVisible = null;
