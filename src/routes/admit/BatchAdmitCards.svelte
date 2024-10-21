@@ -316,6 +316,9 @@
                   - প্রত্যেক পরীক্ষার্থী প্রয়োজনীয় ক্যালকুলেটর, কলম ও জ্যামিতি বক্স অবশ্যই সাথে আনতে হবে। এছাড়া অতিরিক্ত কাগজ সাথে রাখা যাবে না<br>
                 </div>
               </div>
+              <div class="text-blue-400">
+                <span>ঠিকানাঃ {card['Present Address']}</span>
+              </div>
               <div class="mt-4 flex justify-between">
                 <div class=" mx-4 border-2 border-blue-400 pt-2 px-8">
                   <div>
