@@ -9,7 +9,7 @@
     onMount(async () => {
         
         const countPromises = Object.entries(data.thana).map(async ([key, value]) => {
-            const q = query(collection(db, 'offline'), where('branch', '==', key), orderBy('serial', 'desc'));
+            const q = query(collection(db, 'offline'), where('branch', '==', key));
             const querySnapshot = await getCountFromServer(q);
             return {
                 key,
