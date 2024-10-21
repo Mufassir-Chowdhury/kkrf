@@ -6,9 +6,9 @@ export async function loadRegistrations(branch) {
       const q = query(
         collection(db, 'offline'),
         where('branch', '==', branch),
-        orderBy('creationTime', 'desc')
+        orderBy('serial', 'desc')
     );
-    // orderBy('serial', 'desc')
+    // orderBy('creationTime', 'desc')
       const querySnapshot = await getDocs(q);
       let registrations = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
       return registrations;
