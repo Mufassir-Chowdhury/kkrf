@@ -17,7 +17,7 @@
   });
 </script>
 
-<div class="min-h-screen bg-gradient-to-br from-teal-50 to-amber-50 print:bg-white">
+<div class="min-h-screen bg-gradient-to-br from-teal-50 to-amber-50 print:bg-white font-solaimanlipi">
   <header class="bg-teal-600 text-white shadow-lg print:hidden">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16">

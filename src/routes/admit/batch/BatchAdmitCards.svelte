@@ -189,11 +189,12 @@
     </button>
   </div>
 </div>
+          <!-- {#each {length: 5} as _, i} -->
+
   <div>
     {#if !checked}
       <div class="a4-page">
         <div class="flex flex-col">
-          <!-- {#each {length: 5} as _, i} -->
           {#each csvData as card}
             <div class="admit-card bg-white  text-sm">
               <div class="bg-blue-400 text-white p-2 text-center mb-3 w-full flex justify-between">
