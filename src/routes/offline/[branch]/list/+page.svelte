@@ -91,7 +91,7 @@
         <table class="w-full text-sm text-left text-gray-500">
           <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-              <th scope="col" class="px-6 py-3">ID</th>
+              <th scope="col" class="px-6 py-3">Qualifiers</th>
               <th scope="col" class="px-6 py-3">Serial</th>
               <th scope="col" class="px-6 py-3">Name</th>
               <th scope="col" class="px-6 py-3">Institution</th>
@@ -103,7 +103,9 @@
           <tbody>
             {#each filteredRegistrations as registration, i}
               <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b hover:bg-gray-100">
-                <td class="px-6 py-4">{registration.id}</td>
+                <td class="px-6 py-4">
+                  {registration.gender ?? "Gender Not Specified"} <br>                  {registration.institutionType ?? "Institution Type Not Specified"}
+                </td>
                 <td class="px-6 py-4">{registration.serial}</td>
                 <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{registration.name}</td>
                 <td class="px-6 py-4">{registration.institution}</td>
