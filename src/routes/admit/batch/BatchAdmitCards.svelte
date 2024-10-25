@@ -324,7 +324,7 @@
                 <div class=" mx-4 border-2 border-blue-400 pt-2 px-8">
                   <div>
                     <div class="font-semibold">অফিস কর্তৃক পূরণীয়</div>
-                    <div>থানাঃ {thana[card.Branch]}</div>
+                    <div>থানাঃ {thana[card.Branch]} ({card.Ward ?? ""})</div>
                     <div>সিরিয়ালঃ {card.Serial}</div>
                   </div>
                 </div>
