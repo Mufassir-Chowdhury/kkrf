@@ -3,7 +3,7 @@
 export function handleExportCSV(registrations) {
     const headers = [
       'Serial', 'Institute Type', 'Gender', 'Name', 'Father\'s name', 'Institute',
-      'Class', 'Section', 'Class Roll', 'Mobile', 'Present Address', 'Creation Time', 'Branch'
+      'Class', 'Section', 'Class Roll', 'Mobile', 'Present Address', 'Creation Time', 'Branch', "Ward"
     ];
   
     const csvContent = [
@@ -22,6 +22,7 @@ export function handleExportCSV(registrations) {
 		reg.presentAddress,
 		reg.creationTime,
         reg.branch,
+        reg.ward
       ].map(field => `"${field}"`).join(','))
     ].join('\n');
     const BOM = "\uFEFF";

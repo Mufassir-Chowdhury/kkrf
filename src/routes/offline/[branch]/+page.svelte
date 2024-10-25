@@ -38,6 +38,7 @@
 		presentAddress: '',
 		creationTime: '',
         branch: '',
+		ward: '',
 	};
 	let formErrors = {};
 	let submitting = false;
@@ -168,6 +169,10 @@
       <label class="block text-sm font-medium text-gray-700">বর্তমান ঠিকানা</label>
       <input type="text" bind:value={formData.presentAddress} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
     </div>
+	<div>
+		<label class="block text-sm font-medium text-gray-700">ওয়ার্ড</label>
+		<input type="text" bind:value={formData.ward} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+	  </div>
   
   
     <div class="text-center">

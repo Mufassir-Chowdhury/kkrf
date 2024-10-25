@@ -18,6 +18,7 @@
         mobile: '',
         presentAddress: '',
         branch: '',
+        ward: '',
     };
 
     let loading = true;
@@ -176,6 +177,10 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700">থানা</label>
                 <input type="text" bind:value={formData.branch} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+            </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700">ওয়ার্ড</label>
+                <input type="text" bind:value={formData.ward} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
             </div>
 
             <div class="flex justify-center space-x-4">
