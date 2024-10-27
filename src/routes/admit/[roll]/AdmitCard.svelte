@@ -44,7 +44,7 @@ let thana = {
   }
   onMount(async () => {
     try {
-      const csvResponse = await fetch('/All Forms Roll - 1.csv');
+      const csvResponse = await fetch('/Roll.csv');
       const csvText = await csvResponse.text();
       Papa.parse(csvText, {
         header: true,
