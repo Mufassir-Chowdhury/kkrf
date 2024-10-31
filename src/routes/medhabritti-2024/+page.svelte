@@ -67,6 +67,12 @@
     <h1 class="text-3xl font-bold text-center text-teal-700">
       কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪
     </h1>
+    <div in:fly="{{ y: 50, duration: 500, delay: 1000 }}" class="bg-white p-6 rounded-lg shadow-md text-center">
+      <h3 class="text-xl font-semibold text-teal-700 mb-4">সীটপ্লান এবং এডমিট কার্ড দেখুন</h3>
+      <a href="/britti_info" class="bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
+        সীটপ্লান এবং এডমিট কার্ড
+      </a>
+    </div>
     
     <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
       <h2 class="text-2xl font-bold mb-4 text-center">৪র্থ-১০ম শ্রেণী, স্কুল এবং মাদরাসা</h2>

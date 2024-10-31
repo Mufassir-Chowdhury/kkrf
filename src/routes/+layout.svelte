@@ -30,7 +30,10 @@
               <a href="/" class="nav-link {$page.url.pathname === '/' ? 'active' : ''}">Home</a>
               <a href="/about" class="nav-link {$page.url.pathname === '/about' ? 'active' : ''}">About</a>
               <a href="/medhabritti-2024" class="nav-link {$page.url.pathname === '/medhabritti-2024' ? 'active' : ''}">মেধাবৃত্তি - ২০২৪</a>
+              <a href="/britti_info" class="nav-link {$page.url.pathname === '/britti_info' ? 'active' : ''}">সীটপ্লান</a>
+              <a href="/admit" class="nav-link {$page.url.pathname === '/admit' ? 'active' : ''}">এডমিট কার্ড</a>
               <a href="/contact" class="nav-link {$page.url.pathname === '/contact' ? 'active' : ''}">Contact</a>
+
             </div>
           </div>
         </div>
@@ -51,6 +54,8 @@
           <a href="/" class="mobile-nav-link {$page.url.pathname === '/' ? 'active' : ''}">Home</a>
           <a href="/about" class="mobile-nav-link {$page.url.pathname === '/about' ? 'active' : ''}">About</a>
           <a href="/medhabritti-2024" class="mobile-nav-link {$page.url.pathname === '/medhabritti-2024' ? 'active' : ''}">মেধাবৃত্তি - ২০২৪</a>
+          <a href="/britti_info" class="nav-link {$page.url.pathname === '/britti_info' ? 'active' : ''}">সীটপ্লান</a>
+          <a href="/admit" class="nav-link {$page.url.pathname === '/admit' ? 'active' : ''}">এডমিট কার্ড</a>
           <a href="/contact" class="mobile-nav-link {$page.url.pathname === '/contact' ? 'active' : ''}">Contact</a>
         </div>
       </div>

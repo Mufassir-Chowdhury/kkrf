@@ -188,6 +188,12 @@
           বৃত্তি সম্পর্কে জানুন
         </a>
       </div>
+      <div class="bg-white p-6 rounded-lg shadow-md text-center mt-10">
+        <h3 class="text-xl font-semibold text-teal-700 mb-4">সীটপ্লান এবং এডমিট কার্ড দেখুন</h3>
+        <a href="/britti_info" class="bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
+          সীটপ্লান এবং এডমিট কার্ড
+        </a>
+      </div>
     </section>
 
     <section class="mb-12">
