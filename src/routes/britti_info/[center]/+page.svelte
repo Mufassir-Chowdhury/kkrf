@@ -29,13 +29,13 @@
       </p>
     </div>
       
-    <div in:fly="{{ y: 50, duration: 500 }}" class="bg-white p-6 rounded-lg shadow-md">
+    <div class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-teal-700 mb-4">সীট প্লান</h3>
         <img src="/{center}-seatplan.jpg" alt="{center} Seat Plan" class="w-full">
     </div>
       
   
-      <div in:fly="{{ y: 50, duration: 500, delay: 800 }}" class="bg-amber-50 p-6 rounded-lg shadow-md">
+      <div class="bg-amber-50 p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগ</h3>
         <p class="text-gray-700 mb-2">
           অফিস: ইউনিভার্সাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।
