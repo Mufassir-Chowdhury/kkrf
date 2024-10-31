@@ -31,7 +31,7 @@
       
     <div class="bg-white p-6 rounded-lg shadow-md">
         <h3 class="text-xl font-semibold text-teal-700 mb-4">সীট প্লান</h3>
-        <img src="/{center}-seatplan.jpg" alt="{center} Seat Plan" class="w-full">
+        <img src="/{center}.jpg" alt="{center} Seat Plan" class="w-full">
     </div>
       
   
