@@ -52,7 +52,6 @@
     <h1 class="text-3xl font-bold text-center text-teal-700 mb-8">মেধাবৃত্তি পরীক্ষার ফলাফল - ২০২৪</h1>
   
     <div class="bg-white rounded-lg shadow-lg p-6">
-      <!-- Class-wise sections -->
       {#each classes as classLevel}
         <div class="mb-4 border rounded-lg overflow-hidden">
           <button

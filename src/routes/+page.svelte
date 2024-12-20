@@ -189,6 +189,12 @@
         </a>
       </div>
       <div class="bg-white p-6 rounded-lg shadow-md text-center mt-10">
+        <h3 class="text-xl font-semibold text-teal-700 mb-4">কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪ এর ফলাফল দেখুন</h3>
+        <a href="/results" class="bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
+          ফলাফল
+        </a>
+      </div>
+      <div class="bg-white p-6 rounded-lg shadow-md text-center mt-10">
         <h3 class="text-xl font-semibold text-teal-700 mb-4">সীটপ্লান এবং এডমিট কার্ড দেখুন</h3>
         <a href="/britti_info" class="bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
           সীটপ্লান এবং এডমিট কার্ড
