@@ -1,13 +1,4 @@
 <script>
-    import { fly } from 'svelte/transition';
-    import { onMount } from 'svelte';
-  
-    let mounted = false;
-  
-    onMount(() => {
-      mounted = true;
-    });
-  
     const examRules = [
       "৪র্থ, ৫ম, ৬ষ্ঠ, ৭ম, ৮ম, ৯ম ও ১০ম শ্রেণির ছাত্র-ছাত্রী (স্কুল-মাদরাসা) বৃত্তি পরীক্ষায় অংশগ্রহণ করতে পারবে।",
       "সিলেট বিভাগের যে কোন স্কুল-মাদরাসার ছাত্র-ছাত্রী পরীক্ষায় অংশগ্রহণ করতে পারবে।",
@@ -19,83 +10,73 @@
       "ট্যালেন্টপুল, সাধারণ ও বিশেষ এই তিনটি গ্রেডে বৃত্তিপ্রাপ্ত ছাত্র-ছাত্রীদের এককালীন শিক্ষা ব্যয় বাবদ নগদ অর্থ, সনদপত্র ও আকর্ষণীয় পুরষ্কার প্রদান করা হবে।",
       "৪র্থ থেকে ১০ম শ্রেণি পর্যন্ত সকল রেজিস্ট্রেশন ফি ২০০/- (দুইশত টাকা)।"
     ];
-  </script>
-  
-  <svelte:head>
-    <title>মেধাবৃত্তি পরীক্ষা ২০২৪ - কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</title>
-  </svelte:head>
-  
-  <div class="space-y-8">
-    <h1 class="text-3xl font-bold text-center text-teal-700">
-      কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪
-    </h1>
-    
-    <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-bold mb-4 text-center">পরীক্ষার তারিখ</h2>
-      <p class="text-lg text-center font-semibold">
-        ২ নভেম্বর, ২০২৪ (শনিবার) 
+</script>
+
+<svelte:head>
+  <title>মেধাবৃত্তি পরীক্ষা ২০২৪ - কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</title>
+</svelte:head>
+
+<div class="space-y-16">
+  <section class="text-center pt-8">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪</h1>
+  </section>
+
+  <section class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
+      <h2 class="text-3xl font-bold mb-4">পরীক্ষার তারিখ</h2>
+      <p class="text-4xl font-extrabold tracking-tight">
+        ২ নভেম্বর, ২০২৪
       </p>
-    </div>
-  
-    {#if mounted}
-    <div in:fly="{{ y: 50, duration: 500, delay: 600 }}" class="bg-teal-100 p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">এডমিট কার্ড</h3>
-        <a href="/admit" class="bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition-colors">
-          ডাউনলোড
+      <p class="text-xl text-secondary-100">(শনিবার)</p>
+  </section>
+
+  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center">
+    <h2 class="text-3xl font-bold text-primary-700 mb-6">এডমিট কার্ড ডাউনলোড করুন</h2>
+    <a href="/admit" class="bg-primary-600 text-white py-3 px-8 rounded-full hover:bg-primary-700 transition-colors inline-block text-lg font-semibold shadow-md">
+      ডাউনলোড
+    </a>
+    <p class="mt-4 text-gray-600">
+      অথবা আপনার স্কুল প্রতিনিধির সাথে যোগাযোগ করুন।
+    </p>
+  </section>
+
+  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+    <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">সীট প্লান দেখুন</h2>
+    <div class="grid md:grid-cols-3 gap-8">
+        <a href="/britti_info/alia" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg shadow-md">
+            <h3 class="text-2xl font-bold text-primary-800">সিলেট সরকারী আলিয়া মাদরাসা</h3>
         </a>
-        <p class="mt-2 text-sm text-gray-600">
-          অথবা স্কুল প্রতিনিধির সাথে যোগাযোগ করুন।
-        </p>
-      </div>  
-    
-    <div in:fly="{{ y: 50, duration: 500, delay: 1000 }}" class="bg-white p-6 rounded-lg shadow-md text-center">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">সীট প্লান দেখুন</h3>
-        <div class="flex flex-col gap-4 items-center">
-            <a href="/britti_info/alia" class=" w-80 bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
-              সিলেট সরকারী আলিয়া মাদরাসা
-            </a>
-            <a href="/britti_info/ptj" class=" w-80 bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
-                শাহজালাল জামেয়া ইসলামিয়া কামিল মাদরাসা
-            </a>
-            <a href="/britti_info/alamin" class=" w-80 bg-amber-500 text-white py-2 px-4 rounded-md hover:bg-amber-600 transition-colors">
-                আল-আমীন জামেয়া স্কুল এন্ড কলেজ
-            </a>
-        </div>
-      </div>
-      
-      <div in:fly="{{ y: 50, duration: 500 }}" class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">বৃত্তি সম্পর্কিত তথ্য</h3>
-        <ul class="list-disc list-inside space-y-2 text-gray-700">
-          {#each examRules as rule}
-            <li>{rule}</li>
-          {/each}
-        </ul>
-      </div>
-  
-      
-  
-      
-  
-      <div in:fly="{{ y: 50, duration: 500, delay: 800 }}" class="bg-amber-50 p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগ</h3>
-        <p class="text-gray-700 mb-2">
-          অফিস: ইউনিভার্সাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।
-        </p>
-        <p class="text-gray-700 mb-2">
-          ফোন: ০১৭৫২-৮৩১১৮৪, ০১৭০১-৪৫৯৮৮১, ০১৭৭১-১৪৪৩০৮
-        </p>
-        <p class="text-gray-700">
-          অফিস টাইম: বিকাল ৫:০০ থেকে রাত ৮:০০ পর্যন্ত
-        </p>
-      </div>
-    {/if}
-  
-    <div class="text-sm text-gray-600 text-center">
-      আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর<br>
-      বিস্তারিত তথ্যের জন্য: <a href="http://www.kkrfsylhet.org" class="text-teal-600 hover:underline">www.kkrfsylhet.org</a>
+        <a href="/britti_info/ptj" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg shadow-md">
+            <h3 class="text-2xl font-bold text-primary-800">শাহজালাল জামেয়া ইসলামিয়া কামিল মাদরাসা</h3>
+        </a>
+        <a href="/britti_info/alamin" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg shadow-md">
+            <h3 class="text-2xl font-bold text-primary-800">আল-আমীন জামেয়া স্কুল এন্ড কলেজ</h3>
+        </a>
     </div>
+  </section>
+
+  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+    <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">বৃত্তি সম্পর্কিত তথ্য</h2>
+    <ul class="space-y-4">
+      {#each examRules as rule}
+        <li class="flex items-start space-x-4">
+          <span class="text-primary-500 mt-1 text-xl">✓</span>
+          <span class="text-lg text-gray-700">{rule}</span>
+        </li>
+      {/each}
+    </ul>
+  </section>
+
+  <section class="text-center">
+    <h2 class="text-2xl font-bold text-primary-700 mb-4">যোগাযোগ</h2>
+    <div class="text-lg text-gray-600">
+      <p>অফিস: ইউনিভার্সাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।</p>
+      <p>ফোন: ০১৭৫২-৮৩১১৮৪, ০১৭০১-৪৫৯৮৮১, ০১৭৭১-১৪৪৩০৮</p>
+      <p>অফিস টাইম: বিকাল ৫:০০ থেকে রাত ৮:০০ পর্যন্ত</p>
+    </div>
+  </section>
+
+  <div class="text-sm text-gray-500 text-center py-8 border-t">
+    আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর<br>
+    বিস্তারিত তথ্যের জন্য: <a href="http://www.kkrfsylhet.org" class="text-primary-600 hover:underline">www.kkrfsylhet.org</a>
   </div>
-  
-  <style>
-    /* Any additional styles can be added here */
-  </style>
+</div>

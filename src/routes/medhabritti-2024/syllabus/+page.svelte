@@ -1,13 +1,4 @@
 <script>
-    import { fly } from 'svelte/transition';
-    import { onMount } from 'svelte';
-  
-    let mounted = false;
-  
-    onMount(() => {
-      mounted = true;
-    });
-  
     const syllabusData = [
   {
     class: "দশম শ্রেণি (স্কুল/মাদরাসা)",
@@ -242,31 +233,33 @@
     ]
   }
 ];
-  </script>
-  
-  <svelte:head>
-    <title>মেধাবৃত্তি পরীক্ষা ২০২৪ সিলেবাস - কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</title>
-  </svelte:head>
-  
+</script>
+
+<svelte:head>
+  <title>মেধাবৃত্তি পরীক্ষা ২০২৪ সিলেবাস - কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</title>
+</svelte:head>
+
+<div class="space-y-12">
+  <section class="text-center pt-8">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">মেধাবৃত্তি পরীক্ষা ২০২৪ সিলেবাস</h1>
+  </section>
+
+  <section class="bg-secondary-50 border-l-4 border-secondary-400 p-8 rounded-r-lg">
+    <h3 class="text-2xl font-semibold text-secondary-800 mb-4">বিশেষ দ্রষ্টব্য</h3>
+    <p class="text-lg text-secondary-700">
+      সাধারণ জ্ঞানের জন্য (জানুয়ারি-আগস্ট'২৪) কিশোরকণ্ঠ এবং বিশেষ সংকলন "অন্বেষণ" সংগ্রহ করতে হবে।
+    </p>
+  </section>
+
   <div class="space-y-8">
-    <h1 class="text-3xl font-bold text-center text-teal-700">
-      মেধাবৃত্তি পরীক্ষা ২০২৪ সিলেবাস
-    </h1>
-  
-    {#if mounted}
-      <div in:fly="{{ y: 50, duration: 500, delay: syllabusData.length * 100 }}" class="bg-amber-50 p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">বিশেষ দ্রষ্টব্য</h3>
-        <p class="text-gray-700">
-          সাধারণ জ্ঞানের জন্য (জানুয়ারি-আগস্ট'২৪) কিশোরকণ্ঠ এবং বিশেষ সংকলন "অন্বেষণ" সংগ্রহ করতে হবে।
-        </p>
-      </div>
-      {#each syllabusData as classData, index}
-        <div in:fly="{{ y: 50, duration: 500, delay: index * 100 }}" class="bg-white p-6 rounded-lg shadow-md">
-          <h2 class="text-2xl font-semibold text-teal-600 mb-4">{classData.class}</h2>
+    {#each syllabusData as classData}
+      <section class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <h2 class="text-2xl font-bold text-white bg-primary-600 p-6">{classData.class}</h2>
+        <div class="p-6 md:p-8 grid gap-8">
           {#each classData.subjects as subject}
-            <div class="mb-4">
-              <h3 class="text-xl font-medium text-amber-600">{subject.name}</h3>
-              <ul class="list-disc list-inside pl-4 text-gray-700">
+            <div class="border-b pb-6 last:border-b-0 last:pb-0">
+              <h3 class="text-2xl font-bold text-secondary-600 mb-4">{subject.name}</h3>
+              <ul class="list-disc list-inside space-y-2 text-gray-700 text-lg">
                 {#each subject.topics as topic}
                   <li>{topic}</li>
                 {/each}
@@ -274,8 +267,7 @@
             </div>
           {/each}
         </div>
-      {/each}
-  
-      
-    {/if}
+      </section>
+    {/each}
   </div>
+</div>

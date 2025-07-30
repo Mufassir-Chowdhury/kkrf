@@ -1,74 +1,67 @@
 
-<script>
-    import { fly } from 'svelte/transition';
-    import { onMount } from 'svelte';
-  
-    let mounted = false;
-  
-    onMount(() => {
-      mounted = true;
-    });
-  
-  </script>
-  
-  <svelte:head>
-    <title>আমাদের সম্পর্কে - কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</title>
-  </svelte:head>
-  
-  <div class="space-y-8">
-    <h1 class="text-3xl font-bold text-center text-teal-700">
-      আমাদের সম্পর্কে
-    </h1>
-    
-    <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
-      <h2 class="text-2xl font-bold mb-4 text-center">কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</h2>
-      <p class="text-lg text-center">
-        ১৯৮৪ সালে প্রতিষ্ঠিত, শিক্ষা ও সংস্কৃতির উন্নয়নে নিবেদিত একটি স্বেচ্ছাসেবী সংগঠন
-      </p>
-    </div>
-  
-    {#if mounted}
-      <div in:fly="{{ y: 50, duration: 500 }}" class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">একটি সংক্ষিপ্ত পরিচিতি</h3>
-        <p class="text-gray-700 mb-4">
+<svelte:head>
+  <title>আমাদের সম্পর্কে - কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</title>
+</svelte:head>
+
+<div class="space-y-12">
+  <section class="text-center py-8">
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">আমাদের সম্পর্কে</h1>
+    <p class="text-xl md:text-2xl text-secondary-700">কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</p>
+  </section>
+
+  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+    <h2 class="text-3xl font-bold text-primary-700 mb-6 text-center">একটি সংক্ষিপ্ত পরিচিতি</h2>
+    <div class="prose max-w-none text-gray-700 leading-loose">
+        <p>
             বাংলাদেশ! আমাদের প্রিয় জন্মভূমি। মাথার ওপর নীল ছামিয়ানা উঁচিয়ে সদা দণ্ডায়মান আসমান। দিগন্ত বিস্তৃত ফসলের মাঠে দোল দিয়ে যায় ঝিরিঝিরি বাতাস, অন্তরে বুলিয়ে দেয় প্রশান্তির ছোঁয়া। কুলুকুলু রব তুলে বহমান পদ্মা, মেঘনা, যমুনাসহ অজস্র নদী-নালার বুকে বয়ে চলে নৌকা। বাংলার দক্ষিণ অঞ্চলকে ঘিরে রেখেছে পৃথিবীর সর্ববৃহৎ ম্যানগ্রোভ সুন্দরবন। এতো এতো রূপ-রস-গন্ধে ভরা এই অনিন্দ্য সুন্দর দেশটির প্রতি আকৃষ্ট হয়ে সুদূর সাইবেরিয়া থেকে শীতের মৌসুমে অতিথি পাখিরা এসে ভিড় জমায়। কার না ভালো লাগে এই দেশ! তাইতো একেক সময় একেক দেশ তাদের কুনজর নিয়ে শাসন করতে এসেছিল এদেশকে। কিন্তু শাসনের নামে তাদের সেই শোষণকে মেনে নিতে পারেনি দেশপ্রেমিক মানুষ। বাংলামায়ের দামাল ছেলেরা তাদেরকে রুখে দিয়েছে। তথাপি এখনও থেমে নেই বিদেশীদের লোলুপ দৃষ্টি। তাই এই সুজলা-সুফলা-শস্যশ্যামলা বাংলাদেশের অপার সম্ভাবনার সম্ভারকে রক্ষা ও তার পরিচর্যার জন্য প্রয়োজন একদল সৎ, দক্ষ ও দেশপ্রেমিক মানুষের এবং সেই সাথে প্রয়োজন আমাদের গৌরবময় ইতিহাস-ঐতিহ্য তুলে ধরার মতো নির্ভিক কলমসৈনিক।
-<br><br>
+        </p>
+        <p>
             জাতির সেই প্রত্যাশা পূরণের জন্য ১৯৮৪ সালের ১৪ ফেব্রুয়ারি প্রথম প্রকাশিত হয় কিশোরকণ্ঠ নামক শিশু-কিশোর মাসিক পত্রিকাটি। প্রকাশের পর থেকেই পরিণত হয় দেশের অগণন শিশু-কিশোরদের প্রিয় পত্রিকায়। ছড়িয়ে পড়ে বাংলাদেশের প্রত্যন্ত অঞ্চলে, এমনকি দেশের গণ্ডি পেরিয়ে সার্কভুক্তদেশ তথা ভারত, পাকিস্তান, নেপাল, শ্রীলঙ্কা, মালদ্বীপ, ভুটান, আফগানিস্তানসহ সমগ্র এশিয়া মহাদেশ এবং আফ্রিকা, ইউরোপ, ওশেনিয়া ও আমেরিকা মহাদেশে। একটি পত্রিকার এতো দ্রুত সম্প্রসারণের ফলে প্রয়োজন হয়ে পড়ে একটি ফাউন্ডেশনের ভিত রচনার। তারই ফলশ্রুতিতে অনেক চড়াই-উৎরাই পেরিয়ে ২০০২ সালে সরকারি রেজিস্ট্রিভুক্ত হয় কিশোরকণ্ঠ ফাউন্ডেশন। আর পত্রিকার রেজিস্ট্রেশন হয় ২০০৪ সালের মার্চ মাসে। তবে পত্রিকাটির অফিসিয়াল নাম হয়ে যায় “নতুন কিশোরকণ্ঠ”। কিশোরকণ্ঠ ফাউন্ডেশন থেকে ২০০৮ সালে সাধারণ জ্ঞানভিত্তিক মাসিক পত্রিকা “কারেন্ট ইস্যু” ও কার্টুন মাসিক “নয়া চাবুক” বের করা হয়। পত্রিকা দু’টির প্রকাশনা আপাতত বন্ধ আছে।
-    <br><br>        
+        </p>
+        <p>
             কিশোরকণ্ঠ আজ শুধু একটি পত্রিকার নাম নয়, এটি একটি প্রতিষ্ঠানে রূপ লাভ করেছে। কালের পরিক্রমায় আজ এক মহীরুহ রূপ ধারণ করেছে।
         </p>
-      </div>
-  
-      <div in:fly="{{ y: 50, duration: 500, delay: 200 }}" class="bg-white p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">আমাদের কার্যক্রম</h3>
-        <ul class="list-disc list-inside space-y-2 text-gray-700">
-          <li>মেধা, দেশপ্রেম ও চারিত্রিক মূল্যবোধ সৃষ্টি</li>
-          <li>ফ্রি কোচিং ক্লাস, দরিদ্র মেধাবী ছাত্রদেরকে বৃত্তি ও আর্থিক সহায়তা প্রদান</li>
-          <li>দেয়ালিকা ও ফোল্ডার স্টিকার, ক্লাস রুটিন, ক্যালেন্ডার এবং ঈদ কার্ড প্রকাশ</li>
-          <li>আন্তঃস্কুল ক্রিকেট ও ফুটবল টুর্নামেন্ট, বৃক্ষরোপন, স্কুল আঙ্গিনা পরিষ্কার অভিযান, অলিম্পিয়াড এর আয়োজন</li>
-          <li>জেএসসি, জেডিসি কৃতি এবং এসএসসি ও দাখিল জিপিএ-৫ প্রাপ্তদের সংবর্ধনা</li>
-          <li>কিশোরকণ্ঠ পাঠ, সাধারণ জ্ঞানের আসর, বিতর্ক ও রচনা প্রতিযোগিতা</li>
-          <li>শিক্ষা সফর, সামষ্টিক ভোজ ও পাঠচক্রের আয়োজন</li>
-        </ul>
-      </div>
-  
-  
-      <div in:fly="{{ y: 50, duration: 500, delay: 600 }}" class="bg-amber-50 p-6 rounded-lg shadow-md">
-        <h3 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগ করুন</h3>
-        <p class="text-gray-700 mb-2">
-          ঠিকানা: ইউনিভার্স্যাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।
-        </p>
-        <p class="text-gray-700 mb-2">
-          ফোন: ০১৭৫২-৮৩১১৮৪
-        </p>
-        <p class="text-gray-700">
-          অফিস সময়: বিকাল ৫:০০ থেকে রাত ৮:০০ ঘটিকা
-        </p>
-      </div>
-    {/if}
-  
-  </div>
-  
-  <style>
-    /* Any additional styles can be added here */
-  </style>
+    </div>
+  </section>
+
+  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+    <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">আমাদের কার্যক্রম</h2>
+    <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
+      <li class="flex items-start space-x-3">
+        <span class="text-primary-500 mt-1">✓</span>
+        <span>মেধা, দেশপ্রেম ও চারিত্রিক মূল্যবোধ সৃষ্টি</span>
+      </li>
+      <li class="flex items-start space-x-3">
+        <span class="text-primary-500 mt-1">✓</span>
+        <span>ফ্রি কোচিং ক্লাস, দরিদ্র মেধাবী ছাত্রদেরকে বৃত্তি ও আর্থিক সহায়তা প্রদান</span>
+      </li>
+      <li class="flex items-start space-x-3">
+        <span class="text-primary-500 mt-1">✓</span>
+        <span>দেয়ালিকা ও ফোল্ডার স্টিকার, ক্লাস রুটিন, ক্যালেন্ডার এবং ঈদ কার্ড প্রকাশ</span>
+      </li>
+      <li class="flex items-start space-x-3">
+        <span class="text-primary-500 mt-1">✓</span>
+        <span>আন্তঃস্কুল ক্রিকেট ও ফুটবল টুর্নামেন্ট, বৃক্ষরোপন, স্কুল আঙ্গিনা পরিষ্কার অভিযান, অলিম্পিয়াড এর আয়োজন</span>
+      </li>
+      <li class="flex items-start space-x-3">
+        <span class="text-primary-500 mt-1">✓</span>
+        <span>জেএসসি, জেডিসি কৃতি এবং এসএসসি ও দাখিল জিপিএ-৫ প্রাপ্তদের সংবর্ধনা</span>
+      </li>
+      <li class="flex items-start space-x-3">
+        <span class="text-primary-500 mt-1">✓</span>
+        <span>কিশোরকণ্ঠ পাঠ, সাধারণ জ্ঞানের আসর, বিতর্ক ও রচনা প্রতিযোগিতা</span>
+      </li>
+      <li class="flex items-start space-x-3">
+        <span class="text-primary-500 mt-1">✓</span>
+        <span>শিক্ষা সফর, সামষ্টিক ভোজ ও পাঠচক্রের আয়োজন</span>
+      </li>
+    </ul>
+  </section>
+
+  <section class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
+    <h2 class="text-3xl font-bold mb-4">যোগাযোগ করুন</h2>
+    <p class="text-lg mb-2">ঠিকানা: ইউনিভার্স্যাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।</p>
+    <p class="text-lg mb-2">ফোন: ০১৭৫২-৮৩১১৮৪</p>
+    <p class="text-lg">অফিস সময়: বিকাল ৫:০০ থেকে রাত ৮:০০ ঘটিকা</p>
+  </section>
+</div>
