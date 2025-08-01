@@ -14,7 +14,7 @@
             <div class="space-y-6 text-lg text-gray-700">
                 <p>
                     <strong class="font-semibold text-primary-800">ঠিকানা:</strong><br>
-                    ইউনিভার্স্যাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।
+                    রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট।
                 </p>
                 <p>
                     <strong class="font-semibold text-primary-800">ফোন:</strong><br>
@@ -43,16 +43,16 @@
         <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">অন্যান্য যোগাযোগের নম্বর</h2>
         <div class="grid sm:grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div class="border border-gray-200 rounded-lg p-6">
-                <h3 class="text-xl font-bold text-primary-800">আহসান হাবীব</h3>
-                <p class="text-secondary-600 font-medium mt-2">০১৯৭৩৮৮১৪৯৮</p>
+                <h3 class="text-xl font-bold text-primary-800">তৌহিদুল ইসলাম</h3>
+                <p class="text-secondary-600 font-medium mt-2">০১৩০০২০৮১৮৮</p>
             </div>
             <div class="border border-gray-200 rounded-lg p-6">
-                <h3 class="text-xl font-bold text-primary-800">রফিকুল ইসলাম</h3>
-                <p class="text-secondary-600 font-medium mt-2">০১৯০৮৩০৩৮২৬</p>
+                <h3 class="text-xl font-bold text-primary-800">রেজাউল করিম</h3>
+                <p class="text-secondary-600 font-medium mt-2">০১৭৮২৮৪৭৪৩৯</p>
             </div>
             <div class="border border-gray-200 rounded-lg p-6">
-                <h3 class="text-xl font-bold text-primary-800">ছফির উদ্দীন</h3>
-                <p class="text-secondary-600 font-medium mt-2">০১৮৭৭৪৩৮৫৪৮</p>
+                <h3 class="text-xl font-bold text-primary-800">ফাহাদ হুসাইন</h3>
+                <p class="text-secondary-600 font-medium mt-2">০১৭৭৯০৯৮৬৪৫</p>
             </div>
             <div class="border border-gray-200 rounded-lg p-6">
                 <h3 class="text-xl font-bold text-primary-800">আবুল হাসান রিয়াদ</h3>

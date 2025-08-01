@@ -29,8 +29,8 @@
             <div class="flex items-baseline space-x-4">
               <a href="/" class="nav-link" class:active={$page.url.pathname === '/'}>Home</a>
               <a href="/about" class="nav-link" class:active={$page.url.pathname === '/about'}>About</a>
-              <a href="/medhabritti-2024" class="nav-link" class:active={$page.url.pathname === '/medhabritti-2024'}>মেধাবৃত্তি - ২০২৪</a>
-              <a href="/results" class="nav-link" class:active={$page.url.pathname === '/results'}>ফলাফল</a>
+              <a href="/medhabritti-2025" class="nav-link" class:active={$page.url.pathname === '/medhabritti-2025'}>মেধাবৃত্তি - ২০২৫</a>
+              <a href="/results" class="nav-link" class:active={$page.url.pathname === '/results'}>ফলাফল (২০২৪)</a>
               <a href="/contact" class="nav-link" class:active={$page.url.pathname === '/contact'}>Contact</a>
             </div>
           </div>
@@ -51,7 +51,7 @@
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <a href="/" class="mobile-nav-link" class:active={$page.url.pathname === '/'}>Home</a>
           <a href="/about" class="mobile-nav-link" class:active={$page.url.pathname === '/about'}>About</a>
-          <a href="/medhabritti-2024" class="mobile-nav-link" class:active={$page.url.pathname === '/medhabritti-2024'}>মেধাবৃত্তি - ২০২৪</a>
+          <a href="/medhabritti-2025" class="mobile-nav-link" class:active={$page.url.pathname === '/medhabritti-2025'}>মেধাবৃত্তি - ২০২৪</a>
           <a href="/results" class="mobile-nav-link" class:active={$page.url.pathname === '/results'}>ফলাফল</a>
           <a href="/contact" class="mobile-nav-link" class:active={$page.url.pathname === '/contact'}>Contact</a>
         </div>

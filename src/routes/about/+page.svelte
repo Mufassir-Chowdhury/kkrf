@@ -60,7 +60,7 @@
 
   <section class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
     <h2 class="text-3xl font-bold mb-4">যোগাযোগ করুন</h2>
-    <p class="text-lg mb-2">ঠিকানা: ইউনিভার্স্যাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।</p>
+    <p class="text-lg mb-2">ঠিকানা: রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট।</p>
     <p class="text-lg mb-2">ফোন: ০১৭৫২-৮৩১১৮৪</p>
     <p class="text-lg">অফিস সময়: বিকাল ৫:০০ থেকে রাত ৮:০০ ঘটিকা</p>
   </section>

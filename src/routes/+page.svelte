@@ -17,14 +17,14 @@
   });
 
   const carouselItems = [
-    { id: 1, image: "britti-2023.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ১", caption: "কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৩" },
-    { id: 2, image: "kk-2024.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ২", caption: "শিক্ষা সফর ২০২৩" },
-    { id: 3, image: "/placeholder-3.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ৩", caption: "বৃক্ষরোপণ কর্মসূচি" },
+    { id: 1, image: "britti-2024.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ১", caption: "কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪" },
+    // { id: 2, image: "kk-2024.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ২", caption: "শিক্ষা সফর ২০২৩" },
+    // { id: 3, image: "/placeholder-3.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ৩", caption: "বৃক্ষরোপণ কর্মসূচি" },
   ];
 
   const members = [
-    { id: 1, name: "আফসার উদ্দীন কামরান", role: "পরিচালক", image: "kamran.png", phone: "০১৭৪৩৮৮৭৭০৭" },
-    { id: 2, name: "নাবিল মাহমুদ নিলয়", role: "সহকারী পরিচালক", image: "niloy.jpg", phone: "০১৭০১৪৫৯৮৮১" },
+    { id: 1, name: "নাবিল মাহমুদ নিলয়", role: "পরিচালক", image: "niloy.png", phone: "০১৭০১৪৫৯৮৮১" },
+    { id: 2, name: "আহসান হাবীব", role: "সহকারী পরিচালক", image: "habib.png", phone: "০১৯৭৩৮৮১৪৯৮" },
     { id: 3, name: "মুফাসসির আহমদ চৌধুরী", role: "সহকারী পরিচালক", image: "mufassir.jpg", phone: "০১৭৭১১৪৪৩০৮" },
   ];
 
@@ -130,7 +130,7 @@
           <img src={member.image} alt={member.name} class="w-32 h-32 rounded-full mx-auto mb-6 shadow-md border-4 border-white" />
           <h3 class="text-2xl font-semibold text-primary-800">{member.name}</h3>
           <p class="text-secondary-600 font-medium">{member.role}</p>
-          <p class="text-gray-500 mt-2">{member.phone}</p>
+          <!-- <p class="text-gray-500 mt-2">{member.phone}</p> -->
         </div>
       {/each}
     </div>
@@ -142,11 +142,11 @@
       <p class="text-lg text-primary-100 mb-6 max-w-2xl mx-auto">
         আমাদের বার্ষিক বৃত্তি কার্যক্রম শুরু হতে যাচ্ছে। আগ্রহী শিক্ষার্থীদের জন্য নিবন্ধন খোলা রয়েছে।
       </p>
-      <a href="/medhabritti-2024" class="bg-white text-primary-600 py-3 px-8 rounded-full hover:bg-primary-50 transition-colors inline-block text-lg font-semibold shadow-md">
+      <a href="/medhabritti-2025" class="bg-white text-primary-600 py-3 px-8 rounded-full hover:bg-primary-50 transition-colors inline-block text-lg font-semibold shadow-md">
         বৃত্তি সম্পর্কে জানুন
       </a>
     </div>
-    <div class="grid md:grid-cols-2 gap-8 mt-12 text-center">
+    <!-- <div class="grid md:grid-cols-2 gap-8 mt-12 text-center">
         <div class="bg-white/20 backdrop-blur-sm p-6 rounded-xl">
             <h3 class="text-xl font-semibold text-white mb-4">কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪ এর ফলাফল দেখুন</h3>
             <a href="/results" class="bg-secondary-500 text-white py-2 px-6 rounded-lg hover:bg-secondary-600 transition-colors font-semibold">
@@ -159,14 +159,14 @@
               সীটপ্লান এবং এডমিট কার্ড
             </a>
         </div>
-    </div>
+    </div> -->
   </section>
 
   <section>
     <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">যোগাযোগ করুন</h2>
     <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-3xl mx-auto">
       <p class="text-lg text-gray-700 mb-4">
-        <strong>ঠিকানা:</strong> ইউনিভার্স্যাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।
+        <strong>ঠিকানা:</strong> রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট।
       </p>
       <p class="text-lg text-gray-700 mb-4">
         <strong>ফোন:</strong> ০১৭৫২-৮৩১১৮৪

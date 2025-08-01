@@ -64,7 +64,7 @@
 		try {
 			formData.creationTime = new Date().toISOString();
 			formData.confirmed = false;  // Ensure confirmed is set to false
-			const docRef = await addDoc(collection(db, 'scholarshipApplications'), formData);
+			const docRef = await addDoc(collection(db, 'scholarshipApplications-2025'), formData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
 			goto('/britti_registration/successful');
@@ -113,11 +113,11 @@
 
 
 <svelte:head>
-	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪ - নিবন্ধন ফরম</title>
+	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫ - নিবন্ধন ফরম</title>
 </svelte:head>
 
 <div class="space-y-8">
-	<h1 class="text-3xl font-bold text-center text-teal-700">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪</h1>
+	<h1 class="text-3xl font-bold text-center text-teal-700">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
 	<h2 class="text-xl font-semibold text-center text-teal-600">
 		আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
 	</h2>
@@ -310,9 +310,9 @@
 		<div class="bg-amber-50 p-6 rounded-lg shadow-md">
 			<h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
 			<ul class="space-y-2 text-gray-700">
-				<li>০১৯৭৩৮৮১৪৯৮ (আহসান হাবীব)</li>
-				<li>০১৯০৮৩০৩৮২৬ (রফিকুল ইসলাম)</li>
-				<li>০১৮৭৭৪৩৮৫৪৮ (ছফির উদ্দীন)</li>
+				<li>০১৩০০২০৮১৮৮ (তৌহিদুল ইসলাম)</li>
+				<li>০১৭৮২৮৪৭৪৩৯ (রেজাউল করিম)</li>
+				<li>০১৭৭৯০৯৮৬৪৫ (ফাহাদ হুসাইন)</li>
 				<li>০১৩০৬৩২১০৫২ (আবুল হাসান রিয়াদ)</li>
 			</ul>
 		</div>
