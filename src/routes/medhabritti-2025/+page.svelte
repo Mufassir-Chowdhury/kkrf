@@ -25,12 +25,12 @@
       {
         name: "সৌম্য এন্টারপ্রাইজ",
         address: "ব্লু-বার্ড জুনিয়র স্কুলের বিপরীতে, মিরের ময়দান",
-        phone: "০১৯৭৩৮৮১৪৯৮"
+        phone: "০১৩০০২০৮১৮৮"
       },
       {
-        name: "ইফরাজ সাইন প্রিন্টার্স",
-        address: "পাইলট স্কুলের পেছনের গেইট, নিউ মার্কেট, লালদিঘীরপাড়",
-        phone: "০১৩০৬৩১৮৭৭৩"
+        name: "ঢাকা বুক ডিপো এন্ড স্টেশনারী",
+        address: "১নং ঈসমাইল টাওয়ার, ইসলামী ব্যাংকের বিপরীতে, লালদিঘীরপার, সিলেট।",
+        phone: "০১৭৮২৮৪৭৪৩৯"
       },
       {
         name: "প্রভিন্সিয়াল লাইব্রেরি",
@@ -40,7 +40,7 @@
       {
         name: "মনোরম লাইব্রেরি",
         address: "ইবনে সিনার পাশে, রিকাবীবাজার",
-        phone: "০১৯০৮৩০৩৮২৬"
+        phone: "০১৭৭৯০৯৮৬৪৫"
       },
       {
         name: "ফ্রেন্ডস লাইব্রেরি",
@@ -90,16 +90,16 @@
   <section class="bg-secondary-50 border-l-4 border-secondary-400 p-8 rounded-r-lg">
       <h3 class="text-2xl font-semibold text-secondary-800 mb-4">বিশেষ দ্রষ্টব্য</h3>
       <p class="text-lg text-secondary-700">
-        সাধারণ জ্ঞানের জন্য (জানুয়ারি-জুলাই'২৫) কিশোরকণ্ঠ এবং বিশেষ সংকলন "অন্বেষণ" সংগ্রহ করতে হবে।
+        সাধারণ জ্ঞানের জন্য (জানুয়ারি - জুলাই'২৫) কিশোরকণ্ঠ এবং বিশেষ সংকলন "অন্বেষণ" সংগ্রহ করতে হবে।
       </p>
   </section>
 
-  <!-- <section class="text-center">
+  <section class="text-center">
       <h2 class="text-3xl font-bold text-primary-700 mb-6">পরীক্ষার সিলেবাস</h2>
-      <a href="/medhabritti-2024/syllabus" class="bg-primary-600 text-white py-3 px-8 rounded-full hover:bg-primary-700 transition-colors inline-block text-lg font-semibold shadow-md">
+      <a href="/medhabritti-2025/syllabus" class="bg-primary-600 text-white py-3 px-8 rounded-full hover:bg-primary-700 transition-colors inline-block text-lg font-semibold shadow-md">
         সিলেবাস দেখুন
       </a>
-  </section> -->
+  </section>
 
   <section class="bg-gradient-to-r from-teal-500 to-green-500 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
     <h2 class="text-3xl font-bold mb-4">এখনই রেজিস্ট্রেশন করুন!</h2>
@@ -111,7 +111,7 @@
     </p>
   </section>
 
-  <!-- <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
     <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">অফলাইনে ফর্ম প্রাপ্তি ও জমা দেওয়ার ঠিকানা</h2>
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       {#each offices as office}
@@ -122,7 +122,7 @@
         </div>
       {/each}
     </div>
-  </section> -->
+  </section>
 
   <section class="text-center">
     <h2 class="text-2xl font-bold text-primary-700 mb-4">যোগাযোগ</h2>
