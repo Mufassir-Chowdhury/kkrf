@@ -54,7 +54,7 @@
     }
 
     async function loadPaginatedRegistrations(page) {
-        const registrationsRef = collection(db, 'scholarshipApplications');
+        const registrationsRef = collection(db, 'scholarshipApplications-2025');
         let q;
 
         if (page === 1) {
@@ -113,8 +113,8 @@
     }
     async function confirmRegistration(id) {
         try {
-            await updateDoc(doc(db, 'scholarshipApplications', id), { confirmed: true });
-            const registrationDoc = await getDoc(doc(db, 'scholarshipApplications', id));
+            await updateDoc(doc(db, 'scholarshipApplications-2025', id), { confirmed: true });
+            const registrationDoc = await getDoc(doc(db, 'scholarshipApplications-2025', id));
             const registrationData = registrationDoc.data();
             await sendConfirmationSMS(registrationData.mobile);
             const { items, total, last } = await loadPaginatedRegistrations(currentPage);
@@ -129,7 +129,7 @@
 
     async function cancelConfirmation(id) {
         try {
-            await updateDoc(doc(db, 'scholarshipApplications', id), { confirmed: false });
+            await updateDoc(doc(db, 'scholarshipApplications-2025', id), { confirmed: false });
             await handleLoad();
             selectedRegistration = null;
         } catch (err) {

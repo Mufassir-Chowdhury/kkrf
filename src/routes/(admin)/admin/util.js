@@ -9,7 +9,7 @@ export async function sendConfirmationSMS(phoneNumber) {
     const SMS_API_TOKEN = `${t1}${t2}${t3}`;
     const data = new FormData();
     data.set('token', SMS_API_TOKEN);
-    data.set('message', 'আপনার রেজিস্ট্রেশন কনফার্ম হয়েছে। কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪');
+    data.set('message', 'আপনার রেজিস্ট্রেশন কনফার্ম হয়েছে। কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫');
     data.set('to', phoneNumber);
 
     try {
