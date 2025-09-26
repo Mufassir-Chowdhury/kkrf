@@ -26,7 +26,7 @@
     
             // Create query to get the last two registrations for this branch
             const q = query(
-                collection(db, 'offline'),
+                collection(db, 'offline-2025'),
                 where('branch', '==', branch),
                 orderBy('creationTime', 'desc'),
                 limit(2)

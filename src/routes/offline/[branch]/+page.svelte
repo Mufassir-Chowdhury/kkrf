@@ -26,8 +26,8 @@
 
 	let formData = {
 		serial: '',
-        institutionType: '',
-		gender: '',
+        institutionType: null,
+		gender: null,
 		name: '',
 		fatherName: '',
 		institution: '',
@@ -53,7 +53,7 @@
 		try {
 			formData.creationTime = new Date().toISOString();
             formData.branch = branch;
-			const docRef = await addDoc(collection(db, `offline`), formData);
+			const docRef = await addDoc(collection(db, `offline-2025`), formData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
 			goto(`/offline/${branch}/successful`);
@@ -79,7 +79,7 @@
 
 
 <svelte:head>
-	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪ - নিবন্ধন ফরম</title>
+	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫ - নিবন্ধন ফরম</title>
 </svelte:head>
 
 <div class="space-y-8">
@@ -161,7 +161,7 @@
       </div>
       <div>
         <label class="block text-sm font-medium text-gray-700">মোবাইল (ইংরেজিতে ১১ ডিজিট, ডাবল চেক করবেন)</label>
-        <input type="tel" maxlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <input type="tel" maxlength="11" minlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
       </div>
     </div>
   

@@ -9,7 +9,7 @@
     onMount(async () => {
         
         const countPromises = Object.entries(data.thana).map(async ([key, value]) => {
-            const q = query(collection(db, 'offline'), where('branch', '==', key));
+            const q = query(collection(db, 'offline-2025'), where('branch', '==', key));
             const querySnapshot = await getCountFromServer(q);
             return {
                 key,
@@ -17,7 +17,7 @@
                 count: querySnapshot.data().count
             };
         });
-            const q = query(collection(db, 'offline'));
+            const q = query(collection(db, 'offline-2025'));
             const querySnapshot = await getCountFromServer(q);
             
             total = querySnapshot.data().count;
@@ -26,7 +26,7 @@
 });
     async function handleExportCSV() {
     const q = query(
-        collection(db, 'offline'),
+        collection(db, 'offline-2025'),
         orderBy('creationTime', 'desc')
     );
       const querySnapshot = await getDocs(q);

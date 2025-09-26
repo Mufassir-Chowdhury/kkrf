@@ -4,7 +4,7 @@ import { db } from '$lib/firebase';
 export async function loadRegistrations(branch) {
     try {
       const q = query(
-        collection(db, 'offline'),
+        collection(db, 'offline-2025'),
         where('branch', '==', branch),
         orderBy('serial', 'desc')
     );
@@ -22,7 +22,7 @@ export async function loadRegistrations(branch) {
 export async function deleteRegistration(id) {
     if (confirm('Are you sure you want to delete this registration?')) {
         try {
-          await deleteDoc(doc(db, 'offline', id));
+          await deleteDoc(doc(db, 'offline-2025', id));
         } catch (err) {
           console.error("Error deleting registration:", err);
           throw err;

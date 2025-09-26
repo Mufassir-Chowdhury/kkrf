@@ -39,7 +39,7 @@
 
     onMount(async () => {
         try {
-            const docRef = doc(db, 'offline', id);
+            const docRef = doc(db, 'offline-2025', id);
             const docSnap = await getDoc(docRef);
             
             if (docSnap.exists()) {
@@ -61,7 +61,7 @@
         error = null;
 
         try {
-            const docRef = doc(db, 'offline', id);
+            const docRef = doc(db, 'offline-2025', id);
             await updateDoc(docRef, formData);
             success = true;
             goto(`/offline/${formData.branch}/list`);
@@ -75,7 +75,7 @@
 </script>
 
 <svelte:head>
-    <title>Edit Registration - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪</title>
+    <title>Edit Registration - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</title>
 </svelte:head>
 
 <div class="max-w-2xl mx-auto p-6">

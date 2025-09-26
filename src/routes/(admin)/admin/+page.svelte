@@ -18,7 +18,7 @@
 
     // Pagination variables
     let currentPage = 1;
-    let itemsPerPage = 300;
+    let itemsPerPage = 25;
     let totalPages = 1;
     let totalItems = 0;
     let lastVisible = null;
@@ -152,7 +152,7 @@
         const SMS_API_TOKEN = `${t1}${t2}${t3}`;
         const data = new FormData();
         data.set('token', SMS_API_TOKEN);
-        data.set('message', 'আপনার রেজিস্ট্রেশন সম্পূর্ণ হয়নি। অনুগ্রহ করে পেমেন্ট সম্পন্ন করে আমাদের সাথে যোগাযোগ করুন। - কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪');
+        data.set('message', 'আপনার রেজিস্ট্রেশন সম্পূর্ণ হয়নি। অনুগ্রহ করে পেমেন্ট সম্পন্ন করে আমাদের সাথে যোগাযোগ করুন। - কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫');
         data.set('to', selectedUnconfirmedReg.mobile);
 
         try {
