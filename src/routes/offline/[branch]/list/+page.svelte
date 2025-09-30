@@ -6,8 +6,8 @@
 	import { handleExportCSV } from './util';
 	import { loadRegistrations, deleteRegistration } from './db';
 
-  export let data;
-  let branch = $page.params.branch;
+	export let data;
+	let branch = $page.params.branch;
 	let registrations = [];
 	let filteredRegistrations = [];
 	let searchTerm = '';
@@ -23,13 +23,34 @@
 		await handleLoad();
 	});
 
-	
+	import { updateDoc, doc } from 'firebase/firestore';
+	import { db } from '$lib/firebase';
+
+	let incompleteRegs = [];
+
+	function computeIncomplete() {
+		incompleteRegs = registrations.filter((r) => !r.gender || !r.institutionType);
+	}
+
+	async function handleBulkUpdate() {
+		for (const reg of incompleteRegs) {
+			const ref = doc(db, 'offline-2025', reg.id);
+			await updateDoc(ref, {
+				gender: reg.gender ?? '',
+				institutionType: reg.institutionType ?? ''
+			});
+		}
+		// refresh only the temporary list
+		const branch = $page.params.branch;
+		registrations = await loadRegistrations(branch);
+		handleLoad();
+	}
 
 	async function handleLoad() {
-		
 		loading = true;
 		registrations = await loadRegistrations(branch);
 		computeSerialRange(branch);
+		computeIncomplete();
 		filterRegistrations();
 		loading = false;
 	}
@@ -152,6 +173,53 @@
 				</button>
 			</div>
 		</div>
+
+		{#if incompleteRegs.length > 0}
+			<div class="p-4 border rounded bg-yellow-50 space-y-2">
+				<p class="font-semibold text-yellow-700">
+					Incomplete Registrations: {incompleteRegs.length}
+				</p>
+				<table class="w-full text-sm border">
+					<thead class="bg-gray-100">
+						<tr>
+							<th class="px-2 py-1">Serial</th>
+							<th class="px-2 py-1">Name</th>
+							<th class="px-2 py-1">Gender</th>
+							<th class="px-2 py-1">Institution Type</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each incompleteRegs as reg}
+							<tr class="border-t">
+								<td class="px-2 py-1">{reg.serial}</td>
+								<td class="px-2 py-1">{reg.name}</td>
+								<td class="px-2 py-1">{reg.institution}</td>
+								<td class="px-2 py-1">
+									<select bind:value={reg.gender} class="border p-1 rounded w-full">
+										<option value="">Select</option>
+										<option value="male">male</option>
+										<option value="female">female</option>
+									</select>
+								</td>
+								<td class="px-2 py-1">
+									<select bind:value={reg.institutionType} class="border p-1 rounded w-full">
+										<option value="">Select</option>
+										<option value="school">school</option>
+										<option value="madrasa">madrasa</option>
+									</select>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+				<button
+					on:click={handleBulkUpdate}
+					class="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600"
+				>
+					Save All
+				</button>
+			</div>
+		{/if}
 
 		{#if filteredRegistrations.length === 0}
 			<p class="text-center text-gray-500 my-4">No registrations found.</p>
