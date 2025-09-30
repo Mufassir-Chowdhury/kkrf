@@ -72,7 +72,7 @@
 </script>
 
 <div>
-    <div class="flex justify-between">
+    <div class="flex justify-between mb-4">
         <h1>Offline Registrations {total}</h1>
         <div class="space-x-2">
             <button 
