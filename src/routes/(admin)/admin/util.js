@@ -23,6 +23,7 @@ export async function sendConfirmationSMS(phoneNumber) {
         console.error('Error sending SMS:', error);
     }
 }
+
 export function handleExportCSV(registrations) {
     const headers = [
       'Name', 'Name (English)', 'Father\'s Name', 'Mother\'s Name', 'Institution', 'Class',
@@ -73,29 +74,3 @@ export function handleExportCSV(registrations) {
     }
   }
   
-  export function handleExportPDF(filteredRegistrations) {
-    const doc = new jsPDF();
-  
-    doc.setFontSize(18);
-    doc.text("Scholarship Applications", 14, 22);
-  
-    const headers = [['Name', 'Institution', 'Class', 'Mobile']];
-    const data = filteredRegistrations.map(reg => [
-      reg.name,
-      reg.institution,
-      reg.class,
-      reg.mobile
-    ]);
-  
-    doc.autoTable({
-      startY: 30,
-      head: headers,
-      body: data,
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 2 },
-      headStyles: { fillColor: [41, 128, 185], textColor: 255 },
-      alternateRowStyles: { fillColor: [242, 242, 242] },
-    });
-  
-    doc.save("scholarship_applications.pdf");
-  }

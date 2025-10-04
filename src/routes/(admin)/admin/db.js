@@ -14,7 +14,17 @@ export async function loadRegistrations() {
     }
   }
 
-
+export async function loadAllRegistrations() {
+    try {
+      const q = query(collection(db, 'scholarshipApplications-2025'), orderBy('creationTime', 'desc'));
+      const querySnapshot = await getDocs(q);
+      let registrations = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
+      return registrations;
+    } catch (err) {
+      console.error("Error loading all registrations:", err);
+      throw err;
+    }
+}
 export async function deleteRegistration(id) {
     if (confirm('Are you sure you want to delete this registration?')) {
         try {

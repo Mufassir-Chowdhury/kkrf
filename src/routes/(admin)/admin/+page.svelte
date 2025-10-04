@@ -4,8 +4,8 @@
     import { db } from '$lib/firebase';
     import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc, limit, startAfter, getCountFromServer } from 'firebase/firestore';
     import { page } from '$app/stores';
-    import { sendConfirmationSMS, handleExportCSV, handleExportPDF } from './util';
-    import { loadRegistrations, deleteRegistration } from './db';
+    import { sendConfirmationSMS, handleExportCSV } from './util';
+    import { loadRegistrations, deleteRegistration, loadAllRegistrations } from './db';
     
     let registrations = [];
     let filteredRegistrations = [];
@@ -18,7 +18,7 @@
 
     // Pagination variables
     let currentPage = 1;
-    let itemsPerPage = 500;
+    let itemsPerPage = 25;
     let totalPages = 1;
     let totalItems = 0;
     let lastVisible = null;
@@ -52,7 +52,15 @@
             loading = false;
         }
     }
-
+    async function handleExportAllCSV() {
+    try {
+        const allRegistrations = await loadAllRegistrations();
+        handleExportCSV(allRegistrations);
+    } catch (err) {
+        console.error("Error exporting CSV:", err);
+        error = "Failed to export CSV. Please try again.";
+    }
+}
     async function loadPaginatedRegistrations(page) {
         const registrationsRef = collection(db, 'scholarshipApplications-2025');
         let q;
@@ -173,7 +181,7 @@
     }
 </script>
 <svelte:head>
-  <title>Admin Dashboard - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪</title>
+  <title>Admin Dashboard - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</title>
 </svelte:head>
 
 {#if loading}
@@ -198,17 +206,11 @@
       />
       <div class="space-x-2">
         <button 
-          on:click={() => handleExportCSV(registrations)}
-          class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
-        >
-          Export CSV
-        </button>
-        <button 
-          on:click={() => handleExportPDF(filteredRegistrations)}
-          class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors"
-        >
-          Export PDF
-        </button>
+  on:click={handleExportAllCSV}
+  class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+>
+  Export CSV
+</button>
       </div>
     </div>
 
