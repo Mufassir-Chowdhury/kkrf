@@ -5,7 +5,7 @@
 
 	import { handleExportCSV } from './util';
 	import { loadRegistrations, deleteRegistration } from './db';
-
+	import { writeBatch } from 'firebase/firestore';
 	export let data;
 	let branch = $page.params.branch;
 	let registrations = [];
@@ -18,6 +18,57 @@
 	let missingSerials = [];
 	let invalidSerials = [];
 	let invalidMobiles = [];
+
+	let selectedIds = new Set();
+	let selectAll = false;
+	let confirmedCount = 0;
+
+	function toggleSelectAll() {
+		if (selectAll) {
+			selectedIds = new Set(filteredRegistrations.map(r => r.id));
+		} else {
+			selectedIds = new Set();
+		}
+	}
+
+	function toggleSelect(id) {
+		if (selectedIds.has(id)) {
+			selectedIds.delete(id);
+		} else {
+			selectedIds.add(id);
+		}
+		selectedIds = selectedIds; // trigger reactivity
+		selectAll = selectedIds.size === filteredRegistrations.length;
+	}
+
+	async function handleConfirmRegistrations() {
+		if (selectedIds.size === 0) {
+			alert('Please select at least one registration to confirm');
+			return;
+		}
+		
+		if (!confirm(`Are you sure you want to confirm ${selectedIds.size} registration(s)?`)) {
+			return;
+		}
+
+		try {
+			const batch = writeBatch(db);
+			
+			for (const id of selectedIds) {
+				const ref = doc(db, 'offline-2025', id);
+				batch.update(ref, { confirm: true });
+			}
+			
+			await batch.commit();
+			selectedIds = new Set();
+			selectAll = false;
+			await handleLoad();
+			alert('Registrations confirmed successfully!');
+		} catch (err) {
+			console.error('Error confirming registrations:', err);
+			alert('Error confirming registrations. Please try again.');
+		}
+	}
 
 	onMount(async () => {
 		await handleLoad();
@@ -51,6 +102,7 @@
 		registrations = await loadRegistrations(branch);
 		computeSerialRange(branch);
 		computeIncomplete();
+		confirmedCount = registrations.filter(r => r.confirm === true).length;
 		filterRegistrations();
 		loading = false;
 	}
@@ -139,6 +191,7 @@
 			Registrations: {data.thana[branch]} - [{registrations.length}]
 		</h2>
 		<p class="text-center text-gray-600">Serial Range: {serialRange}</p>
+		<p class="text-center text-blue-600 font-semibold">Confirmed Registrations: {confirmedCount}</p>
 		{#if duplicateSerials.length > 0}
 			<p class="text-center text-red-600">Duplicates: {duplicateSerials.join(', ')}</p>
 		{/if}
@@ -165,6 +218,13 @@
 				class="p-2 border border-gray-300 rounded-md w-64"
 			/>
 			<div class="space-x-2">
+				<button
+				   on:click={handleConfirmRegistrations}
+				   disabled={selectedIds.size === 0}
+				   class="bg-teal-500 text-white px-4 py-2 rounded-md hover:bg-teal-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed"
+				 >
+				   Confirm Registration ({selectedIds.size})
+				</button>
 				<button
 					on:click={() => handleExportCSV(registrations)}
 					class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
@@ -228,6 +288,9 @@
 				<table class="w-full text-sm text-left text-gray-500">
 					<thead class="text-xs text-gray-700 uppercase bg-gray-50">
 						<tr>
+							<th scope="col" class="px-6 py-3">
+								<input type="checkbox" bind:checked={selectAll} on:change={toggleSelectAll} />
+							</th>
 							<th scope="col" class="px-6 py-3">Qualifiers</th>
 							<th scope="col" class="px-6 py-3">Serial</th>
 							<th scope="col" class="px-6 py-3">Name</th>
@@ -239,7 +302,14 @@
 					</thead>
 					<tbody>
 						{#each filteredRegistrations as registration, i}
-							<tr class="{i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b hover:bg-gray-100">
+							<tr class="{registration.confirm ? 'bg-green-100' : (i % 2 === 0 ? 'bg-white' : 'bg-gray-50')} border-b hover:bg-gray-100">
+								<td class="px-6 py-4">
+									<input 
+										type="checkbox" 
+										checked={selectedIds.has(registration.id)}
+										on:change={() => toggleSelect(registration.id)}
+									/>
+								</td>
 								<td class="px-6 py-4">
 									{registration.gender ?? 'Gender Not Specified'} <br />
 									{registration.institutionType ?? 'Institution Type Not Specified'}
