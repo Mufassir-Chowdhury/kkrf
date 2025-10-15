@@ -19,6 +19,10 @@
 	let invalidSerials = [];
 	let invalidMobiles = [];
 
+	let rangeStart = '';
+	let rangeEnd = '';
+	let showRangeModal = false;
+
 	let selectedIds = new Set();
 	let selectAll = false;
 	let confirmedCount = 0;
@@ -67,6 +71,60 @@
 		} catch (err) {
 			console.error('Error confirming registrations:', err);
 			alert('Error confirming registrations. Please try again.');
+		}
+	}
+
+	async function handleConfirmRange() {
+		if (!rangeStart || !rangeEnd) {
+			alert('Please enter both start and end serial numbers');
+			return;
+		}
+
+		const start = parseInt(rangeStart);
+		const end = parseInt(rangeEnd);
+
+		if (isNaN(start) || isNaN(end)) {
+			alert('Please enter valid numbers');
+			return;
+		}
+
+		if (start > end) {
+			alert('Start serial must be less than or equal to end serial');
+			return;
+		}
+
+		// Find registrations in range
+		const regsInRange = registrations.filter(r => {
+			const serialNum = parseInt(r.serial);
+			return serialNum >= start && serialNum <= end;
+		});
+
+		if (regsInRange.length === 0) {
+			alert('No registrations found in this range');
+			return;
+		}
+
+		if (!confirm(`Are you sure you want to confirm ${regsInRange.length} registration(s) in range ${start}-${end}?`)) {
+			return;
+		}
+
+		try {
+			const batch = writeBatch(db);
+			
+			for (const reg of regsInRange) {
+				const ref = doc(db, 'offline-2025', reg.id);
+				batch.update(ref, { confirm: true });
+			}
+			
+			await batch.commit();
+			showRangeModal = false;
+			rangeStart = '';
+			rangeEnd = '';
+			await handleLoad();
+			alert('Range confirmed successfully!');
+		} catch (err) {
+			console.error('Error confirming range:', err);
+			alert('Error confirming range. Please try again.');
 		}
 	}
 
@@ -226,6 +284,12 @@
 				   Confirm Registration ({selectedIds.size})
 				</button>
 				<button
+					on:click={() => showRangeModal = true}
+					class="bg-purple-500 text-white px-4 py-2 rounded-md hover:bg-purple-600 transition-colors"
+				>
+					Confirm Range
+				</button>
+				<button
 					on:click={() => handleExportCSV(registrations)}
 					class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
 				>
@@ -341,5 +405,47 @@
 				</table>
 			</div>
 		{/if}
+	</div>
+{/if}
+
+{#if showRangeModal}
+	<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+		<div class="bg-white rounded-lg p-6 w-96 shadow-xl">
+			<h3 class="text-xl font-bold mb-4">Confirm Serial Range</h3>
+			<div class="space-y-4">
+				<div>
+					<label class="block text-sm font-medium mb-1">Start Serial</label>
+					<input
+						type="number"
+						bind:value={rangeStart}
+						placeholder="e.g., 1001"
+						class="w-full p-2 border border-gray-300 rounded-md"
+					/>
+				</div>
+				<div>
+					<label class="block text-sm font-medium mb-1">End Serial</label>
+					<input
+						type="number"
+						bind:value={rangeEnd}
+						placeholder="e.g., 1050"
+						class="w-full p-2 border border-gray-300 rounded-md"
+					/>
+				</div>
+				<div class="flex space-x-2 justify-end">
+					<button
+						on:click={() => { showRangeModal = false; rangeStart = ''; rangeEnd = ''; }}
+						class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+					>
+						Cancel
+					</button>
+					<button
+						on:click={handleConfirmRange}
+						class="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600"
+					>
+						Confirm
+					</button>
+				</div>
+			</div>
+		</div>
 	</div>
 {/if}
