@@ -18,10 +18,22 @@
 
 	let app;
 	let db;
+	let institutions = [];
+	let filteredInstitutions = [];
+	let showDropdown = false;
 
-	onMount(() => {
+	onMount(async () => {
 		app = initializeApp(firebaseConfig);
 		db = getFirestore(app);
+		
+		// Load institutions from JSON file
+		try {
+			const response = await fetch('/institutions.json');
+			const jsonData = await response.json();
+			institutions = jsonData.institutions || [];
+		} catch (error) {
+			console.error('Error loading institutions:', error);
+		}
 	});
 
 	let formData = {
@@ -45,20 +57,88 @@
 	let submitSuccess = false;
 	let submitError = '';
     let branch = $page.params.branch;
+
+	function handleInstitutionInput() {
+		const value = formData.institution.toLowerCase();
+		if (value.length > 0) {
+			filteredInstitutions = institutions.filter(inst => 
+				inst.toLowerCase().includes(value)
+			).slice(0, 10); // Limit to 10 suggestions
+			showDropdown = filteredInstitutions.length > 0;
+		} else {
+			showDropdown = false;
+		}
+	}
+
+	function selectInstitution(institution) {
+		formData.institution = institution;
+		showDropdown = false;
+	}
+
+	function handleInstitutionBlur() {
+		// Delay hiding dropdown to allow click events to register
+		setTimeout(() => {
+			showDropdown = false;
+		}, 200);
+	}
+
+    function validateForm() {
+        formErrors = {};
+        const serialRegex = new RegExp(`^${branch}[0-9]{3}$`);
+        const mobileRegex = /^\d{11}$/;
+
+        // Institution Type validation
+        if (!formData.institutionType) {
+            formErrors.institutionType = 'Please select an institution type.';
+        }
+
+        // Gender validation
+        if (!formData.gender) {
+            formErrors.gender = 'Please select a gender.';
+        }
+
+        // Serial validation
+        if (!formData.serial || !serialRegex.test(formData.serial.trim())) {
+            formErrors.serial = `Serial must be in English digits and format ${branch}001 to ${branch}999 without spaces.`;
+        }
+
+        // Mobile validation
+        if (!formData.mobile || !mobileRegex.test(formData.mobile.trim())) {
+            formErrors.mobile = 'Mobile number must be exactly 11 English digits without spaces.';
+        }
+
+        return Object.keys(formErrors).length === 0;
+    }
+
 	async function handleSubmit() {
 		submitting = true;
 		submitSuccess = false;
 		submitError = '';
+        
+        // Run validation checks
+        if (!validateForm()) {
+            submitting = false;
+            // The reactive formErrors object will cause UI to update with error messages
+            return;
+        }
 
 		try {
-			formData.creationTime = new Date().toISOString();
-            formData.branch = branch;
-			const docRef = await addDoc(collection(db, `offline-2025`), formData);
+            // Trim whitespace from all string fields before submitting
+            const cleanedFormData = Object.fromEntries(
+                Object.entries(formData).map(([key, value]) => 
+                    typeof value === 'string' ? [key, value.trim()] : [key, value]
+                )
+            );
+            
+			cleanedFormData.creationTime = new Date().toISOString();
+            cleanedFormData.branch = branch;
+
+			const docRef = await addDoc(collection(db, `offline-2025`), cleanedFormData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
 			goto(`/offline/${branch}/successful`);
 			
-			formErrors = {};
+			formErrors = {}; // Clear errors on success
 		} catch (e) {
 			console.error('Error adding document: ', e);
 			submitError = 'An error occurred while submitting the form. Please try again.';
@@ -66,6 +146,7 @@
 
 		submitting = false;
 	}
+
 	let classOptions = [
 		{ value: '৪র্থ', label: '৪র্থ শ্রেণি' },
 		{ value: '৫ম', label: '৫ম শ্রেণি' },
@@ -85,13 +166,11 @@
 <div class="space-y-8">
 	<h1 class="text-3xl font-bold text-center text-teal-700">শাখাঃ {data.thana[branch]}</h1>
 	
-
-
 	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>
 
 	<form on:submit|preventDefault={handleSubmit} class="space-y-6">
-    <div class="flex justify-between">
-      <div class="w-1/2">
+    <div class="flex flex-col md:flex-row justify-between md:space-x-4">
+      <div class="w-full md:w-1/2 mb-4 md:mb-0">
         <div class="flex space-x-4">
           <label class="inline-flex items-center">
             <input type="radio" bind:group={formData.institutionType} value="school" required class="form-radio">
@@ -102,9 +181,11 @@
             <span class="ml-2">মাদরাসা</span>
           </label>
         </div>
+        {#if formErrors.institutionType}
+            <p class="text-red-500 text-sm mt-1">{formErrors.institutionType}</p>
+        {/if}
       </div>
-      <div class="w-1/2">
-        <label class="block text-sm font-medium text-gray-700"></label>
+      <div class="w-full md:w-1/2">
         <div class="flex space-x-4">
           <label class="inline-flex items-center">
             <input type="radio" bind:group={formData.gender} value="male" required class="form-radio">
@@ -115,13 +196,19 @@
             <span class="ml-2">ছাত্রী</span>
           </label>
         </div>
+        {#if formErrors.gender}
+            <p class="text-red-500 text-sm mt-1">{formErrors.gender}</p>
+        {/if}
       </div>
     </div>
   
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
-        <label class="block text-sm font-medium text-gray-700">সিরিয়াল ({branch}001 থেকে শুরু হবে <br/> ইংরেজিতে লিখবেন <br/> আপনার ফর্মের কপিতেও হাতে লিখে রাখবেন সিরিয়াল নাম্বারের ঘরে)</label>
-        <input type="text" maxlength="5" bind:value={formData.serial} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <label class="block text-sm font-medium text-gray-700">সিরিয়াল ({branch}001 থেকে শুরু হবে <br/> ইংরেজিতে লিখবেন <br/> আপনার ফর্মের কপিতেও হাতে লিখে রাখবেন সিরিয়াল নাম্বারের ঘরে)</label>
+        <input type="text" maxlength={branch.length + 3} bind:value={formData.serial} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        {#if formErrors.serial}
+            <p class="text-red-500 text-sm mt-1">{formErrors.serial}</p>
+        {/if}
         </div>
       <div>
         <label class="block text-sm font-medium text-gray-700">পরীক্ষার্থীর নাম (বাংলায়)</label>
@@ -131,9 +218,31 @@
         <label class="block text-sm font-medium text-gray-700">পিতার নাম (বাংলায়)</label>
         <input type="text" bind:value={formData.fatherName} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
       </div>
-      <div>
+      <div class="relative">
         <label class="block text-sm font-medium text-gray-700">শিক্ষা প্রতিষ্ঠান</label>
-        <input type="text" bind:value={formData.institution} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <input 
+          type="text" 
+          bind:value={formData.institution} 
+          on:input={handleInstitutionInput}
+          on:blur={handleInstitutionBlur}
+          on:focus={handleInstitutionInput}
+          required 
+          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
+          autocomplete="off"
+        >
+        {#if showDropdown}
+          <div class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
+            {#each filteredInstitutions as institution}
+              <button
+                type="button"
+                class="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                on:click={() => selectInstitution(institution)}
+              >
+                {institution}
+              </button>
+            {/each}
+          </div>
+        {/if}
       </div>
       <div class="grid grid-cols-3 gap-2">
         <div>
@@ -162,6 +271,9 @@
       <div>
         <label class="block text-sm font-medium text-gray-700">মোবাইল (ইংরেজিতে ১১ ডিজিট, ডাবল চেক করবেন)</label>
         <input type="tel" maxlength="11" minlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        {#if formErrors.mobile}
+            <p class="text-red-500 text-sm mt-1">{formErrors.mobile}</p>
+        {/if}
       </div>
     </div>
   
@@ -170,7 +282,7 @@
       <input type="text" bind:value={formData.presentAddress} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
     </div>
 	<div>
-		<label class="block text-sm font-medium text-gray-700">ওয়ার্ড</label>
+		<label class="block text-sm font-medium text-gray-700">ওয়ার্ড</label>
 		<input type="text" bind:value={formData.ward} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
 	  </div>
   
@@ -193,23 +305,4 @@
 			{submitError}
 		</div>
 	{/if}
-
-	<div class="mt-8 space-y-4">
-		<div class="bg-amber-50 p-6 rounded-lg shadow-md">
-			<h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
-			<ul class="space-y-2 text-gray-700">
-				<li>০১৯৭৩৮৮১৪৯৮ (আহসান হাবীব)</li>
-				<li>০১৯০৮৩০৩৮২৬ (রফিকুল ইসলাম)</li>
-				<li>০১৮৭৭৪৩৮৫৪৮ (ছফির উদ্দীন)</li>
-				<li>০১৩০৬৩২১০৫২ (আবুল হাসান রিয়াদ)</li>
-			</ul>
-		</div>
-
-		<div class="text-sm text-gray-600 text-center">
-			বিস্তারিত তথ্যের জন্য: <a
-				href="http://www.kkrfsylhet.org"
-				class="text-teal-600 hover:underline">www.kkrfsylhet.org</a
-			>
-		</div>
-	</div>
 </div>
