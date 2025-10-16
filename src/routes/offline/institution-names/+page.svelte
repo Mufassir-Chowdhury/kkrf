@@ -1,6 +1,6 @@
 <script>
 	import { onMount } from 'svelte';
-	import { collection, getDocs, writeBatch, doc } from 'firebase/firestore';
+	import { collection, getDocs, writeBatch, doc, getDoc, setDoc } from 'firebase/firestore';
 	import { db } from '$lib/firebase';
 
 	let loading = true;
@@ -10,53 +10,125 @@
 	let searchTerm = '';
 	let sortBy = 'count';
 	let filteredGroups = [];
+	let mergeRules = new Map(); // Tracks: oldName -> newName
+	let pendingMerges = []; // Array of merge rules for display
 
 	onMount(async () => {
 		await loadInstitutions();
+		await loadMergeRules();
 	});
 
 	async function loadInstitutions() {
 		loading = true;
 		try {
-			const querySnapshot = await getDocs(collection(db, 'offline-2025'));
-			const registrations = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-
-			// Group by institution name (case-insensitive)
-			const institutionMap = new Map();
+			// Try to load from cache first
+			const cacheDoc = await getDoc(doc(db, '_cache', 'institution-groups'));
 			
-			registrations.forEach(reg => {
-				const institution = reg.institution || 'Unknown';
-				const lowerInstitution = institution.toLowerCase().trim();
-				
-				if (!institutionMap.has(lowerInstitution)) {
-					institutionMap.set(lowerInstitution, {
-						displayName: institution,
-						count: 0,
-						registrationIds: []
-					});
-				}
-				
-				const group = institutionMap.get(lowerInstitution);
-				group.count++;
-				group.registrationIds.push(reg.id);
-			});
+			if (cacheDoc.exists()) {
+				const cached = cacheDoc.data();
+				institutionGroups = cached.groups || [];
+				applySorting();
+				filteredGroups = [...institutionGroups];
+				loading = false;
+				return;
+			}
 
-			// Convert to array and sort by count (descending)
-			institutionGroups = Array.from(institutionMap.entries())
-				.map(([key, value]) => ({
-					key,
-					displayName: value.displayName,
-					count: value.count,
-					registrationIds: value.registrationIds
-				}));
-
-			applySorting();
-			filteredGroups = [...institutionGroups];
+			// If no cache, rebuild from scratch
+			await rebuildCache();
 		} catch (err) {
 			console.error('Error loading institutions:', err);
 			alert('Error loading institutions');
+			loading = false;
 		}
-		loading = false;
+	}
+
+	async function loadMergeRules() {
+		try {
+			const rulesDoc = await getDoc(doc(db, '_cache', 'merge-rules'));
+			if (rulesDoc.exists()) {
+				const data = rulesDoc.data();
+				mergeRules = new Map(Object.entries(data.rules || {}));
+				updatePendingMerges();
+			}
+		} catch (err) {
+			console.error('Error loading merge rules:', err);
+		}
+	}
+
+	async function saveMergeRules() {
+		try {
+			const rulesObject = Object.fromEntries(mergeRules);
+			await setDoc(doc(db, '_cache', 'merge-rules'), {
+				rules: rulesObject,
+				lastUpdated: new Date().toISOString()
+			});
+		} catch (err) {
+			console.error('Error saving merge rules:', err);
+			throw err;
+		}
+	}
+
+	function updatePendingMerges() {
+		// Convert mergeRules Map to array for display
+		const mergeMap = new Map(); // newName -> [oldNames]
+		
+		mergeRules.forEach((newName, oldKey) => {
+			if (!mergeMap.has(newName)) {
+				mergeMap.set(newName, []);
+			}
+			// Find the display name for this key
+			const group = institutionGroups.find(g => g.key === oldKey);
+			if (group) {
+				mergeMap.get(newName).push(group.displayName);
+			}
+		});
+
+		pendingMerges = Array.from(mergeMap.entries()).map(([newName, oldNames]) => ({
+			standardName: newName,
+			institutions: oldNames,
+			count: oldNames.length
+		}));
+	}
+
+	async function rebuildCache() {
+		const querySnapshot = await getDocs(collection(db, 'offline-2025'));
+		const registrations = querySnapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+
+		const institutionMap = new Map();
+		
+		registrations.forEach(reg => {
+			const institution = reg.institution || 'Unknown';
+			const lowerInstitution = institution.toLowerCase().trim();
+			
+			if (!institutionMap.has(lowerInstitution)) {
+				institutionMap.set(lowerInstitution, {
+					displayName: institution,
+					count: 0,
+					registrationIds: []
+				});
+			}
+			
+			const group = institutionMap.get(lowerInstitution);
+			group.count++;
+			group.registrationIds.push(reg.id);
+		});
+
+		institutionGroups = Array.from(institutionMap.entries())
+			.map(([key, value]) => ({
+				key,
+				displayName: value.displayName,
+				count: value.count,
+				registrationIds: value.registrationIds
+			}));
+
+		// Save to cache
+		await setDoc(doc(db, '_cache', 'institution-groups'), {
+			groups: institutionGroups,
+			lastUpdated: new Date().toISOString()
+		});
+
+		applySorting();
+		filteredGroups = [...institutionGroups];
 	}
 
 	function applySorting() {
@@ -81,7 +153,7 @@
 	function toggleSort() {
 		sortBy = sortBy === 'count' ? 'name' : 'count';
 		applySorting();
-		handleSearch(); // Re-apply search with new sorting
+		handleSearch();
 	}
 
 	function toggleSelect(key) {
@@ -90,7 +162,7 @@
 		} else {
 			selectedInstitutions.add(key);
 		}
-		selectedInstitutions = selectedInstitutions; // trigger reactivity
+		selectedInstitutions = selectedInstitutions;
 	}
 
 	function selectAll() {
@@ -101,7 +173,7 @@
 		selectedInstitutions = new Set();
 	}
 
-	async function handleMerge() {
+	async function addMergeRule() {
 		if (selectedInstitutions.size === 0) {
 			alert('Please select at least one institution to merge');
 			return;
@@ -112,55 +184,119 @@
 			return;
 		}
 
-		const selectedGroups = institutionGroups.filter(g => selectedInstitutions.has(g.key));
-		const totalRegistrations = selectedGroups.reduce((sum, g) => sum + g.count, 0);
-		const institutionNames = selectedGroups.map(g => g.displayName).join(', ');
+		try {
+			// Add selected institutions to merge rules
+			selectedInstitutions.forEach(key => {
+				mergeRules.set(key, standardName.trim());
+			});
+
+			await saveMergeRules();
+			updatePendingMerges();
+
+			alert(`Added merge rule for ${selectedInstitutions.size} institutions → "${standardName}"`);
+			
+			selectedInstitutions = new Set();
+			standardName = '';
+		} catch (err) {
+			console.error('Error adding merge rule:', err);
+			alert('Error adding merge rule. Please try again.');
+		}
+	}
+
+	async function applyAllMerges() {
+		if (mergeRules.size === 0) {
+			alert('No merge rules to apply');
+			return;
+		}
+
+		const totalInstitutions = mergeRules.size;
+		const totalRegistrations = Array.from(mergeRules.keys())
+			.reduce((sum, key) => {
+				const group = institutionGroups.find(g => g.key === key);
+				return sum + (group?.count || 0);
+			}, 0);
 
 		if (!confirm(
-			`Are you sure you want to merge these ${selectedInstitutions.size} institution names into "${standardName}"?\n\n` +
-			`This will update ${totalRegistrations} registrations.\n\n` +
-			`Institutions to merge:\n${institutionNames}`
+			`Are you sure you want to apply all pending merges?\n\n` +
+			`This will update ${totalRegistrations} registrations across ${totalInstitutions} institutions.\n\n` +
+			`This action cannot be undone.`
 		)) {
 			return;
 		}
 
 		try {
 			loading = true;
-			
-			// Get all registration IDs that need updating
-			const allRegistrationIds = selectedGroups.flatMap(g => g.registrationIds);
-			
-			// Batch update in chunks of 500 (Firestore limit)
+
+			// Get all registration IDs and their new institution names
+			const updates = [];
+			mergeRules.forEach((newName, oldKey) => {
+				const group = institutionGroups.find(g => g.key === oldKey);
+				if (group) {
+					group.registrationIds.forEach(id => {
+						updates.push({ id, newName });
+					});
+				}
+			});
+
+			// Batch update in chunks of 500
 			const chunkSize = 500;
-			for (let i = 0; i < allRegistrationIds.length; i += chunkSize) {
-				const chunk = allRegistrationIds.slice(i, i + chunkSize);
+			for (let i = 0; i < updates.length; i += chunkSize) {
+				const chunk = updates.slice(i, i + chunkSize);
 				const batch = writeBatch(db);
 				
-				chunk.forEach(id => {
-					const ref = doc(db, 'offline-2025', id);
-					batch.update(ref, { institution: standardName.trim() });
+				chunk.forEach(update => {
+					const ref = doc(db, 'offline-2025', update.id);
+					batch.update(ref, { institution: update.newName });
 				});
 				
 				await batch.commit();
 			}
 
-			alert(`Successfully merged ${selectedInstitutions.size} institution names, updating ${totalRegistrations} registrations!`);
+			// Clear merge rules
+			mergeRules.clear();
+			await saveMergeRules();
+			updatePendingMerges();
+
+			alert(`Successfully applied all merges! Updated ${totalRegistrations} registrations.`);
 			
-			// Reset and reload
-			selectedInstitutions = new Set();
-			standardName = '';
-			await loadInstitutions();
+			// Rebuild cache to reflect changes
+			await rebuildCache();
 		} catch (err) {
-			console.error('Error merging institutions:', err);
-			alert('Error merging institutions. Please try again.');
+			console.error('Error applying merges:', err);
+			alert('Error applying merges. Please try again.');
+		} finally {
 			loading = false;
 		}
+	}
+
+	async function clearAllMergeRules() {
+		if (!confirm('Are you sure you want to clear all pending merge rules?')) {
+			return;
+		}
+
+		mergeRules.clear();
+		await saveMergeRules();
+		updatePendingMerges();
+		alert('All merge rules cleared');
+	}
+
+	async function removeMergeRule(standardNameToRemove) {
+		// Remove all rules with this standard name
+		const keysToRemove = [];
+		mergeRules.forEach((newName, oldKey) => {
+			if (newName === standardNameToRemove) {
+				keysToRemove.push(oldKey);
+			}
+		});
+
+		keysToRemove.forEach(key => mergeRules.delete(key));
+		await saveMergeRules();
+		updatePendingMerges();
 	}
 
 	function autoFillStandardName() {
 		if (selectedInstitutions.size === 0) return;
 		
-		// Get the selected institution with the highest count
 		const selected = institutionGroups
 			.filter(g => selectedInstitutions.has(g.key))
 			.sort((a, b) => b.count - a.count);
@@ -173,6 +309,12 @@
 	$: totalSelected = institutionGroups
 		.filter(g => selectedInstitutions.has(g.key))
 		.reduce((sum, g) => sum + g.count, 0);
+
+	$: totalPendingRegistrations = Array.from(mergeRules.keys())
+		.reduce((sum, key) => {
+			const group = institutionGroups.find(g => g.key === key);
+			return sum + (group?.count || 0);
+		}, 0);
 </script>
 
 <svelte:head>
@@ -185,6 +327,60 @@
 	</div>
 {:else}
 	<div class="space-y-6 p-6 max-w-7xl mx-auto">
+		<!-- Pending Merges Section -->
+		{#if pendingMerges.length > 0}
+			<div class="bg-orange-50 border-2 border-orange-300 rounded-lg p-6 shadow-lg">
+				<div class="flex justify-between items-start mb-4">
+					<div>
+						<h2 class="text-2xl font-bold text-orange-800 mb-2">
+							Pending Merges ({pendingMerges.length})
+						</h2>
+						<p class="text-sm text-orange-700">
+							{totalPendingRegistrations} registrations will be updated
+						</p>
+					</div>
+					<div class="space-x-2">
+						<button
+							on:click={applyAllMerges}
+							class="bg-green-600 text-white px-6 py-3 rounded-md hover:bg-green-700 transition-colors font-semibold"
+						>
+							✓ Apply All Merges
+						</button>
+						<button
+							on:click={clearAllMergeRules}
+							class="bg-red-500 text-white px-4 py-3 rounded-md hover:bg-red-600 transition-colors"
+						>
+							Clear All
+						</button>
+					</div>
+				</div>
+
+				<div class="space-y-3 max-h-96 overflow-y-auto">
+					{#each pendingMerges as merge}
+						<div class="bg-white p-4 rounded-md shadow-sm border border-orange-200">
+							<div class="flex justify-between items-start">
+								<div class="flex-1">
+									<p class="font-semibold text-lg text-gray-900 mb-2">
+										→ {merge.standardName}
+									</p>
+									<p class="text-sm text-gray-600">
+										Merging {merge.count} variants: {merge.institutions.join(', ')}
+									</p>
+								</div>
+								<button
+									on:click={() => removeMergeRule(merge.standardName)}
+									class="text-red-500 hover:text-red-700 font-bold text-xl ml-4"
+									title="Remove this merge rule"
+								>
+									×
+								</button>
+							</div>
+						</div>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
 		<div class="bg-white shadow-md rounded-lg p-6">
 			<h1 class="text-3xl font-bold text-center text-teal-700 mb-2">
 				Institution Name Management
@@ -203,11 +399,12 @@
 					class="w-full p-3 border border-gray-300 rounded-md"
 				/>
 			</div>
+
 			<!-- Sort Toggle -->
 			<div class="mb-4 flex justify-end">
 				<button
 					on:click={toggleSort}
-					class="bg-indigo-500 px-4 py-2 rounded-md hover:bg-indigo-600 transition-colors text-sm flex items-center gap-2"
+					class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition-colors text-sm flex items-center gap-2"
 				>
 					Sort by: {sortBy === 'count' ? 'Count ↓' : 'Name ↑'}
 				</button>
@@ -234,10 +431,10 @@
 				</div>
 			</div>
 
-			<!-- Merge Section -->
+			<!-- Add Merge Rule Section -->
 			{#if selectedInstitutions.size > 0}
 				<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
-					<h3 class="font-semibold text-lg mb-3">Merge Selected Institutions</h3>
+					<h3 class="font-semibold text-lg mb-3">Add Merge Rule</h3>
 					<div class="flex gap-2 mb-3">
 						<input
 							type="text"
@@ -253,11 +450,11 @@
 						</button>
 					</div>
 					<button
-						on:click={handleMerge}
+						on:click={addMergeRule}
 						disabled={!standardName.trim()}
-						class="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed w-full"
+						class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed w-full"
 					>
-						Merge {selectedInstitutions.size} Institutions → "{standardName || '...'}"
+						Add Rule: {selectedInstitutions.size} Institutions → "{standardName || '...'}"
 					</button>
 				</div>
 			{/if}
@@ -274,8 +471,13 @@
 					</thead>
 					<tbody>
 						{#each filteredGroups as group, i}
+							{@const hasPendingMerge = mergeRules.has(group.key)}
 							<tr 
-								class="{selectedInstitutions.has(group.key) ? 'bg-blue-100' : (i % 2 === 0 ? 'bg-white' : 'bg-gray-50')} border-b hover:bg-gray-100 cursor-pointer"
+								class="{
+									hasPendingMerge ? 'bg-orange-100' : 
+									selectedInstitutions.has(group.key) ? 'bg-blue-100' : 
+									(i % 2 === 0 ? 'bg-white' : 'bg-gray-50')
+								} border-b hover:bg-gray-100 cursor-pointer"
 								on:click={() => toggleSelect(group.key)}
 							>
 								<td class="px-6 py-4">
@@ -288,6 +490,11 @@
 								</td>
 								<td class="px-6 py-4 font-medium text-gray-900">
 									{group.displayName}
+									{#if hasPendingMerge}
+										<span class="ml-2 text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded">
+											→ {mergeRules.get(group.key)}
+										</span>
+									{/if}
 								</td>
 								<td class="px-6 py-4 text-center">
 									<span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-semibold">

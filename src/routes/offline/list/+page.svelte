@@ -82,6 +82,13 @@
     <div class="flex justify-between mb-4">
         <h1>Offline Registrations {total}</h1>
         <div class="space-x-2">
+          <a href="/offline/institution-names">
+            <button 
+                class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+              >
+                Institutions
+              </button>
+          </a>
             <button 
               on:click={() => handleExportCSV()}
               class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
