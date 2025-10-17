@@ -159,11 +159,11 @@
                     ১ নভেম্বর, ২০২৫ <br /> শনিবার
                   </div>
                   <div class="divide-y-2 divide-blue-400">
-                    <div>৯:৩০-১০:৫০</div>
+                    <div>১০:০০-১১:০০</div>
                     <div>বাংলা ও ইংরেজি</div>
                   </div>
                   <div class="divide-y-2 divide-blue-400">
-                    <div>১১:০০-১২:০০</div>
+                    <div>১১:১০-১২:১০</div>
                     <div>গণিত ও সাধারণ জ্ঞান/সাধারণ বিজ্ঞান</div>
                   </div>
                 </div>
