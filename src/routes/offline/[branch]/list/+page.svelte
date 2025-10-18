@@ -6,6 +6,8 @@
 	import { handleExportCSV } from './util';
 	import { loadRegistrations, deleteRegistration, assignRollNumbers } from './db';
 	import { writeBatch } from 'firebase/firestore';
+	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
+
 	export let data;
 	let branch = $page.params.branch;
 	let registrations = [];
@@ -281,6 +283,12 @@
 <svelte:head>
 	<title>Admin Dashboard - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</title>
 </svelte:head>
+
+<BreadCrumb links={[
+    { url: '/offline/list', label: 'Home' },
+    { url: `/offline/${branch}/list`, label: data.thana[branch] },
+    { url: `#`, label: 'List' }
+  ]} />
 
 {#if loading}
 	<div class="flex justify-center items-center h-screen">

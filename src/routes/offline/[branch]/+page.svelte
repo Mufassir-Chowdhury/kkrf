@@ -4,6 +4,7 @@
 	import { initializeApp } from 'firebase/app';
 	import { getFirestore, collection, addDoc } from 'firebase/firestore';
     import { page } from '$app/stores';
+	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 
 	export let data;
 	// Your Firebase configuration
@@ -164,6 +165,14 @@
 </svelte:head>
 
 <div class="space-y-8">
+
+  <BreadCrumb links={[
+    { url: '/offline', label: 'Home' },
+    { url: `/offline/${branch}`, label: data.thana[branch] },
+    { url: `#`, label: 'Form' }
+  ]} />
+
+
 	<h1 class="text-3xl font-bold text-center text-teal-700">শাখাঃ {data.thana[branch]}</h1>
 	
 	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>

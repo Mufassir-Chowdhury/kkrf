@@ -42,12 +42,18 @@
 		{error}
 	</div>
 {/if}
-<div class="print:hidden">
+<div class="print:hidden w-full flex justify-center">
 	<div class="toggle-container">
 		<button class="m-8 bg-black rounded-lg text-white px-4 py-2" on:click={() => window.print()}>
 			Print
 		</button>
 	</div>
+</div>
+<div class="print:hidden mb-4">
+	- প্রিন্ট বাটনে ক্লিক করার পর ব্রাউজার কিছুক্ষণ এর জন্য ফ্রিজ হতে পারে। ধৈর্য ধরুন এবং সম্পূর্ণ প্রিন্ট হওয়ার পরেই ব্রাউজার বন্ধ করুন।<br />
+  - ডিরেক্ট ওয়েবপেজ থেকে প্রিন্ট না করে Print to PDF করে পরে PDF থেকে প্রিন্ট করুন। এতে করে ফরম্যাটিং ঠিক থাকবে।<br />
+  - প্রতিটি এডমিট কার্ড একটি A4 সাইজ পেজে প্রিন্ট হবে।<br />
+  - প্রিন্ট করার সময় পেজ সেটিংসে 'print backgrounds' অপশন সিলেক্ট করুন।<br />
 </div>
 <div>
 		<div class="a4-page">

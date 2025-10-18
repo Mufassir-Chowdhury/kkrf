@@ -1,7 +1,15 @@
 <script>
     import { page } from '$app/stores';
+    import BreadCrumb from '$lib/components/BreadCrumb.svelte';
+    export let data;
     let branch = $page.params.branch;
 </script>
+
+<BreadCrumb links={[
+    { url: '/offline', label: 'Home' },
+    { url: `/offline/${branch}`, label: data.thana[branch] },
+    { url: `#`, label: 'Successful' }
+  ]} />
 
 <div class="flex justify-center mt-10">
     <div class="success-animation">

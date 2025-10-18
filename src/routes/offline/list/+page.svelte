@@ -82,9 +82,16 @@
     <div class="flex justify-between mb-4">
         <h1>Offline Registrations {total}</h1>
         <div class="space-x-2">
+          <a href="/offline">
+            <button 
+                class="border border-green-500 text-black px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+              >
+                Data Entry Page
+              </button>
+          </a>
           <a href="/offline/institution-names">
             <button 
-                class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+                class="border border-green-500 text-black px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
               >
                 Institutions
               </button>
