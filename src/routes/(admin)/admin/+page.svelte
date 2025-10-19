@@ -2,7 +2,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { goto } from '$app/navigation';
     import { db } from '$lib/firebase';
-    import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc, limit, startAfter, getCountFromServer } from 'firebase/firestore';
+    import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc, limit, startAfter, getCountFromServer, addDoc, writeBatch, setDoc } from 'firebase/firestore';
     import { sendConfirmationSMS, handleExportCSV, sendIncompleteRegistrationSMS } from './util';
     import { deleteRegistration, loadAllRegistrations } from './db';
     
@@ -15,6 +15,10 @@
     let selectedRegistration = null;
     let smsModalOpen = false;
     let selectedUnconfirmedReg = null;
+
+    // Selection variables
+    let selectedIds = new Set();
+    let isMoving = false;
 
     // Infinite scroll variables
     let itemsPerPage = 25;
@@ -129,11 +133,114 @@
         filterRegistrations();
     }
 
+    function toggleSelection(id) {
+        if (selectedIds.has(id)) {
+            selectedIds.delete(id);
+        } else {
+            selectedIds.add(id);
+        }
+        selectedIds = selectedIds; // Trigger reactivity
+    }
+
+    function toggleSelectAll() {
+        if (selectedIds.size === filteredRegistrations.length) {
+            selectedIds.clear();
+        } else {
+            filteredRegistrations.forEach(reg => selectedIds.add(reg.id));
+        }
+        selectedIds = selectedIds; // Trigger reactivity
+    }
+
+    async function getNextSerialNumber(count) {
+        const cacheRef = doc(db, '_cache', 'online-serial');
+        const cacheDoc = await getDoc(cacheRef);
+        
+        let currentSerial = 99001;
+        if (cacheDoc.exists()) {
+            currentSerial = cacheDoc.data().lastSerial + 1;
+        }
+        
+        return { startSerial: currentSerial, cacheRef };
+    }
+
+    async function moveToOffline() {
+        if (selectedIds.size === 0) {
+            alert('Please select at least one registration to move');
+            return;
+        }
+
+        if (!confirm(`Are you sure you want to move ${selectedIds.size} registration(s) to offline?`)) {
+            return;
+        }
+
+        isMoving = true;
+        error = null;
+
+        try {
+            const selectedRegs = registrations.filter(reg => selectedIds.has(reg.id));
+            const { startSerial, cacheRef } = await getNextSerialNumber(selectedRegs.length);
+
+            const batch = writeBatch(db);
+            
+            selectedRegs.forEach((reg, index) => {
+                const serial = String(startSerial + index).padStart(5, '0');
+                
+                const offlineData = {
+                    serial: serial,
+                    institutionType: reg.institutionType || null,
+                    gender: reg.gender || null,
+                    name: reg.name || '',
+                    fatherName: reg.fatherName || '',
+                    institution: reg.institution || '',
+                    class: reg.class || '',
+                    section: reg.section || '',
+                    classRoll: reg.classRoll || '',
+                    mobile: reg.mobile || '',
+                    presentAddress: reg.presentAddress || '',
+                    creationTime: reg.creationTime || '',
+                    branch: '99',
+                    ward: ''
+                };
+
+                // Add to offline collection
+                const offlineRef = doc(collection(db, 'offline-2025'));
+                batch.set(offlineRef, offlineData);
+
+                // Delete from scholarshipApplications-2025
+                const onlineRef = doc(db, 'scholarshipApplications-2025', reg.id);
+                batch.delete(onlineRef);
+            });
+
+            // Update cache with last serial number
+            const lastSerial = startSerial + selectedRegs.length - 1;
+            batch.set(cacheRef, { lastSerial }, { merge: true });
+
+            await batch.commit();
+
+            // Remove from local array
+            registrations = registrations.filter(reg => !selectedIds.has(reg.id));
+            totalItems -= selectedIds.size;
+            filterRegistrations();
+            selectedIds.clear();
+            selectedIds = selectedIds; // Trigger reactivity
+
+            alert(`Successfully moved ${selectedRegs.length} registration(s) to offline`);
+        } catch (err) {
+            console.error("Error moving registrations:", err);
+            error = "Failed to move registrations. Please try again.";
+            alert("Failed to move registrations. Please try again.");
+        } finally {
+            isMoving = false;
+        }
+    }
+
     async function handleDelete(id) {
         await deleteRegistration(id);
         // Remove from local array instead of reloading everything
         registrations = registrations.filter(reg => reg.id !== id);
         totalItems--;
+        selectedIds.delete(id);
+        selectedIds = selectedIds;
         filterRegistrations();
     }
 
@@ -204,6 +311,9 @@
             selectedUnconfirmedReg = null;
         }
     }
+
+    $: allSelected = filteredRegistrations.length > 0 && selectedIds.size === filteredRegistrations.length;
+    $: someSelected = selectedIds.size > 0 && selectedIds.size < filteredRegistrations.length;
 </script>
 
 <svelte:head>
@@ -233,6 +343,15 @@
                 class="p-2 border border-gray-300 rounded-md w-64"
             />
             <div class="space-x-2">
+                {#if selectedIds.size > 0}
+                    <button 
+                        on:click={moveToOffline}
+                        disabled={isMoving}
+                        class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+                    >
+                        {isMoving ? 'Moving...' : `Move to Offline (${selectedIds.size})`}
+                    </button>
+                {/if}
                 <button 
                     on:click={handleExportAllCSV}
                     class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
@@ -249,6 +368,15 @@
                 <table class="w-full text-sm text-left text-gray-500">
                     <thead class="text-xs text-gray-700 uppercase bg-gray-50">
                         <tr>
+                            <th scope="col" class="px-6 py-3">
+                                <input 
+                                    type="checkbox" 
+                                    checked={allSelected}
+                                    indeterminate={someSelected}
+                                    on:change={toggleSelectAll}
+                                    class="w-4 h-4 cursor-pointer"
+                                />
+                            </th>
                             <th scope="col" class="px-6 py-3">Name</th>
                             <th scope="col" class="px-6 py-3">Institution</th>
                             <th scope="col" class="px-6 py-3">Class</th>
@@ -260,6 +388,14 @@
                     <tbody>
                         {#each filteredRegistrations as registration, i}
                             <tr class="{i % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b hover:bg-gray-100">
+                                <td class="px-6 py-4">
+                                    <input 
+                                        type="checkbox" 
+                                        checked={selectedIds.has(registration.id)}
+                                        on:change={() => toggleSelection(registration.id)}
+                                        class="w-4 h-4 cursor-pointer"
+                                    />
+                                </td>
                                 <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">{registration.name}</td>
                                 <td class="px-6 py-4">{registration.institution}</td>
                                 <td class="px-6 py-4">{registration.class}</td>
