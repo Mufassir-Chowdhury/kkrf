@@ -441,7 +441,9 @@
 
 			<!-- Add Merge Rule Section -->
 			{#if selectedInstitutions.size > 0}
-				<div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6">
+				<div
+					class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-6 fixed bottom-6 right-6 z-50 shadow-2xl max-w-md"
+				>
 					<h3 class="font-semibold text-lg mb-3">Add Merge Rule</h3>
 					<div class="flex gap-2 mb-3">
 						<input
@@ -523,8 +525,8 @@
 		</div>
 	</div>
 {/if}
-"institutions": [
+<!-- "institutions": [
 {#each filteredGroups as group, i}
-	{group.displayName},<br/>
+	{group.displayName},<br />
 {/each}
-]
+] -->
