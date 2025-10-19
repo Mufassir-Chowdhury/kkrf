@@ -89,7 +89,7 @@
                 Data Entry Page
               </button>
           </a>
-          <a href="/offline/institution-names">
+          <a href="/offline/institutions">
             <button 
                 class="border border-green-500 text-black px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
               >

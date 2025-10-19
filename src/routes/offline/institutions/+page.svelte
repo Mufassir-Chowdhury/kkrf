@@ -2,6 +2,7 @@
 	import { onMount } from 'svelte';
 	import { collection, getDocs, writeBatch, doc, getDoc, setDoc } from 'firebase/firestore';
 	import { db } from '$lib/firebase';
+	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 
 	let loading = true;
 	let institutionGroups = [];
@@ -317,6 +318,11 @@
 <svelte:head>
 	<title>Institution Name Management - Merge & Standardize</title>
 </svelte:head>
+
+<BreadCrumb links={[
+    { url: '/offline/list', label: 'Home' },
+    { url: `#`, label: 'Institution List' }
+  ]} />
 
 {#if loading}
 	<div class="flex justify-center items-center h-screen">
