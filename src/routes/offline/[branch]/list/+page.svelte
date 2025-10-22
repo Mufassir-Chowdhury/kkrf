@@ -4,6 +4,7 @@
 	import { page } from '$app/stores';
 
 	import { handleExportCSV } from './util';
+	import { encodeRoll } from '$lib/hash';
 	import { loadRegistrations, deleteRegistration, assignRollNumbers } from './db';
 	import { writeBatch } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
@@ -20,6 +21,9 @@
 	let missingSerials = [];
 	let invalidSerials = [];
 	let invalidMobiles = [];
+	let sendingSMS = false;
+let showSMSPreviewModal = false;
+let smsPreviewList = [];
 
 	let rangeStart = '';
 	let rangeEnd = '';
@@ -278,6 +282,100 @@
 	function handleEdit(id) {
 		goto(`/offline/edit/${id}`);
 	}
+
+	async function handleSendSMS() {
+	if (selectedIds.size === 0) {
+		alert('Please select at least one registration to send SMS');
+		return;
+	}
+
+	// Get selected registrations that have roll numbers and are confirmed
+	const selectedRegs = registrations.filter(
+		(r) => selectedIds.has(r.id) && r.roll && r.confirm
+	);
+
+	if (selectedRegs.length === 0) {
+		alert('No confirmed registrations with roll numbers found in selection');
+		return;
+	}
+
+	// Generate preview list (first 5)
+	smsPreviewList = selectedRegs.slice(0, 5).map((r) => {
+		const hash = encodeRoll(r.roll);
+		const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
+		return {
+			name: r.name,
+			mobile: r.mobile,
+			roll: r.roll,
+			message: message
+		};
+	});
+
+	showSMSPreviewModal = true;
+}
+
+async function confirmAndSendSMS() {
+	const selectedRegs = registrations.filter(
+		(r) => selectedIds.has(r.id) && r.roll && r.confirm
+	);
+
+	if (
+		!confirm(
+			`Are you sure you want to send SMS to ${selectedRegs.length} registration(s)?\n\nThis action cannot be undone and will use SMS credits.`
+		)
+	) {
+		return;
+	}
+
+	try {
+		sendingSMS = true;
+		showSMSPreviewModal = false;
+
+		const url = 'https://api.bdbulksms.net/api.php?json';
+		const t1 = '59702300401725';
+		const t2 = '814840c01d5e52';
+		const t3 = '79bac7dda539127ec4a9f539';
+		const SMS_API_TOKEN = `${t1}${t2}${t3}`;
+
+		let successCount = 0;
+		let failCount = 0;
+
+		for (const reg of selectedRegs) {
+			const hash = encodeRoll(reg.roll);
+			const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
+
+			const data = new FormData();
+			data.set('token', SMS_API_TOKEN);
+			data.set('message', message);
+			data.set('to', reg.mobile);
+
+			try {
+				const response = await fetch(url, {
+					method: 'POST',
+					body: data
+				});
+				const result = await response.json();
+				console.log(`SMS sent to ${reg.mobile}:`, result);
+				successCount++;
+				
+				// Small delay to avoid rate limiting
+				await new Promise(resolve => setTimeout(resolve, 200));
+			} catch (error) {
+				console.error(`Error sending SMS to ${reg.mobile}:`, error);
+				failCount++;
+			}
+		}
+
+		alert(`SMS sending complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
+		selectedIds = new Set();
+		selectAll = false;
+	} catch (err) {
+		console.error('Error in SMS sending process:', err);
+		alert('Error sending SMS. Please try again.');
+	} finally {
+		sendingSMS = false;
+	}
+}
 </script>
 
 <svelte:head>
@@ -349,6 +447,24 @@
 					>
 					<span class="hidden sm:inline">Confirm ({selectedIds.size})</span>
 				</button>
+
+				<button
+	on:click={handleSendSMS}
+	disabled={selectedIds.size === 0 || sendingSMS}
+	class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+	title="Send Admit Card SMS"
+>
+	<svg
+		xmlns="http://www.w3.org/2000/svg"
+		viewBox="0 0 20 20"
+		fill="currentColor"
+		class="w-5 h-5 mr-0 sm:mr-2"
+	>
+		<path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
+		<path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
+	</svg>
+	<span class="hidden sm:inline">{sendingSMS ? 'Sending...' : `Send SMS (${selectedIds.size})`}</span>
+</button>
 
 				<button
 					on:click={() => (showRangeModal = true)}
@@ -540,7 +656,14 @@
 								>
 
 								<td class="block lg:table-cell px-6 py-4" data-label="Actions">
-									<div class="flex justify-end items-center gap-4">
+									<div class="flex justify-end items-center gap-4 h-8 w-8 px-8">
+										<a href="/admit/{encodeRoll(registration.roll)}" target="_blank" class="text-gray-600 hover:text-gray-800 h-8 w-8" title="View Admit Card">
+											<svg width="16px" height="16px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
+	  <path stroke="#535358" stroke-linejoin="round" stroke-width="2" d="M6 5a2 2 0 012-2h16a2 2 0 012 2v22a2 2 0 01-2 2H8a2 2 0 01-2-2V5z"/>
+	  <path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9h4M10 16h12M10 20h12M10 24h4"/>
+	  <circle cx="22" cy="9" r="1" fill="#535358"/>
+	</svg>
+										</a>
 										<button
 											on:click={() => handleEdit(registration.id)}
 											class="text-blue-600 hover:text-blue-800 h-8 w-8"
@@ -657,6 +780,54 @@
 	</div>
 {/if}
 
+{#if showSMSPreviewModal}
+	<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+		<div class="bg-white rounded-lg p-6 max-w-2xl w-full shadow-xl max-h-[90vh] overflow-y-auto">
+			<h3 class="text-xl font-bold mb-4">SMS Preview (First 5)</h3>
+			<div class="space-y-4 mb-6">
+				{#each smsPreviewList as preview}
+					<div class="border border-gray-300 rounded-lg p-4 bg-gray-50">
+						<div class="flex justify-between items-start mb-2">
+							<div>
+								<p class="font-semibold text-gray-900">{preview.name}</p>
+								<p class="text-sm text-gray-600">Roll: {preview.roll}</p>
+							</div>
+							<p class="text-sm font-mono text-gray-600">{preview.mobile}</p>
+						</div>
+						<div class="bg-white border border-gray-200 rounded p-3 mt-2">
+							<p class="text-sm whitespace-pre-wrap font-bengali">{preview.message}</p>
+						</div>
+					</div>
+				{/each}
+			</div>
+			<p class="text-sm text-orange-600 mb-4">
+				Total messages to be sent: {registrations.filter(
+					(r) => selectedIds.has(r.id) && r.roll && r.confirm
+				).length}
+			</p>
+			<div class="flex space-x-2 justify-end">
+				<button
+					on:click={() => {
+						showSMSPreviewModal = false;
+						smsPreviewList = [];
+					}}
+					disabled={sendingSMS}
+					class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
+				>
+					Cancel
+				</button>
+				<button
+					on:click={confirmAndSendSMS}
+					disabled={sendingSMS}
+					class="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 disabled:opacity-50"
+				>
+					{sendingSMS ? 'Sending...' : 'Confirm & Send'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style global>
 	@tailwind base;
 	@tailwind components;
@@ -695,3 +866,4 @@
 		}
 	}
 </style>
+
