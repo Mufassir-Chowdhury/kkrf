@@ -22,8 +22,8 @@
 	let invalidSerials = [];
 	let invalidMobiles = [];
 	let sendingSMS = false;
-let showSMSPreviewModal = false;
-let smsPreviewList = [];
+	let showSMSPreviewModal = false;
+	let smsPreviewList = [];
 
 	let rangeStart = '';
 	let rangeEnd = '';
@@ -284,109 +284,107 @@ let smsPreviewList = [];
 	}
 
 	async function handleSendSMS() {
-	if (selectedIds.size === 0) {
-		alert('Please select at least one registration to send SMS');
-		return;
-	}
-
-	// Get selected registrations that have roll numbers and are confirmed
-	const selectedRegs = registrations.filter(
-		(r) => selectedIds.has(r.id) && r.roll && r.confirm
-	);
-
-	if (selectedRegs.length === 0) {
-		alert('No confirmed registrations with roll numbers found in selection');
-		return;
-	}
-
-	// Generate preview list (first 5)
-	smsPreviewList = selectedRegs.slice(0, 5).map((r) => {
-		const hash = encodeRoll(r.roll);
-		const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
-		return {
-			name: r.name,
-			mobile: r.mobile,
-			roll: r.roll,
-			message: message
-		};
-	});
-
-	showSMSPreviewModal = true;
-}
-
-async function confirmAndSendSMS() {
-	const selectedRegs = registrations.filter(
-		(r) => selectedIds.has(r.id) && r.roll && r.confirm
-	);
-
-	if (
-		!confirm(
-			`Are you sure you want to send SMS to ${selectedRegs.length} registration(s)?\n\nThis action cannot be undone and will use SMS credits.`
-		)
-	) {
-		return;
-	}
-
-	try {
-		sendingSMS = true;
-		showSMSPreviewModal = false;
-
-		const url = 'https://api.bdbulksms.net/api.php?json';
-		const t1 = '59702300401725';
-		const t2 = '814840c01d5e52';
-		const t3 = '79bac7dda539127ec4a9f539';
-		const SMS_API_TOKEN = `${t1}${t2}${t3}`;
-
-		let successCount = 0;
-		let failCount = 0;
-
-		for (const reg of selectedRegs) {
-			const hash = encodeRoll(reg.roll);
-			const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
-
-			const data = new FormData();
-			data.set('token', SMS_API_TOKEN);
-			data.set('message', message);
-			data.set('to', reg.mobile);
-
-			try {
-				const response = await fetch(url, {
-					method: 'POST',
-					body: data
-				});
-				const result = await response.json();
-				console.log(`SMS sent to ${reg.mobile}:`, result);
-				successCount++;
-				
-				// Small delay to avoid rate limiting
-				await new Promise(resolve => setTimeout(resolve, 200));
-			} catch (error) {
-				console.error(`Error sending SMS to ${reg.mobile}:`, error);
-				failCount++;
-			}
+		if (selectedIds.size === 0) {
+			alert('Please select at least one registration to send SMS');
+			return;
 		}
 
-		alert(`SMS sending complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
-		selectedIds = new Set();
-		selectAll = false;
-	} catch (err) {
-		console.error('Error in SMS sending process:', err);
-		alert('Error sending SMS. Please try again.');
-	} finally {
-		sendingSMS = false;
+		// Get selected registrations that have roll numbers and are confirmed
+		const selectedRegs = registrations.filter((r) => selectedIds.has(r.id) && r.roll && r.confirm);
+
+		if (selectedRegs.length === 0) {
+			alert('No confirmed registrations with roll numbers found in selection');
+			return;
+		}
+
+		// Generate preview list (first 5)
+		smsPreviewList = selectedRegs.slice(0, 5).map((r) => {
+			const hash = encodeRoll(r.roll);
+			const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
+			return {
+				name: r.name,
+				mobile: r.mobile,
+				roll: r.roll,
+				message: message
+			};
+		});
+
+		showSMSPreviewModal = true;
 	}
-}
+
+	async function confirmAndSendSMS() {
+		const selectedRegs = registrations.filter((r) => selectedIds.has(r.id) && r.roll && r.confirm);
+
+		if (
+			!confirm(
+				`Are you sure you want to send SMS to ${selectedRegs.length} registration(s)?\n\nThis action cannot be undone and will use SMS credits.`
+			)
+		) {
+			return;
+		}
+
+		try {
+			sendingSMS = true;
+			showSMSPreviewModal = false;
+
+			const url = 'https://api.bdbulksms.net/api.php?json';
+			const t1 = '59702300401725';
+			const t2 = '814840c01d5e52';
+			const t3 = '79bac7dda539127ec4a9f539';
+			const SMS_API_TOKEN = `${t1}${t2}${t3}`;
+
+			let successCount = 0;
+			let failCount = 0;
+
+			for (const reg of selectedRegs) {
+				const hash = encodeRoll(reg.roll);
+				const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
+
+				const data = new FormData();
+				data.set('token', SMS_API_TOKEN);
+				data.set('message', message);
+				data.set('to', reg.mobile);
+
+				try {
+					const response = await fetch(url, {
+						method: 'POST',
+						body: data
+					});
+					const result = await response.json();
+					console.log(`SMS sent to ${reg.mobile}:`, result);
+					successCount++;
+
+					// Small delay to avoid rate limiting
+					await new Promise((resolve) => setTimeout(resolve, 200));
+				} catch (error) {
+					console.error(`Error sending SMS to ${reg.mobile}:`, error);
+					failCount++;
+				}
+			}
+
+			alert(`SMS sending complete!\nSuccess: ${successCount}\nFailed: ${failCount}`);
+			selectedIds = new Set();
+			selectAll = false;
+		} catch (err) {
+			console.error('Error in SMS sending process:', err);
+			alert('Error sending SMS. Please try again.');
+		} finally {
+			sendingSMS = false;
+		}
+	}
 </script>
 
 <svelte:head>
 	<title>Admin Dashboard - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</title>
 </svelte:head>
 
-<BreadCrumb links={[
-    { url: '/offline/list', label: 'Home' },
-    { url: `/offline/${branch}/list`, label: data.thana[branch] },
-    { url: `#`, label: 'List' }
-  ]} />
+<BreadCrumb
+	links={[
+		{ url: '/offline/list', label: 'Home' },
+		{ url: `/offline/${branch}/list`, label: data.thana[branch] },
+		{ url: `#`, label: 'List' }
+	]}
+/>
 
 {#if loading}
 	<div class="flex justify-center items-center h-screen">
@@ -449,22 +447,28 @@ async function confirmAndSendSMS() {
 				</button>
 
 				<button
-	on:click={handleSendSMS}
-	disabled={selectedIds.size === 0 || sendingSMS}
-	class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
-	title="Send Admit Card SMS"
->
-	<svg
-		xmlns="http://www.w3.org/2000/svg"
-		viewBox="0 0 20 20"
-		fill="currentColor"
-		class="w-5 h-5 mr-0 sm:mr-2"
-	>
-		<path d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z" />
-		<path d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z" />
-	</svg>
-	<span class="hidden sm:inline">{sendingSMS ? 'Sending...' : `Send SMS (${selectedIds.size})`}</span>
-</button>
+					on:click={handleSendSMS}
+					disabled={selectedIds.size === 0 || sendingSMS}
+					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 bg-green-600 text-white hover:bg-green-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+					title="Send Admit Card SMS"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 20 20"
+						fill="currentColor"
+						class="w-5 h-5 mr-0 sm:mr-2"
+					>
+						<path
+							d="M3 4a2 2 0 00-2 2v1.161l8.441 4.221a1.25 1.25 0 001.118 0L19 7.162V6a2 2 0 00-2-2H3z"
+						/>
+						<path
+							d="M19 8.839l-7.77 3.885a2.75 2.75 0 01-2.46 0L1 8.839V14a2 2 0 002 2h14a2 2 0 002-2V8.839z"
+						/>
+					</svg>
+					<span class="hidden sm:inline"
+						>{sendingSMS ? 'Sending...' : `Send SMS (${selectedIds.size})`}</span
+					>
+				</button>
 
 				<button
 					on:click={() => (showRangeModal = true)}
@@ -657,26 +661,67 @@ async function confirmAndSendSMS() {
 
 								<td class="block lg:table-cell px-6 py-4" data-label="Actions">
 									<div class="flex justify-end items-center gap-4 h-8 w-8 px-8">
-										<a href="/admit/{encodeRoll(registration.roll)}" target="_blank" class="text-gray-600 hover:text-gray-800 h-8 w-8" title="View Admit Card">
-											<svg width="16px" height="16px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" fill="none">
-	  <path stroke="#535358" stroke-linejoin="round" stroke-width="2" d="M6 5a2 2 0 012-2h16a2 2 0 012 2v22a2 2 0 01-2 2H8a2 2 0 01-2-2V5z"/>
-	  <path stroke="#535358" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 9h4M10 16h12M10 20h12M10 24h4"/>
-	  <circle cx="22" cy="9" r="1" fill="#535358"/>
-	</svg>
+										<a
+											href="/admit/{encodeRoll(registration.roll)}"
+											target="_blank"
+											class="text-gray-600 hover:text-gray-800 h-8 w-8"
+											title="View Admit Card"
+										>
+											<svg
+												width="16px"
+												height="16px"
+												viewBox="0 0 32 32"
+												xmlns="http://www.w3.org/2000/svg"
+												fill="none"
+											>
+												<path
+													stroke="#535358"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M6 5a2 2 0 012-2h16a2 2 0 012 2v22a2 2 0 01-2 2H8a2 2 0 01-2-2V5z"
+												/>
+												<path
+													stroke="#535358"
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M10 9h4M10 16h12M10 20h12M10 24h4"
+												/>
+												<circle cx="22" cy="9" r="1" fill="#535358" />
+											</svg>
 										</a>
 										<button
 											on:click={() => handleEdit(registration.id)}
 											class="text-blue-600 hover:text-blue-800 h-8 w-8"
 											title="Edit"
 										>
-											<svg fill="#008080" width="16px" height="16px" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M21,12a1,1,0,0,0-1,1v6a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V5A1,1,0,0,1,5,4h6a1,1,0,0,0,0-2H5A3,3,0,0,0,2,5V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V13A1,1,0,0,0,21,12ZM6,12.76V17a1,1,0,0,0,1,1h4.24a1,1,0,0,0,.71-.29l6.92-6.93h0L21.71,8a1,1,0,0,0,0-1.42L17.47,2.29a1,1,0,0,0-1.42,0L13.23,5.12h0L6.29,12.05A1,1,0,0,0,6,12.76ZM16.76,4.41l2.83,2.83L18.17,8.66,15.34,5.83ZM8,13.17l5.93-5.93,2.83,2.83L10.83,16H8Z"/></svg>
+											<svg
+												fill="#008080"
+												width="16px"
+												height="16px"
+												viewBox="0 0 24 24"
+												xmlns="http://www.w3.org/2000/svg"
+												><path
+													d="M21,12a1,1,0,0,0-1,1v6a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V5A1,1,0,0,1,5,4h6a1,1,0,0,0,0-2H5A3,3,0,0,0,2,5V19a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V13A1,1,0,0,0,21,12ZM6,12.76V17a1,1,0,0,0,1,1h4.24a1,1,0,0,0,.71-.29l6.92-6.93h0L21.71,8a1,1,0,0,0,0-1.42L17.47,2.29a1,1,0,0,0-1.42,0L13.23,5.12h0L6.29,12.05A1,1,0,0,0,6,12.76ZM16.76,4.41l2.83,2.83L18.17,8.66,15.34,5.83ZM8,13.17l5.93-5.93,2.83,2.83L10.83,16H8Z"
+												/></svg
+											>
 										</button>
 										<button
 											on:click={() => handleDelete(registration.id)}
 											class="text-red-600 hover:text-red-800 h-8 w-8"
 											title="Delete"
 										>
-											<svg width="16px" height="16px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z" fill="#FF0000"/></svg>
+											<svg
+												width="16px"
+												height="16px"
+												viewBox="0 0 24 24"
+												fill="none"
+												xmlns="http://www.w3.org/2000/svg"
+												><path
+													d="M7 4a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2h4a1 1 0 1 1 0 2h-1.069l-.867 12.142A2 2 0 0 1 17.069 22H6.93a2 2 0 0 1-1.995-1.858L4.07 8H3a1 1 0 0 1 0-2h4V4zm2 2h6V4H9v2zM6.074 8l.857 12H17.07l.857-12H6.074zM10 10a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 1 1-2 0v-6a1 1 0 0 1 1-1z"
+													fill="#FF0000"
+												/></svg
+											>
 										</button>
 									</div>
 								</td>
@@ -866,4 +911,3 @@ async function confirmAndSendSMS() {
 		}
 	}
 </style>
-
