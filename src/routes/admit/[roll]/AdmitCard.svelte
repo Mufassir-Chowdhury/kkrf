@@ -5,6 +5,7 @@
   import { collection, getDocs, query, where } from 'firebase/firestore';
   import { db } from '$lib/firebase';
   import { page } from '$app/stores';
+  import html2pdf from 'html2pdf.js';
 
   let admitCardInfo = null;
   let loading = true;
@@ -59,6 +60,19 @@
     }
   });
 
+  function downloadPDF() {
+  const element = document.querySelector('.a4-page');
+  const opt = {
+    margin: 0,
+    filename: `${admitCardInfo?.roll || 'admit-card'}.pdf`,
+    image: { type: 'jpeg', quality: 0.98 },
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+  };
+  html2pdf().set(opt).from(element).save();
+}
+
   // Expose encode function for testing (remove in production or use in a separate admin tool)
   // Example usage in browser console: window.encodeRoll('190001')
   if (typeof window !== 'undefined') {
@@ -67,9 +81,17 @@
   }
 </script>
 
-<div class="print:hidden w-full flex justify-center my-8">
-  <button class="bg-black text-white py-3 px-8 rounded-lg hover:bg-gray-800 transition-transform transform hover:scale-105 text-lg font-semibold shadow-lg" on:click={() => window.print()}>
+<div class="print:hidden w-full flex justify-center gap-4 my-8">
+  <button
+    class="bg-black text-white py-3 px-8 rounded-lg hover:bg-gray-800 transition-transform transform hover:scale-105 text-lg font-semibold shadow-lg"
+    on:click={() => window.print()}>
     প্রিন্ট করুন
+  </button>
+
+  <button
+    class="bg-blue-600 text-white py-3 px-8 rounded-lg hover:bg-blue-500 transition-transform transform hover:scale-105 text-lg font-semibold shadow-lg"
+    on:click={downloadPDF}>
+    PDF ডাউনলোড করুন
   </button>
 </div>
 <p class="text-center text-gray-500 print:hidden mb-8">*প্রিন্ট করার সময় ব্যাকগ্রাউন্ড গ্রাফিক্স অপশনটি চালু রাখুন।</p>
@@ -91,11 +113,11 @@
         <div class="bg-blue-400 text-white p-2 text-center mb-3 w-full flex justify-between">
           <div class="flex-1">
             <p>বৃত্তি রোল</p>
-            <div class="border mx-16 font-bold bg-slate-400">{admitCardInfo.roll}</div>
+            <div class="border mx-16 font-bold bg-slate-400 mt-2 pb-2">{admitCardInfo.roll}</div>
           </div>
           <div class="flex-1">
             <h1 class="text-xl font-bold">কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫</h1>
-            <p class="text-sm border-2 rounded-full">প্রবেশপত্র</p>
+            <p class="text-sm border-2 rounded-full mt-2 pb-2">প্রবেশপত্র</p>
           </div>
           <div class="flex-1"></div>
         </div>
@@ -176,14 +198,14 @@
         </div>
 
         <div class="text-sm border-2 border-blue-400 mt-2">
-          <div class="text-lg font-semibold text-blue-400 flex justify-between px-2 py-1">
+          <div class="text-lg font-semibold text-blue-400 flex justify-between px-2 py-1 pb-2">
             <div>পরীক্ষার কেন্দ্রঃ</div>
             <div>
               {center[admitCardInfo.roll[0]]}
             </div>
             <div></div>
           </div>
-          <div class="w-full bg-blue-400 text-center text-white py-1">পরীক্ষার সময়সূচী</div>
+          <div class="w-full bg-blue-400 text-center text-white py-1 pb-2">পরীক্ষার সময়সূচী</div>
           <div class="grid grid-cols-3 text-xs divide-x-2 divide-blue-400 text-center">
             <div class="py-2">
               ১ নভেম্বর, ২০২৫ <br /> শনিবার
