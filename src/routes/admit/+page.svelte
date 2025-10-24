@@ -2,7 +2,6 @@
     import { goto } from '$app/navigation';
   
     let roll = '';
-    let mobile = '';
     let error = '';
     let loading = false;
   
@@ -10,9 +9,9 @@
         loading = true;
         error = '';
         try {
-            goto(`/admit/${roll}?challenge=${mobile}`);
+            goto(`/admit/${roll}`);
         } catch (err) {
-            error = "Invalid credentials. Please try again.";
+            error = "Invalid code. Please try again.";
         } finally {
             loading = false;
         }
@@ -30,27 +29,16 @@
             
             <form on:submit|preventDefault={handleLogin} class="space-y-6">
                 <div>
-                    <label for="roll" class="block text-lg font-medium text-gray-700 mb-2">Roll Number</label>
+                    <label for="roll" class="block text-lg font-medium text-gray-700 mb-2">Code</label>
                     <input 
-                        type="number" 
+                        type="text" 
                         id="roll" 
                         bind:value={roll} 
                         required 
                         class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:ring-primary-500 focus:border-primary-500 transition"
-                        placeholder="Enter your roll number"
+                        placeholder="Enter the 6 character code"
                     />
-                </div>
-                <div>
-                    <label for="mobile" class="block text-lg font-medium text-gray-700 mb-2">Mobile Number</label>
-                    <input 
-                        type="tel" 
-                        id="mobile" 
-                        bind:value={mobile} 
-                        required 
-                        class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:ring-primary-500 focus:border-primary-500 transition"
-                        placeholder="Enter the 11-digit mobile number"
-                    />
-                    <p class="text-sm text-gray-500 mt-1">যে নাম্বারে ম্যাসেজ পেয়েছেন সেই ফোন নাম্বারটি দিন।</p>
+                    <span>ম্যাসেজে প্রাপ্ত লিংকের শেষ ৬ টি ক্যারেক্টার প্রদান করুন। যেমনঃ AABSoU</span>
                 </div>
                 
                 {#if error}
