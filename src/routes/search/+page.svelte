@@ -152,13 +152,10 @@
 					<table class="w-full text-sm text-left text-gray-500">
 						<thead class="text-xs text-gray-700 uppercase bg-gray-50">
 							<tr class="hidden lg:table-row">
-								<th scope="col" class="px-6 py-3">Branch</th>
 								<th scope="col" class="px-6 py-3">Serial/Roll</th>
 								<th scope="col" class="px-6 py-3">Name</th>
 								<th scope="col" class="px-6 py-3">Institution</th>
-								<th scope="col" class="px-6 py-3">Class</th>
 								<th scope="col" class="px-6 py-3">Mobile</th>
-								<th scope="col" class="px-6 py-3">Status</th>
 								<th scope="col" class="px-6 py-3 text-right">Admit Card</th>
 							</tr>
 						</thead>
@@ -169,9 +166,6 @@
 										? 'bg-teal-50'
 										: 'bg-white'}"
 								>
-									<td class="block lg:table-cell px-6 py-4 font-medium" data-label="Branch">
-										{registration.branch}
-									</td>
 
 									<td class="block lg:table-cell px-6 py-4" data-label="Serial/Roll">
 										<div>Serial: {registration.serial}</div>
@@ -191,25 +185,11 @@
 										{registration.institution}
 									</td>
 
-									<td class="block lg:table-cell px-6 py-4" data-label="Class">
-										{registration.class}
-									</td>
 
 									<td class="block lg:table-cell px-6 py-4" data-label="Mobile">
 										{registration.mobile}
 									</td>
 
-									<td class="block lg:table-cell px-6 py-4" data-label="Status">
-										{#if registration.confirm}
-											<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-												Confirmed
-											</span>
-										{:else}
-											<span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-												Pending
-											</span>
-										{/if}
-									</td>
 
 									<td class="block lg:table-cell px-6 py-4" data-label="Admit Card">
 										<div class="flex justify-end">

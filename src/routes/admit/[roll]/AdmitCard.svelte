@@ -5,7 +5,7 @@
   import { collection, getDocs, query, where } from 'firebase/firestore';
   import { db } from '$lib/firebase';
   import { page } from '$app/stores';
-  import html2pdf from 'html2pdf.js';
+  // import html2pdf from 'html2pdf.js';
 
   let admitCardInfo = null;
   let loading = true;
@@ -60,17 +60,30 @@
     }
   });
 
-  function downloadPDF() {
-  const element = document.querySelector('.a4-page');
-  const opt = {
-    margin: 0,
-    filename: `${admitCardInfo?.roll || 'admit-card'}.pdf`,
-    image: { type: 'jpeg', quality: 0.98 },
-    html2canvas: { scale: 2 },
-    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-  };
-  html2pdf().set(opt).from(element).save();
+  async function downloadPDF() {
+  try {
+    const { jsPDF } = window.jspdf;
+    const element = document.querySelector('.a4-page');
+    
+    // Use html2canvas to capture the element
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      backgroundColor: '#ffffff'
+    });
+    
+    const imgData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pdfWidth = pdf.internal.pageSize.getWidth();
+    const pdfHeight = pdf.internal.pageSize.getHeight();
+    
+    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+    pdf.save(`${admitCardInfo?.roll || 'admit-card'}.pdf`);
+  } catch (error) {
+    console.error('PDF generation failed:', error);
+    alert('PDF ডাউনলোড করতে সমস্যা হয়েছে। অনুগ্রহ করে প্রিন্ট বাটন ব্যবহার করুন।');
+  }
 }
 
   // Expose encode function for testing (remove in production or use in a separate admin tool)
