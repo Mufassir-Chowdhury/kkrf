@@ -40,6 +40,16 @@
 		searchResults = [];
 		hasSearched = false;
 	}
+
+    const class_ban = {
+        "1": "১০ম",
+        "4": "৪র্থ",
+        "5": "৫ম",
+        "6": "৬ষ্ঠ",
+        "7": "৭ম",
+        "8": "৮ম", 
+        "9": "৯ম"
+    }
 </script>
 
 <svelte:head>
@@ -155,6 +165,7 @@
 								<th scope="col" class="px-6 py-3">Serial/Roll</th>
 								<th scope="col" class="px-6 py-3">Name</th>
 								<th scope="col" class="px-6 py-3">Institution</th>
+								<th scope="col" class="px-6 py-3">Class</th>
 								<th scope="col" class="px-6 py-3">Mobile</th>
 								<th scope="col" class="px-6 py-3 text-right">Admit Card</th>
 							</tr>
@@ -185,11 +196,15 @@
 										{registration.institution}
 									</td>
 
+									<td class="block lg:table-cell px-6 py-4" data-label="Class">
+										{#if registration.roll}
+											{class_ban[registration.roll[1]]}
+										{/if}
+									</td>
 
 									<td class="block lg:table-cell px-6 py-4" data-label="Mobile">
 										{registration.mobile}
 									</td>
-
 
 									<td class="block lg:table-cell px-6 py-4" data-label="Admit Card">
 										<div class="flex justify-end">
