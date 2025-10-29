@@ -121,8 +121,8 @@
 	<h2 class="text-xl font-semibold text-center text-teal-600">
 		আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
 	</h2>
-
-	<div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
+	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন বন্ধ আছে</h3>
+	<!-- <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
 		<h3 class="text-2xl font-bold mb-4 text-center">রেজিস্ট্রেশন ফি জমা দিন</h3>
 		<div class="grid md:grid-cols-2 gap-4">
 			<div in:fly={{ y: 50, duration: 500 }} class="bg-white bg-opacity-20 p-4 rounded-lg">
@@ -305,7 +305,7 @@
 		<div class="mt-4 p-2 bg-red-100 text-red-700 rounded">
 			{submitError}
 		</div>
-	{/if}
+	{/if} -->
 
 	<div class="mt-8 space-y-4">
 		<div class="bg-amber-50 p-6 rounded-lg shadow-md">

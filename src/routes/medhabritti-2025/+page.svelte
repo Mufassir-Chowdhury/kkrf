@@ -101,7 +101,7 @@
       </a>
   </section>
 
-  <section class="bg-gradient-to-r from-teal-500 to-green-500 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
+  <!-- <section class="bg-gradient-to-r from-teal-500 to-green-500 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
     <h2 class="text-3xl font-bold mb-4">এখনই রেজিস্ট্রেশন করুন!</h2>
     <a href="/britti_registration" class="bg-white text-primary-600 py-3 px-8 rounded-full hover:bg-primary-50 transition-colors inline-block text-lg font-semibold shadow-md">
       অনলাইন রেজিস্ট্রেশন
@@ -109,7 +109,7 @@
     <p class="mt-4 text-primary-100">
       অথবা আপনার স্কুল প্রতিনিধির সাথে যোগাযোগ করুন।
     </p>
-  </section>
+  </section> -->
 
   <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
     <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">অফলাইনে ফর্ম প্রাপ্তি ও জমা দেওয়ার ঠিকানা</h2>
