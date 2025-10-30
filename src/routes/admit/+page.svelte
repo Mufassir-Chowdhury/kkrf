@@ -38,7 +38,9 @@
                         class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:ring-primary-500 focus:border-primary-500 transition"
                         placeholder="Enter the 6 character code"
                     />
-                    <span>ম্যাসেজে প্রাপ্ত লিংকের শেষ ৬ টি ক্যারেক্টার প্রদান করুন। যেমনঃ AABSoU</span>
+                    <span>এডমিট কার্ড সংক্রান্ত ম্যাসেজে প্রাপ্ত লিংকের শেষ ৬ টি ক্যারেক্টার প্রদান করুন। যেমনঃ AABSoU</span>
+                    <p>*এডমিট কার্ড পেয়ে থাকলে নতুন করে ডাউনলোড করতে হবে না।</p>
+                    <p>*এডমিট কার্ডের ম্যাসেজ না পেয়ে থাকলে আমাদের সাথে যোগাযোগ করুন।</p>
                 </div>
                 
                 {#if error}

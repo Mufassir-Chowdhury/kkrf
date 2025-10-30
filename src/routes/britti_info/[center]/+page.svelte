@@ -3,7 +3,7 @@
     let center = $page.params.center;
 
     let center_name = {
-        "alia": "সিলেট সরকারি আলিয়া মাদরাসা, চৌহাট্টা",
+        "mirabazar": "শাহজালাল জামেয়া ইসলামিয়া স্কুল এন্ড কলেজ, মিরাবাজার",
         "ptj": "শাহজালাল জামেয়া ইসলামিয়া কামিল মাদরাসা, পাঠানটুলা",
         "alamin": "আল-আমিন জামেয়া ইসলামিয়া উচ্চ বিদ্যালয়, মেজরটিলা"
     }
@@ -15,13 +15,13 @@
 
 <div class="space-y-12">
     <section class="text-center pt-8">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৪</h1>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
         <h2 class="text-2xl md:text-3xl font-bold text-secondary-700">সেন্টার - {center_name[center]}</h2>
     </section>
 
     <section class="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
         <h2 class="text-3xl font-bold mb-4">পরীক্ষার তারিখ</h2>
-        <p class="text-4xl font-extrabold tracking-tight">২ নভেম্বর, ২০২৪</p>
+        <p class="text-4xl font-extrabold tracking-tight">১ নভেম্বর, ২০২৫</p>
         <p class="text-xl text-primary-100">(শনিবার)</p>
     </section>
       
@@ -30,16 +30,20 @@
         <div class="overflow-hidden rounded-lg shadow-md">
             <img src="/{center}.jpg" alt="{center} Seat Plan" class="w-full h-auto object-contain">
         </div>
-    </section>
-      
-    <section class="text-center">
-        <h2 class="text-2xl font-bold text-primary-700 mb-4">যোগাযোগ</h2>
-        <div class="text-lg text-gray-600">
-          <p>অফিস: ইউনিভার্সাল কলেজ, ১১২ ইবকো হাউজ, পূর্ব চৌহাট্টা, সিলেট।</p>
-          <p>ফোন: ০১৭৫২-৮৩১১৮৪, ০১৭০১-৪৫৯৮৮১, ০১৭৭১-১৪৪৩০৮</p>
-          <p>অফিস টাইম: বিকাল ৫:০০ থেকে রাত ৮:০০ পর্যন্ত</p>
+        <div class="overflow-hidden rounded-lg shadow-md">
+            <img src="/{center}-2.jpg" alt="{center} Seat Plan" class="w-full h-auto object-contain">
         </div>
     </section>
+      
+    <div class="bg-amber-50 p-6 rounded-lg shadow-md">
+			<h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
+			<ul class="space-y-2 text-gray-700">
+				<li>০১৩০০২০৮১৮৮ (তৌহিদুল ইসলাম)</li>
+				<li>০১৭৮২৮৪৭৪৩৯ (রেজাউল করিম)</li>
+				<li>০১৭৭৯০৯৮৬৪৫ (ফাহাদ হুসাইন)</li>
+				<li>০১৩০৬৩২১০৫২ (আবুল হাসান রিয়াদ)</li>
+			</ul>
+		</div>
   
     <div class="text-sm text-gray-500 text-center py-8 border-t">
       আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর<br>
