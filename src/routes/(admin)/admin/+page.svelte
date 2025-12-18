@@ -47,15 +47,6 @@
 			</div>
 		</a>
 
-		<a href="/admin/print" class="block">
-			<div
-				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-purple-500"
-			>
-				<h3 class="text-xl font-semibold text-gray-800 mb-2">Print</h3>
-				<p class="text-gray-600">Print admit cards and other documents</p>
-			</div>
-		</a>
-
 		<a href="/admin/search" class="block">
 			<div
 				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-yellow-500"
