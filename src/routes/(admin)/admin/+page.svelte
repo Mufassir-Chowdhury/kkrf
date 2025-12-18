@@ -55,5 +55,14 @@
 				<p class="text-gray-600">Search for students</p>
 			</div>
 		</a>
+
+		<a href="/admin/result" class="block">
+			<div
+				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-yellow-500"
+			>
+				<h3 class="text-xl font-semibold text-gray-800 mb-2">Results</h3>
+				<p class="text-gray-600">Manage results</p>
+			</div>
+		</a>
 	</div>
 </div>
