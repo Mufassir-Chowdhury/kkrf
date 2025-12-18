@@ -41,15 +41,15 @@
 		hasSearched = false;
 	}
 
-    const class_ban = {
-        "1": "১০ম",
-        "4": "৪র্থ",
-        "5": "৫ম",
-        "6": "৬ষ্ঠ",
-        "7": "৭ম",
-        "8": "৮ম", 
-        "9": "৯ম"
-    }
+	const class_ban = {
+		'1': '১০ম',
+		'4': '৪র্থ',
+		'5': '৫ম',
+		'6': '৬ষ্ঠ',
+		'7': '৭ম',
+		'8': '৮ম',
+		'9': '৯ম'
+	};
 </script>
 
 <svelte:head>
@@ -58,7 +58,7 @@
 
 <BreadCrumb
 	links={[
-		{ url: '/offline/list', label: 'Home' },
+		{ url: '/admin', label: 'Home' },
 		{ url: '#', label: 'Search All' }
 	]}
 />
@@ -177,7 +177,6 @@
 										? 'bg-teal-50'
 										: 'bg-white'}"
 								>
-
 									<td class="block lg:table-cell px-6 py-4" data-label="Serial/Roll">
 										<div>Serial: {registration.serial}</div>
 										{#if registration.roll}
