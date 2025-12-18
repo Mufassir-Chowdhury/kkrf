@@ -10,9 +10,10 @@
 <div class="print:hidden">
 	<BreadCrumb
 		links={[
-			{ url: '/admin/list', label: 'Home' },
+			{ url: '/admin', label: 'Home' },
+			{ url: `/admin/list`, label: 'Registrations' },
 			{ url: `/admin/list/${branch}`, label: data.thana[branch] },
-			{ url: `#`, label: 'List' }
+			{ url: `#`, label: 'Admit' }
 		]}
 	/>
 </div>
