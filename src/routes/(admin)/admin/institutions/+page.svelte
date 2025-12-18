@@ -319,10 +319,12 @@
 	<title>Institution Name Management - Merge & Standardize</title>
 </svelte:head>
 
-<BreadCrumb links={[
-    { url: '/offline/list', label: 'Home' },
-    { url: `#`, label: 'Institution List' }
-  ]} />
+<BreadCrumb
+	links={[
+		{ url: '/admin', label: 'Home' },
+		{ url: `#`, label: 'Institution List' }
+	]}
+/>
 
 {#if loading}
 	<div class="flex justify-center items-center h-screen">

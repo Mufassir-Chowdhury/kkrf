@@ -11,6 +11,24 @@
 	<h2 class="text-2xl font-bold text-center text-teal-700">Admin Dashboard</h2>
 
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+		<a href="/admin/list" class="block">
+			<div
+				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-blue-500"
+			>
+				<h3 class="text-xl font-semibold text-gray-800 mb-2">All Registrations</h3>
+				<p class="text-gray-600">Manage all scholarship applications</p>
+			</div>
+		</a>
+
+		<a href="/admin/institutions" class="block">
+			<div
+				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-blue-500"
+			>
+				<h3 class="text-xl font-semibold text-gray-800 mb-2">Institutions</h3>
+				<p class="text-gray-600">Manage all institutions</p>
+			</div>
+		</a>
+
 		<a href="/admin/online" class="block">
 			<div
 				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-blue-500"

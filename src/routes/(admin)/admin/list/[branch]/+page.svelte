@@ -280,7 +280,7 @@
 	}
 
 	function handleEdit(id) {
-		goto(`/offline/edit/${id}`);
+		goto(`/admin/list/edit/${id}`);
 	}
 
 	async function handleSendSMS() {
@@ -380,8 +380,8 @@
 
 <BreadCrumb
 	links={[
-		{ url: '/offline/list', label: 'Home' },
-		{ url: `/offline/${branch}/list`, label: data.thana[branch] },
+		{ url: '/admin/list', label: 'Home' },
+		{ url: `/admin/list/${branch}`, label: data.thana[branch] },
 		{ url: `#`, label: 'List' }
 	]}
 />
@@ -509,7 +509,7 @@
 				</button>
 
 				<a
-					href="/offline/{branch}/admit"
+					href="/admin/list/{branch}/admit"
 					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-gray-900 transition-colors"
 					title="Admit Card"
 				>
