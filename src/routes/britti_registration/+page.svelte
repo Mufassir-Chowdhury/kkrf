@@ -49,7 +49,7 @@
 		guardianMobile: '',
 		transactionID: '',
 		creationTime: '',
-		confirmed: false  // Add the confirmed field, default to false
+		confirmed: false // Add the confirmed field, default to false
 	};
 	let formErrors = {};
 	let submitting = false;
@@ -63,7 +63,7 @@
 
 		try {
 			formData.creationTime = new Date().toISOString();
-			formData.confirmed = false;  // Ensure confirmed is set to false
+			formData.confirmed = false; // Ensure confirmed is set to false
 			const docRef = await addDoc(collection(db, 'scholarshipApplications-2025'), formData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
@@ -111,7 +111,6 @@
 	];
 </script>
 
-
 <svelte:head>
 	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫ - নিবন্ধন ফরম</title>
 </svelte:head>
@@ -121,8 +120,8 @@
 	<h2 class="text-xl font-semibold text-center text-teal-600">
 		আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
 	</h2>
-	<!-- <h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন বন্ধ আছে</h3> -->
-	<div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
+	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন বন্ধ আছে</h3>
+	<!-- <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
 		<h3 class="text-2xl font-bold mb-4 text-center">রেজিস্ট্রেশন ফি জমা দিন</h3>
 		<div class="grid md:grid-cols-2 gap-4">
 			<div in:fly={{ y: 50, duration: 500 }} class="bg-white bg-opacity-20 p-4 rounded-lg">
@@ -293,8 +292,8 @@
         {submitting ? 'Submitting...' : 'নিবন্ধন সম্পন্ন করুন'}
       </button>
     </div>
-  </form>
-  
+  </form> -->
+
 	{#if submitSuccess}
 		<div class="mt-4 p-2 bg-green-100 text-green-700 rounded">
 			Your application has been successfully submitted!
