@@ -8,13 +8,16 @@
 	let allRegistrations = [];
 	let filteredRegistrations = [];
 	let loading = true;
+	// Selection & Grading State
 	let activeTab = '৪র্থ';
 	let showUploadModal = false;
+	let filterMode = 'class'; // 'class' or 'school'
+	let selectedSchool = '';
+	let schoolCounts = [];
 
 	let sortField = 'total';
 	let sortDirection = 'desc';
 
-	// Selection & Grading State
 	let selectedIds = new Set();
 	let selectAll = false;
 	let isAssigning = false;
@@ -34,7 +37,10 @@
 			const q = query(collection(db, 'offline-2025'), orderBy('serial', 'desc'));
 			const querySnapshot = await getDocs(q);
 			allRegistrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-			computeStats();
+
+			// Compute initial school counts from ALL data (for global school mode)
+			computeSchoolCounts(allRegistrations);
+
 			filterRegistrations();
 		} catch (error) {
 			console.error('Error loading registrations:', error);
@@ -61,15 +67,42 @@
 		});
 	}
 
+	function computeSchoolCounts(data) {
+		const counts = {};
+		data.forEach((r) => {
+			const school = r.institution || 'Unknown';
+			counts[school] = (counts[school] || 0) + 1;
+		});
+		schoolCounts = Object.entries(counts)
+			.map(([name, count]) => ({ name, count }))
+			.sort((a, b) => b.count - a.count);
+	}
+
 	function filterRegistrations() {
-		let filtered = allRegistrations.filter((reg) => reg.class === activeTab);
+		let filtered = [];
+
+		if (filterMode === 'class') {
+			// Filter by Class
+			filtered = allRegistrations.filter((reg) => reg.class === activeTab);
+		} else {
+			// Filter by School
+			if (selectedSchool) {
+				filtered = allRegistrations.filter(
+					(reg) => (reg.institution || 'Unknown') === selectedSchool
+				);
+			} else {
+				// Show all if no school selected
+				filtered = allRegistrations;
+			}
+		}
+
 		filteredRegistrations = sortData(filtered);
 
 		// Reset selection when filtering/tab changing
 		selectedIds = new Set();
 		selectAll = false;
 
-		computeStats(); // Update class stats for the new active tab
+		computeStats(filtered); // Pass filtered list to compute stats for the current view
 	}
 
 	function handleTabChange(tab) {
@@ -77,8 +110,14 @@
 		filterRegistrations();
 	}
 
-	function computeStats() {
-		// Global Stats
+	function setFilterMode(mode) {
+		filterMode = mode;
+		selectedSchool = ''; // Reset school selection when switching modes
+		filterRegistrations();
+	}
+
+	function computeStats(currentViewList) {
+		// Global Stats (remains based on ALL data)
 		globalStats = { talentpool: 0, general: 0, special: 0, total: 0 };
 		allRegistrations.forEach((reg) => {
 			if (reg.grade) {
@@ -87,10 +126,12 @@
 			}
 		});
 
-		// Current Class Stats (activeTab)
+		// Current View Stats (based on filtered list - Class + School)
+		// Default to current filteredRegistrations if argument not provided (handled in loadData)
+		const targetList = currentViewList || filteredRegistrations;
+
 		classStats = { talentpool: 0, general: 0, special: 0, total: 0 };
-		const currentClassRegs = allRegistrations.filter((r) => r.class === activeTab);
-		currentClassRegs.forEach((reg) => {
+		targetList.forEach((reg) => {
 			if (reg.grade) {
 				classStats[reg.grade] = (classStats[reg.grade] || 0) + 1;
 				classStats.total++;
@@ -183,7 +224,24 @@
 	<div
 		class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-sm"
 	>
-		<h2 class="text-2xl font-bold text-teal-700">Results</h2>
+		<div class="flex items-center gap-4">
+			<h2 class="text-2xl font-bold text-teal-700">Results</h2>
+			<!-- Filter Mode Switcher -->
+			<div class="flex bg-gray-100 rounded-lg p-1">
+				<button
+					on:click={() => setFilterMode('class')}
+					class="px-3 py-1 text-sm font-medium rounded {filterMode === 'class'
+						? 'bg-white shadow text-teal-700'
+						: 'text-gray-500 hover:text-gray-700'}">By Class</button
+				>
+				<button
+					on:click={() => setFilterMode('school')}
+					class="px-3 py-1 text-sm font-medium rounded {filterMode === 'school'
+						? 'bg-white shadow text-teal-700'
+						: 'text-gray-500 hover:text-gray-700'}">By Institution</button
+				>
+			</div>
+		</div>
 		<button
 			on:click={() => (showUploadModal = true)}
 			class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium"
@@ -213,42 +271,55 @@
 	</div>
 
 	<div class="space-y-4">
-		<!-- Tabs -->
+		<!-- Dynamic Filter Controls -->
 		<div class="bg-white rounded-lg p-2 shadow-sm">
-			<nav class="flex space-x-2 overflow-x-auto" aria-label="Tabs">
-				{#each tabs as tab}
-					<button
-						on:click={() => handleTabChange(tab)}
-						class="{activeTab === tab
-							? 'bg-teal-100 text-teal-700'
-							: 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'} whitespace-nowrap px-4 py-2 rounded-md font-medium text-sm transition-colors flex-1 text-center"
+			{#if filterMode === 'class'}
+				<!-- Class Tabs -->
+				<nav class="flex space-x-2 overflow-x-auto" aria-label="Tabs">
+					{#each tabs as tab}
+						<button
+							on:click={() => handleTabChange(tab)}
+							class="{activeTab === tab
+								? 'bg-teal-100 text-teal-700'
+								: 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'} whitespace-nowrap px-4 py-2 rounded-md font-medium text-sm transition-colors flex-1 text-center"
+						>
+							{tab}
+						</button>
+					{/each}
+				</nav>
+			{:else}
+				<!-- Global School Dropdown -->
+				<div class="p-2">
+					<label class="block text-sm font-medium text-gray-700 mb-1">Select Institution</label>
+					<select
+						bind:value={selectedSchool}
+						on:change={() => filterRegistrations()}
+						class="w-full lg:w-1/2 p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
 					>
-						{tab}
-					</button>
-				{/each}
-			</nav>
+						<option value="">All Institutions ({allRegistrations.length})</option>
+						{#each schoolCounts as school}
+							<option value={school.name}>{school.name} ({school.count})</option>
+						{/each}
+					</select>
+				</div>
+			{/if}
 		</div>
 
-		<!-- Class Level Stats & Controls -->
+		<!-- View Level Stats & Controls -->
 		<div
 			class="bg-white p-4 rounded-lg shadow-sm flex flex-col lg:flex-row justify-between items-center gap-4"
 		>
 			<div
 				class="flex flex-wrap gap-x-4 gap-y-2 text-sm items-center justify-center lg:justify-start"
 			>
-				<span class="font-bold text-gray-700 border-r pr-4 mr-0">Class {activeTab}:</span>
-				<span class="text-teal-600 whitespace-nowrap"
-					>Total: <strong>{classStats.total}</strong></span
-				>
-				<span class="text-green-600 whitespace-nowrap"
-					>TP: <strong>{classStats.talentpool}</strong></span
-				>
-				<span class="text-blue-600 whitespace-nowrap"
-					>Gen: <strong>{classStats.general}</strong></span
-				>
-				<span class="text-purple-600 whitespace-nowrap"
-					>Spl: <strong>{classStats.special}</strong></span
-				>
+				<span class="font-bold text-gray-700 border-r pr-4 mr-0">
+					{#if filterMode === 'class'}
+						Class {activeTab}
+					{:else}
+						{selectedSchool || 'All Institutions'}
+					{/if}
+					Stats:
+				</span>
 			</div>
 
 			<div class="flex flex-wrap gap-2 justify-center lg:justify-end w-full lg:w-auto">
@@ -348,7 +419,7 @@
 								<div class="flex flex-col">
 									<span class="text-teal-600 font-bold text-base">#{reg.roll || 'N/A'}</span>
 									<span class="font-semibold text-gray-900 text-base">{reg.name}</span>
-									<span class="text-xs text-gray-500 mt-0.5">{reg.institution}</span>
+									<span class="text-xs text-gray-500 mt-0.5">{reg.institution} | {reg.class}</span>
 								</div>
 							</td>
 							<td class="px-6 py-4 text-center">
