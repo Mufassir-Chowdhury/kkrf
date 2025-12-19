@@ -209,6 +209,44 @@
 				return 'bg-white hover:bg-gray-50';
 		}
 	}
+
+	async function copyResults() {
+		const groups = {
+			talentpool: [],
+			general: [],
+			special: []
+		};
+
+		// Use allRegistrations to include students from ALL classes/institutions
+		allRegistrations.forEach((reg) => {
+			if (reg.grade && groups[reg.grade]) {
+				groups[reg.grade].push(reg.roll);
+			}
+		});
+
+		// Sort rolls numerically
+		Object.keys(groups).forEach((key) => {
+			groups[key].sort((a, b) => Number(a) - Number(b));
+		});
+
+		let text = '';
+		if (groups.talentpool.length > 0) text += `Talentpool: ${groups.talentpool.join(', ')}\n`;
+		if (groups.general.length > 0) text += `General: ${groups.general.join(', ')}\n`;
+		if (groups.special.length > 0) text += `Special: ${groups.special.join(', ')}`;
+
+		if (!text) {
+			alert('No graded results to copy.');
+			return;
+		}
+
+		try {
+			await navigator.clipboard.writeText(text.trim());
+			alert('Results copied to clipboard!');
+		} catch (err) {
+			console.error('Failed to copy: ', err);
+			alert('Failed to copy results.');
+		}
+	}
 </script>
 
 <svelte:head>
@@ -247,6 +285,12 @@
 			class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium"
 		>
 			Upload Result
+		</button>
+		<button
+			on:click={copyResults}
+			class="w-full sm:w-auto bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shadow-sm font-medium"
+		>
+			Copy Result
 		</button>
 	</div>
 
