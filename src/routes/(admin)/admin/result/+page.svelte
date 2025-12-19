@@ -73,11 +73,13 @@
 	]}
 />
 <div class="p-6 space-y-6 bg-gray-50 min-h-screen">
-	<div class="flex justify-between items-center bg-white p-4 rounded-lg shadow-sm">
+	<div
+		class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-sm"
+	>
 		<h2 class="text-2xl font-bold text-teal-700">Results</h2>
 		<button
 			on:click={() => (showUploadModal = true)}
-			class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium"
+			class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium"
 		>
 			Upload Result
 		</button>
@@ -112,7 +114,7 @@
 			<p class="text-gray-500 text-lg">No entries found for {activeTab}</p>
 		</div>
 	{:else}
-		<div class="overflow-hidden shadow-md sm:rounded-lg bg-white">
+		<div class="overflow-x-auto shadow-md sm:rounded-lg bg-white">
 			<table class="w-full text-sm text-left text-gray-500">
 				<thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
 					<tr>
