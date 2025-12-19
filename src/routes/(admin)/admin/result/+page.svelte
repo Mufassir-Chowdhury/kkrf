@@ -320,6 +320,18 @@
 					{/if}
 					Stats:
 				</span>
+				<span class="text-teal-600 whitespace-nowrap"
+					>Total: <strong>{classStats.total}</strong></span
+				>
+				<span class="text-green-600 whitespace-nowrap"
+					>TP: <strong>{classStats.talentpool}</strong></span
+				>
+				<span class="text-blue-600 whitespace-nowrap"
+					>Gen: <strong>{classStats.general}</strong></span
+				>
+				<span class="text-purple-600 whitespace-nowrap"
+					>Spl: <strong>{classStats.special}</strong></span
+				>
 			</div>
 
 			<div class="flex flex-wrap gap-2 justify-center lg:justify-end w-full lg:w-auto">
