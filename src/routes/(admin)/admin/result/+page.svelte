@@ -11,14 +11,19 @@
 	let activeTab = '৪র্থ';
 	let showUploadModal = false;
 
+	let sortField = 'total';
+	let sortDirection = 'desc';
+
 	const tabs = ['৪র্থ', '৫ম', '৬ষ্ঠ', '৭ম', '৮ম', '৯ম', '১০ম'];
 
-	onMount(async () => {
+	onMount(() => {
+		loadData();
+	});
+
+	async function loadData() {
 		try {
-			const q = query(
-				collection(db, 'offline-2025'),
-				orderBy('serial', 'desc') // Or any other sorting
-			);
+			loading = true;
+			const q = query(collection(db, 'offline-2025'), orderBy('serial', 'desc'));
 			const querySnapshot = await getDocs(q);
 			allRegistrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 			filterRegistrations();
@@ -27,10 +32,29 @@
 		} finally {
 			loading = false;
 		}
-	});
+	}
+
+	function handleSort(field) {
+		if (sortField === field) {
+			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortField = field;
+			sortDirection = 'desc';
+		}
+		filterRegistrations();
+	}
+
+	function sortData(data) {
+		return [...data].sort((a, b) => {
+			const valA = Number(a[sortField] || 0);
+			const valB = Number(b[sortField] || 0);
+			return sortDirection === 'asc' ? valA - valB : valB - valA;
+		});
+	}
 
 	function filterRegistrations() {
-		filteredRegistrations = allRegistrations.filter((reg) => reg.class === activeTab);
+		let filtered = allRegistrations.filter((reg) => reg.class === activeTab);
+		filteredRegistrations = sortData(filtered);
 	}
 
 	function handleTabChange(tab) {
@@ -92,17 +116,32 @@
 			<table class="w-full text-sm text-left text-gray-500">
 				<thead class="text-xs text-gray-700 uppercase bg-gray-50 border-b">
 					<tr>
+						<th scope="col" class="px-6 py-4 w-16">#</th>
 						<th scope="col" class="px-6 py-4">Student Details</th>
 						<th scope="col" class="px-6 py-4 text-center">Type</th>
 						<th scope="col" class="px-6 py-4 text-center">Gender</th>
-						<th scope="col" class="px-6 py-4 text-center">First</th>
-						<th scope="col" class="px-6 py-4 text-center">Second</th>
-						<th scope="col" class="px-6 py-4 text-center">Total</th>
+						{#each ['first', 'second', 'total'] as field}
+							<th
+								scope="col"
+								class="px-6 py-4 text-center cursor-pointer hover:bg-gray-100"
+								on:click={() => handleSort(field)}
+							>
+								<div class="flex items-center justify-center gap-1">
+									{field.charAt(0).toUpperCase() + field.slice(1)}
+									{#if sortField === field}
+										<span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
+									{/if}
+								</div>
+							</th>
+						{/each}
 					</tr>
 				</thead>
 				<tbody>
-					{#each filteredRegistrations as reg}
+					{#each filteredRegistrations as reg, i}
 						<tr class="bg-white border-b hover:bg-gray-50 transition-colors">
+							<td class="px-6 py-4 font-medium text-gray-500">
+								{i + 1}
+							</td>
 							<td class="px-6 py-4">
 								<div class="flex flex-col">
 									<span class="text-teal-600 font-bold text-base">#{reg.roll || 'N/A'}</span>
@@ -112,7 +151,10 @@
 							</td>
 							<td class="px-6 py-4 text-center">
 								<span
-									class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+									class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium {reg.institutionType ===
+									'school'
+										? 'bg-pink-100 text-pink-800'
+										: 'bg-green-100 text-green-800'}"
 								>
 									{reg.institutionType ? reg.institutionType.charAt(0).toUpperCase() : '-'}
 								</span>
@@ -139,5 +181,12 @@
 		</div>
 	{/if}
 
-	<UploadResultModal show={showUploadModal} on:close={() => (showUploadModal = false)} />
+	<UploadResultModal
+		show={showUploadModal}
+		registrations={allRegistrations}
+		on:close={() => {
+			showUploadModal = false;
+			loadData();
+		}}
+	/>
 </div>
