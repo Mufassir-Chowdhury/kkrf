@@ -247,6 +247,40 @@
 			alert('Failed to copy results.');
 		}
 	}
+
+	function exportResults() {
+		// Filter students with a grade
+		const gradedStudents = allRegistrations.filter((reg) => reg.grade);
+
+		if (gradedStudents.length === 0) {
+			alert('No graded results to export.');
+			return;
+		}
+
+		// Sort by Roll numerically
+		gradedStudents.sort((a, b) => Number(a.roll) - Number(b.roll));
+
+		// Generate CSV content
+		const headers = ['ROLL', 'Category', 'Class'];
+		const rows = gradedStudents.map((reg) => {
+			const category = reg.grade.charAt(0).toUpperCase() + reg.grade.slice(1);
+			return [reg.roll, category, reg.class]; // Ensure fields match headers order
+		});
+
+		const csvContent =
+			'data:text/csv;charset=utf-8,' +
+			[headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+
+		// Create download link
+		const encodedUri = encodeURI(csvContent);
+		const link = document.createElement('a');
+		link.setAttribute('href', encodedUri);
+		link.setAttribute('download', 'results.csv');
+		document.body.appendChild(link); // Required for FF
+
+		link.click();
+		document.body.removeChild(link);
+	}
 </script>
 
 <svelte:head>
@@ -291,6 +325,12 @@
 			class="w-full sm:w-auto bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shadow-sm font-medium"
 		>
 			Copy Result
+		</button>
+		<button
+			on:click={exportResults}
+			class="w-full sm:w-auto bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors shadow-sm font-medium"
+		>
+			Export Result
 		</button>
 	</div>
 

@@ -30,7 +30,7 @@
               <a href="/" class="nav-link" class:active={$page.url.pathname === '/'}>Home</a>
               <a href="/about" class="nav-link" class:active={$page.url.pathname === '/about'}>About</a>
               <a href="/medhabritti-2025" class="nav-link" class:active={$page.url.pathname === '/medhabritti-2025'}>মেধাবৃত্তি - ২০২৫</a>
-              <a href="/results" class="nav-link" class:active={$page.url.pathname === '/results'}>ফলাফল (২০২৪)</a>
+              <a href="/results" class="nav-link" class:active={$page.url.pathname === '/results'}>ফলাফল ২০২৫</a>
               <a href="/contact" class="nav-link" class:active={$page.url.pathname === '/contact'}>Contact</a>
             </div>
           </div>
@@ -52,7 +52,7 @@
           <a href="/" class="mobile-nav-link" class:active={$page.url.pathname === '/'}>Home</a>
           <a href="/about" class="mobile-nav-link" class:active={$page.url.pathname === '/about'}>About</a>
           <a href="/medhabritti-2025" class="mobile-nav-link" class:active={$page.url.pathname === '/medhabritti-2025'}>মেধাবৃত্তি - ২০২৫</a>
-          <a href="/results" class="mobile-nav-link" class:active={$page.url.pathname === '/results'}>ফলাফল (২০২৪)</a>
+          <a href="/results" class="mobile-nav-link" class:active={$page.url.pathname === '/results'}>ফলাফল ২০২৫</a>
           <a href="/contact" class="mobile-nav-link" class:active={$page.url.pathname === '/contact'}>Contact</a>
         </div>
       </div>

@@ -48,7 +48,7 @@
 
 <div class="max-w-7xl mx-auto px-4 py-12">
   <section class="text-center mb-12">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">মেধাবৃত্তি পরীক্ষার ফলাফল - ২০২৪</h1>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">মেধাবৃত্তি পরীক্ষার ফলাফল - ২০২৫</h1>
   </section>
 
   <div class="space-y-4">
