@@ -23,9 +23,9 @@
   ];
 
   const members = [
-    { id: 1, name: "নাবিল মাহমুদ নিলয়", role: "পরিচালক", image: "niloy.png", phone: "০১৭০১৪৫৯৮৮১" },
-    { id: 2, name: "আহসান হাবীব", role: "সহকারী পরিচালক", image: "habib.png", phone: "০১৯৭৩৮৮১৪৯৮" },
-    { id: 3, name: "মুফাসসির আহমদ চৌধুরী", role: "সহকারী পরিচালক", image: "mufassir.jpg", phone: "০১৭৭১১৪৪৩০৮" },
+    // { id: 1, name: "নাবিল মাহমুদ নিলয়", role: "পরিচালক", image: "niloy.png", phone: "০১৭০১৪৫৯৮৮১" },
+    { id: 1, name: "আহসান হাবীব", role: "পরিচালক", image: "habib.png", phone: "০১৯৭৩৮৮১৪৯৮" },
+    // { id: 3, name: "মুফাসসির আহমদ চৌধুরী", role: "সহকারী পরিচালক", image: "mufassir.jpg", phone: "০১৭৭১১৪৪৩০৮" },
   ];
 
   const activities = [
