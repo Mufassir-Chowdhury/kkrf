@@ -17,7 +17,7 @@
   });
 
   const carouselItems = [
-    { id: 1, image: "britti-2024.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ১", caption: "কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৪" },
+    { id: 1, image: "britti-2025.jpeg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ১", caption: "কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫" },
     // { id: 2, image: "kk-2024.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ২", caption: "শিক্ষা সফর ২০২৩" },
     // { id: 3, image: "/placeholder-3.jpg", alt: "কিশোরকণ্ঠ পাঠক ফোরাম কার্যক্রম ৩", caption: "বৃক্ষরোপণ কর্মসূচি" },
   ];
@@ -25,6 +25,7 @@
   const members = [
     // { id: 1, name: "নাবিল মাহমুদ নিলয়", role: "পরিচালক", image: "niloy.png", phone: "০১৭০১৪৫৯৮৮১" },
     { id: 1, name: "আহসান হাবীব", role: "পরিচালক", image: "habib.png", phone: "০১৯৭৩৮৮১৪৯৮" },
+    { id: 2, name: "শহিদুল ইসলাম ফেরদৌস", role: "সহকারী পরিচালক", image: "ferdous.png", phone: ""},
     // { id: 3, name: "মুফাসসির আহমদ চৌধুরী", role: "সহকারী পরিচালক", image: "mufassir.jpg", phone: "০১৭৭১১৪৪৩০৮" },
   ];
 
