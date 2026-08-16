@@ -145,7 +145,7 @@
       <p class="text-lg text-primary-200 mb-6 max-w-2xl mx-auto">
         আমাদের বার্ষিক বৃত্তি কার্যক্রম শুরু হতে যাচ্ছে। আগ্রহী শিক্ষার্থীদের জন্য নিবন্ধন খোলা রয়েছে।
       </p>
-      <a href="/medhabritti-2025" class="btn-secondary">
+      <a href="/medhabritti" class="btn-secondary">
         বৃত্তি সম্পর্কে জানুন
       </a>
     </div>

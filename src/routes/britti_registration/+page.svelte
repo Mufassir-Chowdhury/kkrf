@@ -4,6 +4,7 @@
 	import { initializeApp } from 'firebase/app';
 	import { getFirestore, collection, addDoc } from 'firebase/firestore';
 	import { fly } from 'svelte/transition';
+	import { getActiveScholarship, getSiteInfo } from '$lib/siteData';
 
 	// Your Firebase configuration
 	const firebaseConfig = {
@@ -17,10 +18,15 @@
 
 	let app;
 	let db;
+	let loading = true;
+	let scholarship = null;
+	let siteInfo = null;
 
-	onMount(() => {
+	onMount(async () => {
 		app = initializeApp(firebaseConfig);
 		db = getFirestore(app);
+		[scholarship, siteInfo] = await Promise.all([getActiveScholarship(), getSiteInfo()]);
+		loading = false;
 	});
 
 	let formData = {
@@ -112,29 +118,36 @@
 </script>
 
 <svelte:head>
-	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫ - নিবন্ধন ফরম</title>
+	<title>কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা {scholarship?.year ?? ''} - নিবন্ধন ফরম</title>
 </svelte:head>
 
 <div class="space-y-8">
 	<span class="section-eyebrow block text-center">নিবন্ধন</span>
-	<h1 class="text-3xl font-bold text-center text-primary-900">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
+	<h1 class="text-3xl font-bold text-center text-primary-900">
+		কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা {scholarship?.year ?? ''}
+	</h1>
 	<h2 class="text-lg font-semibold text-center text-gray-500">
 		আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
 	</h2>
-	<h3 class="text-xl font-bold text-center text-secondary-700 mb-6">রেজিস্ট্রেশন বন্ধ আছে</h3>
-	<!-- <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
+
+	{#if loading}
+		<p class="text-center text-gray-400 py-8">লোড হচ্ছে...</p>
+	{:else if !scholarship || !scholarship.registrationOpen}
+		<h3 class="text-xl font-bold text-center text-secondary-700 mb-6">রেজিস্ট্রেশন বন্ধ আছে</h3>
+	{:else}
+	<div class="bg-primary-900 text-white p-6 rounded-lg shadow-card-lg">
 		<h3 class="text-2xl font-bold mb-4 text-center">রেজিস্ট্রেশন ফি জমা দিন</h3>
 		<div class="grid md:grid-cols-2 gap-4">
-			<div in:fly={{ y: 50, duration: 500 }} class="bg-white bg-opacity-20 p-4 rounded-lg">
+			<div in:fly={{ y: 50, duration: 500 }} class="bg-white bg-opacity-10 p-4 rounded-lg">
 				<p class="text-lg font-semibold mb-2">রেজিস্ট্রেশন ফিঃ</p>
-				<p class="text-3xl font-bold">২০০/- টাকা</p>
+				<p class="text-3xl font-bold">{scholarship.regFee || '—'}/- টাকা</p>
 			</div>
 			<div
 				in:fly={{ y: 50, duration: 500, delay: 200 }}
-				class="bg-white bg-opacity-20 p-4 rounded-lg"
+				class="bg-white bg-opacity-10 p-4 rounded-lg"
 			>
 				<p class="text-lg font-semibold mb-2">বিকাশ নাম্বার:</p>
-				<p class="text-3xl font-bold">01771144308</p>
+				<p class="text-3xl font-bold">{scholarship.bkashNumber || '—'}</p>
 				<p class="text-sm">(Personal, Send Money)</p>
 			</div>
 		</div>
@@ -144,14 +157,14 @@
 					>Transaction ID/Trx ID</span
 				> নিচের ফর্মে দিতে হবে।
 			</p>
-			<p class="text-sm mt-2 text-yellow-200">
+			<p class="text-sm mt-2 text-secondary-200">
 				সতর্কতা: আইডি না থাকলে অথবা ভুল আইডি দিলে রেজিস্ট্রেশন বাতিল হবে।<br/>
 				সতর্কতা (২): শুধুমাত্র সিলেট মহানগরের রেজিস্ট্রেশনের জন্য এই ফর্ম ফিলাপ করবেন।
 			</p>
 		</div>
 	</div>
 
-	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন ফরম</h3>
+	<h3 class="section-title text-center mb-6">রেজিস্ট্রেশন ফরম</h3>
 
 	<form on:submit|preventDefault={handleSubmit} class="space-y-6">
     <div class="flex justify-between">
@@ -289,11 +302,11 @@
     </div>
   
     <div class="text-center">
-      <button type="submit" class="bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors" disabled={submitting}>
+      <button type="submit" class="btn-primary disabled:opacity-50" disabled={submitting}>
         {submitting ? 'Submitting...' : 'নিবন্ধন সম্পন্ন করুন'}
       </button>
     </div>
-  </form> -->
+  </form>
 
 	{#if submitSuccess}
 		<div class="mt-4 p-2 bg-green-100 text-green-700 rounded">
@@ -306,15 +319,17 @@
 			{submitError}
 		</div>
 	{/if}
+	{/if}
 
 	<div class="mt-8 space-y-4">
 		<div class="bg-secondary-50 border border-secondary-200 p-6 rounded-lg">
 			<h4 class="text-lg font-semibold text-primary-900 mb-4">যোগাযোগের ঠিকানা:</h4>
 			<ul class="space-y-2 text-gray-700">
-				<li>০১৩০০২০৮১৮৮ (তৌহিদুল ইসলাম)</li>
-				<li>০১৭৮২৮৪৭৪৩৯ (রেজাউল করিম)</li>
-				<li>০১৭৭৯০৯৮৬৪৫ (ফাহাদ হুসাইন)</li>
-				<li>০১৩০৬৩২১০৫২ (আবুল হাসান রিয়াদ)</li>
+				{#if siteInfo}
+					{#each siteInfo.contactPersons || [] as person}
+						<li>{person.phone} ({person.name})</li>
+					{/each}
+				{/if}
 			</ul>
 		</div>
 
