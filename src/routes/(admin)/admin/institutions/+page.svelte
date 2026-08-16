@@ -386,22 +386,24 @@
 			</div>
 		{/if}
 
-		<div class="bg-white shadow-md rounded-lg p-6">
-			<h1 class="text-3xl font-bold text-center text-teal-700 mb-2">Institution Name Management</h1>
-			<button
-				on:click={async () => {
-					if (confirm('Rebuild cache from registrations? This will reload all institution data.')) {
-						loading = true;
-						await rebuildCache();
-						loading = false;
-						alert('Cache rebuilt successfully!');
-					}
-				}}
-				class="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors text-sm"
-			>
-				🔄 Refresh Cache
-			</button>
-			<p class="text-center text-gray-600 mb-6">
+		<div class="card">
+			<div class="flex justify-between items-start mb-2">
+				<h1 class="section-title">Institution Name Management</h1>
+				<button
+					on:click={async () => {
+						if (confirm('Rebuild cache from registrations? This will reload all institution data.')) {
+							loading = true;
+							await rebuildCache();
+							loading = false;
+							alert('Cache rebuilt successfully!');
+						}
+					}}
+					class="border border-primary-300 text-primary-800 px-4 py-2 rounded-md hover:bg-primary-50 transition-colors text-sm font-medium whitespace-nowrap"
+				>
+					🔄 Refresh Cache
+				</button>
+			</div>
+			<p class="text-gray-500 mb-6">
 				Total Unique Institutions: {institutionGroups.length}
 			</p>
 
@@ -420,7 +422,7 @@
 			<div class="mb-4 flex justify-end">
 				<button
 					on:click={toggleSort}
-					class="bg-indigo-500 text-white px-4 py-2 rounded-md hover:bg-indigo-600 transition-colors text-sm flex items-center gap-2"
+					class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800 transition-colors text-sm flex items-center gap-2"
 				>
 					Sort by: {sortBy === 'count' ? 'Count ↓' : 'Name ↑'}
 				</button>
@@ -431,7 +433,7 @@
 				<div class="space-x-2">
 					<button
 						on:click={selectAll}
-						class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors text-sm"
+						class="bg-primary-600 text-white px-4 py-2 rounded-md hover:bg-primary-700 transition-colors text-sm"
 					>
 						Select All ({filteredGroups.length})
 					</button>
@@ -470,7 +472,7 @@
 					<button
 						on:click={addMergeRule}
 						disabled={!standardName.trim()}
-						class="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed w-full"
+						class="bg-primary-700 text-white px-6 py-2 rounded-md hover:bg-primary-800 transition-colors disabled:bg-gray-300 disabled:cursor-not-allowed w-full"
 					>
 						Add Rule: {selectedInstitutions.size} Institutions → "{standardName || '...'}"
 					</button>
@@ -494,7 +496,7 @@
 								class="{hasPendingMerge
 									? 'bg-orange-100'
 									: selectedInstitutions.has(group.key)
-										? 'bg-blue-100'
+										? 'bg-primary-100'
 										: i % 2 === 0
 											? 'bg-white'
 											: 'bg-gray-50'} border-b hover:bg-gray-100 cursor-pointer"
@@ -517,7 +519,7 @@
 									{/if}
 								</td>
 								<td class="px-6 py-4 text-center">
-									<span class="bg-teal-100 text-teal-800 px-3 py-1 rounded-full font-semibold">
+									<span class="bg-primary-100 text-primary-800 px-3 py-1 rounded-full font-semibold">
 										{group.count}
 									</span>
 								</td>

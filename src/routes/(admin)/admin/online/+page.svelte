@@ -351,9 +351,9 @@
 		{error}
 	</div>
 {:else}
-	<div class="space-y-6 p-6">
-		<h2 class="text-2xl font-bold text-center text-teal-700">
-			Registrations [{totalItems}]
+	<div class="space-y-6">
+		<h2 class="section-title">
+			Registrations <span class="text-gray-400 font-normal">[{totalItems}]</span>
 		</h2>
 
 		<div class="flex justify-between items-center">
@@ -362,21 +362,21 @@
 				bind:value={searchTerm}
 				on:input={handleSearch}
 				placeholder="Search by name, institution, or mobile"
-				class="p-2 border border-gray-300 rounded-md w-64"
+				class="p-2 border border-gray-300 rounded-md w-64 focus:ring-primary-500 focus:border-primary-500"
 			/>
 			<div class="space-x-2">
 				{#if selectedIds.size > 0}
 					<button
 						on:click={moveToOffline}
 						disabled={isMoving}
-						class="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+						class="bg-primary-700 text-white px-4 py-2 rounded-md hover:bg-primary-800 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
 					>
 						{isMoving ? 'Moving...' : `Move to Offline (${selectedIds.size})`}
 					</button>
 				{/if}
 				<button
 					on:click={handleExportAllCSV}
-					class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+					class="bg-primary-800 text-white px-4 py-2 rounded-md hover:bg-primary-900 transition-colors font-medium shadow-card"
 				>
 					Export CSV
 				</button>

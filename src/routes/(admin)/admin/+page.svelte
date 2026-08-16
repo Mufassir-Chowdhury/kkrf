@@ -7,61 +7,52 @@
 	<title>Admin Dashboard - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</title>
 </svelte:head>
 
-<div class="space-y-6 p-6">
-	<h2 class="text-2xl font-bold text-center text-teal-700">Admin Dashboard</h2>
+<div class="space-y-8">
+	<div>
+		<span class="section-eyebrow">প্যানেল</span>
+		<h2 class="section-title">Admin Dashboard</h2>
+	</div>
 
 	<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-		<a href="/admin/list" class="block">
-			<div
-				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-blue-500"
-			>
-				<h3 class="text-xl font-semibold text-gray-800 mb-2">All Registrations</h3>
-				<p class="text-gray-600">Manage all scholarship applications</p>
+		<a href="/admin/list" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-700">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">All Registrations</h3>
+				<p class="text-gray-500 text-sm">Manage all scholarship applications</p>
 			</div>
 		</a>
 
-		<a href="/admin/institutions" class="block">
-			<div
-				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-blue-500"
-			>
-				<h3 class="text-xl font-semibold text-gray-800 mb-2">Institutions</h3>
-				<p class="text-gray-600">Manage all institutions</p>
+		<a href="/admin/institutions" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-700">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Institutions</h3>
+				<p class="text-gray-500 text-sm">Manage all institutions</p>
 			</div>
 		</a>
 
-		<a href="/admin/online" class="block">
-			<div
-				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-blue-500"
-			>
-				<h3 class="text-xl font-semibold text-gray-800 mb-2">Online Registrations</h3>
-				<p class="text-gray-600">Manage online scholarship applications</p>
+		<a href="/admin/online" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-700">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Online Registrations</h3>
+				<p class="text-gray-500 text-sm">Manage online scholarship applications</p>
 			</div>
 		</a>
 
-		<a href="/admin/refund" class="block">
-			<div
-				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-green-500"
-			>
-				<h3 class="text-xl font-semibold text-gray-800 mb-2">Refund Applications</h3>
-				<p class="text-gray-600">Manage refund requests</p>
+		<a href="/admin/refund" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-secondary-500">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Refund Applications</h3>
+				<p class="text-gray-500 text-sm">Manage refund requests</p>
 			</div>
 		</a>
 
-		<a href="/admin/search" class="block">
-			<div
-				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-yellow-500"
-			>
-				<h3 class="text-xl font-semibold text-gray-800 mb-2">Search</h3>
-				<p class="text-gray-600">Search for students</p>
+		<a href="/admin/search" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-secondary-500">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Search</h3>
+				<p class="text-gray-500 text-sm">Search for students</p>
 			</div>
 		</a>
 
-		<a href="/admin/result" class="block">
-			<div
-				class="bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer text-center border-l-4 border-yellow-500"
-			>
-				<h3 class="text-xl font-semibold text-gray-800 mb-2">Results</h3>
-				<p class="text-gray-600">Manage results</p>
+		<a href="/admin/result" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-secondary-500">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Results</h3>
+				<p class="text-gray-500 text-sm">Manage results</p>
 			</div>
 		</a>
 	</div>

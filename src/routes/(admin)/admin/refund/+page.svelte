@@ -177,18 +177,18 @@
         {error}
     </div>
 {:else}
-    <div class="space-y-6 p-6">
-        <h2 class="text-2xl font-bold text-center text-teal-700">
-            Refund Applications [{totalItems}]
+    <div class="space-y-6">
+        <h2 class="section-title">
+            Refund Applications <span class="text-gray-400 font-normal">[{totalItems}]</span>
         </h2>
 
         <div class="flex justify-between items-center">
-            <input 
-                type="text" 
-                bind:value={searchTerm} 
-                on:input={handleSearch} 
-                placeholder="Search by name, institution, or mobile" 
-                class="p-2 border border-gray-300 rounded-md w-64"
+            <input
+                type="text"
+                bind:value={searchTerm}
+                on:input={handleSearch}
+                placeholder="Search by name, institution, or mobile"
+                class="p-2 border border-gray-300 rounded-md w-64 focus:ring-primary-500 focus:border-primary-500"
             />
         </div>
 

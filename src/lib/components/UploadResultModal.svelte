@@ -262,7 +262,7 @@
 						<button
 							on:click={handlePreview}
 							disabled={!selectedRollCol || !selectedMarkCol || parsing}
-							class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors disabled:bg-gray-400"
+							class="px-4 py-2 bg-primary-800 text-white rounded-md hover:bg-primary-900 transition-colors disabled:bg-gray-400"
 						>
 							{parsing ? 'Parsing...' : 'Preview'}
 						</button>

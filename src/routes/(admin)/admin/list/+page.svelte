@@ -90,20 +90,20 @@
 		{ url: `#`, label: 'Offline Registrations' }
 	]}
 />
-<div>
-	<div class="flex justify-between mb-4">
-		<h1>Offline Registrations {total}</h1>
+<div class="space-y-6">
+	<div class="flex justify-between items-center">
+		<h1 class="section-title">Offline Registrations <span class="text-gray-400 font-normal">({total})</span></h1>
 		<div class="space-x-2">
 			<a href="/offline">
 				<button
-					class="border border-green-500 text-black px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+					class="border border-primary-300 text-primary-800 px-4 py-2 rounded-md hover:bg-primary-50 transition-colors font-medium"
 				>
 					Data Entry Page
 				</button>
 			</a>
 			<button
 				on:click={() => handleExportCSV()}
-				class="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600 transition-colors"
+				class="bg-primary-800 text-white px-4 py-2 rounded-md hover:bg-primary-900 transition-colors font-medium shadow-card"
 			>
 				Export CSV
 			</button>
@@ -128,11 +128,16 @@
 	}
 	.grid-item {
 		padding: 10px;
-		background-color: #f0f0f0;
+		background-color: #f0f4f8;
 		text-align: center;
 		text-decoration: none;
-		color: inherit;
-		border: 1px solid #ccc;
-		border-radius: 4px;
+		color: #102a43;
+		font-weight: 500;
+		border: 1px solid #d9e2ec;
+		border-radius: 6px;
+		transition: background-color 0.2s ease;
+	}
+	.grid-item:hover {
+		background-color: #d9e2ec;
 	}
 </style>

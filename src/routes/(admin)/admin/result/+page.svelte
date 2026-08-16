@@ -292,37 +292,37 @@
 		{ url: '#', label: 'Result' }
 	]}
 />
-<div class="p-6 space-y-6 bg-gray-50 min-h-screen">
+<div class="space-y-6">
 	<div
-		class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-sm"
+		class="flex flex-col sm:flex-row justify-between items-center gap-4 bg-white p-4 rounded-lg shadow-card border border-primary-100/60"
 	>
 		<div class="flex items-center gap-4">
-			<h2 class="text-2xl font-bold text-teal-700">Results</h2>
+			<h2 class="text-xl font-bold text-primary-900">Results</h2>
 			<!-- Filter Mode Switcher -->
 			<div class="flex bg-gray-100 rounded-lg p-1">
 				<button
 					on:click={() => setFilterMode('class')}
 					class="px-3 py-1 text-sm font-medium rounded {filterMode === 'class'
-						? 'bg-white shadow text-teal-700'
+						? 'bg-white shadow text-primary-900'
 						: 'text-gray-500 hover:text-gray-700'}">By Class</button
 				>
 				<button
 					on:click={() => setFilterMode('school')}
 					class="px-3 py-1 text-sm font-medium rounded {filterMode === 'school'
-						? 'bg-white shadow text-teal-700'
+						? 'bg-white shadow text-primary-900'
 						: 'text-gray-500 hover:text-gray-700'}">By Institution</button
 				>
 			</div>
 		</div>
 		<button
 			on:click={() => (showUploadModal = true)}
-			class="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-medium"
+			class="w-full sm:w-auto bg-primary-800 text-white px-4 py-2 rounded-lg hover:bg-primary-900 transition-colors shadow-sm font-medium"
 		>
 			Upload Result
 		</button>
 		<button
 			on:click={copyResults}
-			class="w-full sm:w-auto bg-teal-600 text-white px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors shadow-sm font-medium"
+			class="w-full sm:w-auto bg-primary-700 text-white px-4 py-2 rounded-lg hover:bg-primary-900 transition-colors shadow-sm font-medium"
 		>
 			Copy Result
 		</button>
@@ -336,7 +336,7 @@
 
 	<!-- Global Stats -->
 	<div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-		<div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-teal-500">
+		<div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-primary-600">
 			<div class="text-xs text-gray-500 uppercase font-bold">Total Assigned</div>
 			<div class="text-2xl font-bold text-gray-800">{globalStats.total}</div>
 		</div>
@@ -364,7 +364,7 @@
 						<button
 							on:click={() => handleTabChange(tab)}
 							class="{activeTab === tab
-								? 'bg-teal-100 text-teal-700'
+								? 'bg-primary-100 text-primary-900'
 								: 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'} whitespace-nowrap px-4 py-2 rounded-md font-medium text-sm transition-colors flex-1 text-center"
 						>
 							{tab}
@@ -378,7 +378,7 @@
 					<select
 						bind:value={selectedSchool}
 						on:change={() => filterRegistrations()}
-						class="w-full lg:w-1/2 p-2 border border-gray-300 rounded-md focus:ring-teal-500 focus:border-teal-500"
+						class="w-full lg:w-1/2 p-2 border border-gray-300 rounded-md focus:ring-primary-600 focus:border-primary-600"
 					>
 						<option value="">All Institutions ({allRegistrations.length})</option>
 						{#each schoolCounts as school}
@@ -404,7 +404,7 @@
 					{/if}
 					Stats:
 				</span>
-				<span class="text-teal-600 whitespace-nowrap"
+				<span class="text-primary-700 whitespace-nowrap"
 					>Total: <strong>{classStats.total}</strong></span
 				>
 				<span class="text-green-600 whitespace-nowrap"
@@ -455,7 +455,7 @@
 	<!-- Table -->
 	{#if loading}
 		<div class="text-center py-10">
-			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-teal-600 mx-auto"></div>
+			<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-700 mx-auto"></div>
 			<span class="mt-2 text-gray-500 block">Loading...</span>
 		</div>
 	{:else if filteredRegistrations.length === 0}
@@ -474,7 +474,7 @@
 								type="checkbox"
 								bind:checked={selectAll}
 								on:change={toggleSelectAll}
-								class="rounded border-gray-300 text-teal-600 focus:ring-teal-500 h-4 w-4"
+								class="rounded border-gray-300 text-primary-700 focus:ring-primary-600 h-4 w-4"
 							/>
 						</th>
 						<th scope="col" class="px-6 py-4 w-16">#</th>
@@ -505,7 +505,7 @@
 									type="checkbox"
 									checked={selectedIds.has(reg.id)}
 									on:change={() => toggleSelect(reg.id)}
-									class="rounded border-gray-300 text-teal-600 focus:ring-teal-500 h-4 w-4"
+									class="rounded border-gray-300 text-primary-700 focus:ring-primary-600 h-4 w-4"
 								/>
 							</td>
 							<td class="px-6 py-4 font-medium text-gray-500">
@@ -513,7 +513,7 @@
 							</td>
 							<td class="px-6 py-4">
 								<div class="flex flex-col">
-									<span class="text-teal-600 font-bold text-base">#{reg.roll || 'N/A'}</span>
+									<span class="text-primary-700 font-bold text-base">#{reg.roll || 'N/A'}</span>
 									<span class="font-semibold text-gray-900 text-base">{reg.name}</span>
 									<span class="text-xs text-gray-500 mt-0.5">{reg.institution} | {reg.class}</span>
 								</div>

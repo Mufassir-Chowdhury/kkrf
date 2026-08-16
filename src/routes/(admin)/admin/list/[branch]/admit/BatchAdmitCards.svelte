@@ -76,7 +76,7 @@
 {/if}
 <div class="print:hidden w-full flex justify-center items-center flex-wrap">
   <div class="toggle-container">
-    <button class="m-8 bg-black rounded-lg text-white px-4 py-2" on:click={() => window.print()}>
+    <button class="m-8 bg-primary-900 rounded-md text-white px-4 py-2 hover:bg-primary-800 transition-colors shadow-card" on:click={() => window.print()}>
       Print
     </button>
   </div>
@@ -113,7 +113,7 @@
           <div class="admit-card">
 
             <div class="bg-white text-sm">
-              <div class="bg-blue-400 text-white p-2 text-center mb-3 w-full flex justify-between">
+              <div class="bg-primary-800 text-white p-2 text-center mb-3 w-full flex justify-between">
                 <div class="flex-1">
                   <p>বৃত্তি রোল</p>
                   <div class="border mx-16 font-bold bg-slate-400">{card.roll}</div>
@@ -202,24 +202,24 @@
                 </div>
               </div>
   
-              <div class="text-sm border-2 border-blue-400">
-                <div class="text-lg font-semibold text-blue-400 flex justify-between">
+              <div class="text-sm border-2 border-primary-800">
+                <div class="text-lg font-semibold text-primary-800 flex justify-between">
                   <div>পরীক্ষার কেন্দ্রঃ</div>
                   <div>
                     {center[card.roll[0]]}
                   </div>
                   <div></div>
                 </div>
-                <div class="w-full bg-blue-400 text-center text-white">পরীক্ষার সময়সূচী</div>
-                <div class="grid grid-cols-3 text-xs divide-x-2 divide-blue-400 text-center">
+                <div class="w-full bg-primary-800 text-center text-white">পরীক্ষার সময়সূচী</div>
+                <div class="grid grid-cols-3 text-xs divide-x-2 divide-primary-800 text-center">
                   <div>
                     ১ নভেম্বর, ২০২৫ <br /> শনিবার
                   </div>
-                  <div class="divide-y-2 divide-blue-400">
+                  <div class="divide-y-2 divide-primary-800">
                     <div>১০:০০-১১:০০</div>
                     <div>বাংলা ও ইংরেজি</div>
                   </div>
-                  <div class="divide-y-2 divide-blue-400">
+                  <div class="divide-y-2 divide-primary-800">
                     <div>১১:১০-১২:১০</div>
                     <div>গণিত ও সাধারণ জ্ঞান/সাধারণ বিজ্ঞান</div>
                   </div>
@@ -235,11 +235,11 @@
                   এছাড়া অতিরিক্ত কাগজ সাথে রাখা যাবে না<br />
                 </div>
               </div>
-              <div class="text-blue-400">
+              <div class="text-primary-800">
                 <span>ঠিকানাঃ {card.presentAddress}</span>
               </div>
               <div class="mt-4 flex justify-between">
-                <div class=" mx-4 border-2 border-blue-400 pt-2 px-8">
+                <div class=" mx-4 border-2 border-primary-800 pt-2 px-8">
                   <div>
                     <div class="font-semibold">অফিস কর্তৃক পূরণীয়</div>
                     <div>শাখাঃ {branchName} ({card.ward ?? ''})</div>

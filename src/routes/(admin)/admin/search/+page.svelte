@@ -63,10 +63,10 @@
 	]}
 />
 
-<div class="max-w-6xl mx-auto p-6 space-y-6">
-	<h2 class="text-3xl font-bold text-center text-teal-700">Search All Registrations</h2>
+<div class="max-w-6xl mx-auto space-y-6">
+	<h2 class="section-title">Search All Registrations</h2>
 
-	<div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+	<div class="card space-y-4">
 		<!-- Search Type Selection -->
 		<div class="flex flex-wrap gap-2 justify-center">
 			<label class="inline-flex items-center">
@@ -74,7 +74,7 @@
 					type="radio"
 					bind:group={searchType}
 					value="all"
-					class="form-radio text-teal-600 focus:ring-teal-500"
+					class="form-radio text-primary-700 focus:ring-primary-500"
 				/>
 				<span class="ml-2">All Fields</span>
 			</label>
@@ -83,7 +83,7 @@
 					type="radio"
 					bind:group={searchType}
 					value="mobile"
-					class="form-radio text-teal-600 focus:ring-teal-500"
+					class="form-radio text-primary-700 focus:ring-primary-500"
 				/>
 				<span class="ml-2">Mobile</span>
 			</label>
@@ -92,7 +92,7 @@
 					type="radio"
 					bind:group={searchType}
 					value="name"
-					class="form-radio text-teal-600 focus:ring-teal-500"
+					class="form-radio text-primary-700 focus:ring-primary-500"
 				/>
 				<span class="ml-2">Name</span>
 			</label>
@@ -101,7 +101,7 @@
 					type="radio"
 					bind:group={searchType}
 					value="institution"
-					class="form-radio text-teal-600 focus:ring-teal-500"
+					class="form-radio text-primary-700 focus:ring-primary-500"
 				/>
 				<span class="ml-2">Institution</span>
 			</label>
@@ -114,12 +114,12 @@
 				bind:value={searchTerm}
 				on:keypress={handleKeyPress}
 				placeholder="Search by mobile, name, or institution..."
-				class="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+				class="flex-1 p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
 			/>
 			<button
 				on:click={handleSearch}
 				disabled={loading}
-				class="px-6 py-3 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium"
+				class="px-6 py-3 bg-primary-800 text-white rounded-md hover:bg-primary-900 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed font-medium shadow-card"
 			>
 				{loading ? 'Searching...' : 'Search'}
 			</button>
@@ -139,7 +139,7 @@
 		<div class="flex justify-center items-center py-12">
 			<div class="text-center">
 				<div
-					class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"
+					class="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-primary-700"
 				></div>
 				<p class="mt-4 text-gray-600">Searching all branches...</p>
 			</div>
@@ -148,8 +148,8 @@
 
 	<!-- Results -->
 	{#if hasSearched && !loading}
-		<div class="bg-white rounded-lg shadow-md p-6">
-			<h3 class="text-xl font-semibold mb-4 text-gray-800">
+		<div class="card">
+			<h3 class="text-lg font-semibold mb-4 text-primary-900">
 				Search Results: {searchResults.length} found
 			</h3>
 
@@ -174,13 +174,13 @@
 							{#each searchResults as registration}
 								<tr
 									class="block lg:table-row border-b border-gray-200 mb-4 lg:mb-0 hover:bg-gray-50 transition-colors duration-200 {registration.confirm
-										? 'bg-teal-50'
+										? 'bg-primary-50'
 										: 'bg-white'}"
 								>
 									<td class="block lg:table-cell px-6 py-4" data-label="Serial/Roll">
 										<div>Serial: {registration.serial}</div>
 										{#if registration.roll}
-											<div class="text-teal-600 font-bold">Roll: {registration.roll}</div>
+											<div class="text-primary-700 font-bold">Roll: {registration.roll}</div>
 										{/if}
 									</td>
 
@@ -211,7 +211,7 @@
 												<a
 													href="/admit/{encodeRoll(registration.roll)}"
 													target="_blank"
-													class="inline-flex items-center px-3 py-1.5 bg-teal-600 text-white rounded-md hover:bg-teal-700 transition-colors text-sm"
+													class="inline-flex items-center px-3 py-1.5 bg-primary-800 text-white rounded-md hover:bg-primary-900 transition-colors text-sm"
 													title="View Admit Card"
 												>
 													<svg

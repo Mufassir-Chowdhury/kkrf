@@ -32,21 +32,30 @@
 </script>
 
 {#if loggedIn}
-    <div class="space-y-6 p-6">
-        <h1 class="text-3xl font-bold text-center text-teal-700">Admin Dashboard</h1>
+    <div class="min-h-screen bg-gray-50">
+        <header class="bg-primary-900 text-white sticky top-0 z-40 shadow-card">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+                <a href="/admin" class="flex items-center space-x-3">
+                    <img class="h-8 w-8" src="/favicon.png" alt="কিশোরকণ্ঠ Logo">
+                    <span class="font-bold text-white">Admin Panel</span>
+                </a>
+                <button
+                    on:click={handleLogout}
+                    class="bg-white/10 text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-white/20 transition-colors border border-white/20"
+                >
+                    Logout
+                </button>
+            </div>
+        </header>
 
-        <div class="flex justify-between items-center">
-        <div class="w-full flex justify-end">
-            <button 
-            on:click={handleLogout}
-            class="bg-red-500 text-white px-4 py-2 rounded-md hover:bg-red-600 transition-colors"
-            >
-            Logout
-            </button>
-        </div>
-        </div>
+        {#if error}
+            <p class="text-red-600 text-center text-sm py-2">{error}</p>
+        {/if}
+
+        <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <slot></slot>
+        </main>
     </div>
-    <slot></slot>
 {:else}
-    <p>Loading...</p>
+    <p class="text-center text-gray-500 py-12">Loading...</p>
 {/if}

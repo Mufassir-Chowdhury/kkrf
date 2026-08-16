@@ -78,12 +78,12 @@
 	<title>Edit Registration - কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</title>
 </svelte:head>
 
-<div class="max-w-2xl mx-auto p-6">
-	<h1 class="text-3xl font-bold text-center text-teal-700 mb-8">রেজিস্ট্রেশন সম্পাদনা</h1>
+<div class="max-w-2xl mx-auto card">
+	<h1 class="section-title text-center mb-8">রেজিস্ট্রেশন সম্পাদনা</h1>
 
 	{#if loading}
 		<div class="text-center py-8">
-			<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-teal-700 mx-auto"></div>
+			<div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-900 mx-auto"></div>
 			<p class="mt-4 text-gray-600">লোড হচ্ছে...</p>
 		</div>
 	{:else if error}
@@ -191,7 +191,7 @@
 							id="class"
 							bind:value={formData.class}
 							required
-							class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+							class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
 						>
 							<option value="" disabled>শ্রেণি নির্বাচন করুন</option>
 							{#each classOptions as option}
@@ -260,7 +260,7 @@
 			<div class="flex justify-center space-x-4">
 				<button
 					type="submit"
-					class="bg-teal-600 text-white py-2 px-4 rounded-md hover:bg-teal-700 transition-colors disabled:opacity-50"
+					class="bg-primary-800 text-white py-2 px-4 rounded-md hover:bg-primary-900 transition-colors disabled:opacity-50"
 					disabled={updating}
 				>
 					{updating ? 'আপডেট হচ্ছে...' : 'আপডেট করুন'}

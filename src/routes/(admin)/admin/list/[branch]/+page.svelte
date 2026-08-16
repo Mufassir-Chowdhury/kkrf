@@ -396,9 +396,9 @@
 		{error}
 	</div>
 {:else}
-	<div class="space-y-6 p-6">
-		<h2 class="text-2xl font-bold text-center text-teal-700">
-			Registrations: {data.thana[branch]} - [{registrations.length}]
+	<div class="space-y-6">
+		<h2 class="section-title text-center">
+			Registrations: {data.thana[branch]} <span class="text-gray-400 font-normal">[{registrations.length}]</span>
 		</h2>
 		<p class="text-center text-gray-600">Serial Range: {serialRange}</p>
 		<p class="text-center text-blue-600 font-semibold">Confirmed Registrations: {confirmedCount}</p>
@@ -423,14 +423,14 @@
 			bind:value={searchTerm}
 			on:input={handleSearch}
 			placeholder="Search by name, institution, or mobile"
-			class="p-2 border border-gray-300 rounded-md w-96"
+			class="p-2 border border-gray-300 rounded-md w-96 focus:ring-primary-500 focus:border-primary-500"
 		/>
 		<div class="flex justify-between items-center w-full">
 			<div class="flex items-center gap-2 flex-wrap w-full justify-between">
 				<button
 					on:click={handleConfirmRegistrations}
 					disabled={selectedIds.size === 0}
-					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 bg-teal-600 text-white hover:bg-teal-700 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
+					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 bg-primary-700 text-white hover:bg-primary-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:bg-gray-400 disabled:cursor-not-allowed"
 					title="Confirm Registration"
 				>
 					<svg
@@ -606,7 +606,7 @@
 									type="checkbox"
 									bind:checked={selectAll}
 									on:change={toggleSelectAll}
-									class="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+									class="rounded border-gray-300 text-primary-700 focus:ring-primary-500"
 								/>
 							</th>
 							<th scope="col" class="px-6 py-3">Qualifiers</th>
@@ -623,14 +623,14 @@
 							<tr
 								class="block lg:table-row border-b border-gray-200 mb-4 lg:mb-0
                            hover:bg-gray-50 transition-colors duration-200
-                           {registration.confirm ? 'bg-teal-50' : 'bg-white'}"
+                           {registration.confirm ? 'bg-primary-50' : 'bg-white'}"
 							>
 								<td class="block lg:table-cell p-4 lg:w-4" data-label="Select">
 									<input
 										type="checkbox"
 										checked={selectedIds.has(registration.id)}
 										on:change={() => toggleSelect(registration.id)}
-										class="rounded border-gray-300 text-teal-600 focus:ring-teal-500"
+										class="rounded border-gray-300 text-primary-700 focus:ring-primary-500"
 									/>
 								</td>
 
@@ -642,7 +642,7 @@
 								<td class="block lg:table-cell px-6 py-4" data-label="Serial/Roll">
 									<div>Serial: {registration.serial}</div>
 									{#if registration.roll}
-										<div class="text-teal-600 font-bold">Roll: {registration.roll}</div>
+										<div class="text-primary-700 font-bold">Roll: {registration.roll}</div>
 									{/if}
 								</td>
 
