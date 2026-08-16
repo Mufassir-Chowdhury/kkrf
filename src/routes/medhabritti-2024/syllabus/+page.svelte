@@ -240,8 +240,9 @@
 </svelte:head>
 
 <div class="space-y-12">
-  <section class="text-center pt-8">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">মেধাবৃত্তি পরীক্ষা ২০২৪ সিলেবাস</h1>
+  <section class="text-center pt-4">
+    <span class="section-eyebrow">সিলেবাস</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-900 mb-4 tracking-tight">মেধাবৃত্তি পরীক্ষা ২০২৪ সিলেবাস</h1>
   </section>
 
   <section class="bg-secondary-50 border-l-4 border-secondary-400 p-8 rounded-r-lg">
@@ -253,8 +254,8 @@
 
   <div class="space-y-8">
     {#each syllabusData as classData}
-      <section class="bg-white rounded-2xl shadow-xl overflow-hidden">
-        <h2 class="text-2xl font-bold text-white bg-primary-600 p-6">{classData.class}</h2>
+      <section class="bg-white rounded-xl shadow-card border border-primary-100/60 overflow-hidden">
+        <h2 class="text-xl font-bold text-white bg-primary-900 p-6">{classData.class}</h2>
         <div class="p-6 md:p-8 grid gap-8">
           {#each classData.subjects as subject}
             <div class="border-b pb-6 last:border-b-0 last:pb-0">

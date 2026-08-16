@@ -21,7 +21,7 @@
 
 <div class="print:hidden w-full flex justify-center gap-4 my-8">
   <button
-    class="bg-black text-white py-3 px-8 rounded-lg hover:bg-gray-800 transition-transform transform hover:scale-105 text-lg font-semibold shadow-lg"
+    class="bg-primary-900 text-white py-3 px-8 rounded-md hover:bg-primary-800 transition-colors text-lg font-semibold shadow-card"
     on:click={() => window.print()}>
     প্রিন্ট করুন
   </button>
@@ -32,7 +32,7 @@
     <!-- Admit Card 1 -->
     <div class="admit-card">
       <div class="bg-white text-sm">
-        <div class="bg-blue-400 text-white p-2 text-center mb-3 w-full flex justify-between">
+        <div class="bg-primary-800 text-white p-2 text-center mb-3 w-full flex justify-between">
           <div class="flex-1">
             <p>বৃত্তি রোল</p>
             <div class="border mx-8 font-bold bg-white mt-2 py-4"></div>
@@ -48,23 +48,23 @@
           <div class="grid grid-cols-5 gap-y-2 gap-x-4">
             <div class="mb-2 col-span-5">
               <p class="text-gray-600">পরীক্ষার্থীর নাম</p>
-              <p class="font-semibold border border-blue-300 w-full h-12 rounded-md"></p>
+              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
             </div>
             <div class="mb-2 col-span-3">
               <p class="text-gray-600">পিতার নাম</p>
-              <p class="font-semibold border border-blue-300 w-full h-12 rounded-md"></p>
+              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
             </div>
             <div class="mb-2 col-span-2">
               <p class="text-gray-600">মোবাইল</p>
-              <p class="font-semibold border border-blue-300 w-full h-12 rounded-md"></p>
+              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
             </div>
             <div class="mb-2 col-span-3">
               <p class="text-gray-600">প্রতিষ্ঠানের নাম</p>
-              <p class="font-semibold border border-blue-300 w-full h-12 rounded-md"></p>
+              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
             </div>
             <div class="mb-2">
               <p class="text-gray-600">শ্রেণি</p>
-              <p class="font-semibold border border-blue-300 w-full h-12 rounded-md"></p>
+              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
             </div>
             <div class="mb-2">
               <div class="w-full mb-2">
@@ -115,24 +115,24 @@
           </div>
         </div>
 
-        <div class="text-sm border-2 border-blue-400 mt-2">
-          <div class="text-lg font-semibold text-blue-400 flex justify-between px-2 py-1 pb-2">
+        <div class="text-sm border-2 border-primary-800 mt-2">
+          <div class="text-lg font-semibold text-primary-800 flex justify-between px-2 py-1 pb-2">
             <div>পরীক্ষার কেন্দ্রঃ</div>
             <div>
               {center[3]}
             </div>
             <div></div>
           </div>
-          <div class="w-full bg-blue-400 text-center text-white py-1 pb-2">পরীক্ষার সময়সূচী</div>
-          <div class="grid grid-cols-3 text-xs divide-x-2 divide-blue-400 text-center">
+          <div class="w-full bg-primary-800 text-center text-white py-1 pb-2">পরীক্ষার সময়সূচী</div>
+          <div class="grid grid-cols-3 text-xs divide-x-2 divide-primary-800 text-center">
             <div class="py-2">
               ১ নভেম্বর, ২০২৫ <br /> শনিবার
             </div>
-            <div class="divide-y-2 divide-blue-400">
+            <div class="divide-y-2 divide-primary-800">
               <div class="py-1">১০:০০-১১:০০</div>
               <div class="py-1">বাংলা ও ইংরেজি</div>
             </div>
-            <div class="divide-y-2 divide-blue-400">
+            <div class="divide-y-2 divide-primary-800">
               <div class="py-1">১১:১০-১২:১০</div>
               <div class="py-1">গণিত ও সাধারণ জ্ঞান/সাধারণ বিজ্ঞান</div>
             </div>
@@ -154,13 +154,13 @@
             <div>- উত্তরপত্রে রোল নম্বর ও অন্যান্য তথ্য সঠিকভাবে পূরণ করতে হবে।</div>
           </div>
         </div>
-        <div class="text-blue-400 my-3">
+        <div class="text-primary-800 my-3">
           <span class="font-semibold">ঠিকানাঃ</span> 
-                        <p class="font-semibold border border-blue-300 w-full h-12 rounded-md"></p>
+                        <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
 
         </div>
         <div class="mt-4 flex justify-between items-end">
-          <div class="mx-4 border-2 border-blue-400 pt-2 px-8 pb-2">
+          <div class="mx-4 border-2 border-primary-800 pt-2 px-8 pb-2">
             <div>
               <div class="font-semibold">অফিস কর্তৃক পূরণীয়</div>
               <div>সিরিয়ালঃ XXXXXX</div>

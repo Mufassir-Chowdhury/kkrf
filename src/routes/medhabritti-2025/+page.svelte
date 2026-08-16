@@ -55,27 +55,28 @@
 </svelte:head>
 
 <div class="space-y-16">
-  <section class="text-center pt-8">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
-    <p class="text-xl md:text-2xl text-secondary-700">৪র্থ-১০ম শ্রেণী, স্কুল এবং মাদরাসা</p>
+  <section class="text-center pt-4">
+    <span class="section-eyebrow">মেধাবৃত্তি পরীক্ষা</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-900 mb-3 tracking-tight">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
+    <p class="text-lg md:text-xl text-gray-500">৪র্থ-১০ম শ্রেণী, স্কুল এবং মাদরাসা</p>
   </section>
 
-  <!-- <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center">
+  <!-- <section class="card text-center">
     <h2 class="text-3xl font-bold text-primary-700 mb-6">সীটপ্লান এবং এডমিট কার্ড</h2>
     <a href="/britti_info" class="bg-secondary-500 text-white py-3 px-8 rounded-full hover:bg-secondary-600 transition-colors inline-block text-lg font-semibold shadow-md">
       এখনই দেখুন
     </a>
   </section> -->
 
-  <section class="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
-      <h2 class="text-3xl font-bold mb-4">বৃত্তি প্রদান</h2>
+  <section class="bg-primary-900 text-white p-8 md:p-12 rounded-xl shadow-card-lg text-center">
+      <span class="inline-block text-xs md:text-sm font-semibold tracking-widest uppercase text-secondary-400 mb-3">বৃত্তি প্রদান</span>
       <p class="text-4xl font-extrabold tracking-tight">
         ৬,৫০,০০০/=
       </p>
-      <p class="text-xl text-primary-100">টাকার নগদ অর্থ, সনদপত্র ও আকর্ষণীয় পুরষ্কার</p>
+      <p class="text-xl text-primary-200">টাকার নগদ অর্থ, সনদপত্র ও আকর্ষণীয় পুরষ্কার</p>
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+  <section class="card">
     <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">বৃত্তি সম্পর্কিত তথ্য</h2>
     <ul class="space-y-4">
       {#each examRules as rule}
@@ -96,22 +97,22 @@
 
   <section class="text-center">
       <h2 class="text-3xl font-bold text-primary-700 mb-6">পরীক্ষার সিলেবাস</h2>
-      <a href="/medhabritti-2025/syllabus" class="bg-primary-600 text-white py-3 px-8 rounded-full hover:bg-primary-700 transition-colors inline-block text-lg font-semibold shadow-md">
+      <a href="/medhabritti-2025/syllabus" class="bg-primary-600 text-white py-3 px-8 rounded-md hover:bg-primary-900 transition-colors inline-block text-lg font-semibold shadow-card">
         সিলেবাস দেখুন
       </a>
   </section>
 
-  <section class="bg-gradient-to-r from-teal-500 to-green-500 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
+  <section class="bg-secondary-600 text-white p-8 md:p-12 rounded-xl shadow-card-lg text-center">
     <h2 class="text-3xl font-bold mb-4">এখনই রেজিস্ট্রেশন করুন!</h2>
-    <a href="/britti_registration" class="bg-white text-primary-600 py-3 px-8 rounded-full hover:bg-primary-50 transition-colors inline-block text-lg font-semibold shadow-md">
+    <a href="/britti_registration" class="bg-white text-primary-800 py-3 px-8 rounded-md hover:bg-primary-50 transition-colors inline-block text-lg font-semibold shadow-card">
       অনলাইন রেজিস্ট্রেশন
     </a>
-    <p class="mt-4 text-primary-100">
+    <p class="mt-4 text-secondary-100">
       অথবা আপনার স্কুল প্রতিনিধির সাথে যোগাযোগ করুন।
     </p>
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+  <section class="card">
     <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">অফলাইনে ফর্ম প্রাপ্তি ও জমা দেওয়ার ঠিকানা</h2>
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
       {#each offices as office}
@@ -133,7 +134,7 @@
     </div>
   </section>
 
-  <div class="text-sm text-gray-500 text-center py-8 border-t">
+  <div class="text-sm text-gray-500 text-center py-8 border-t border-gray-200">
     আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর<br>
     বিস্তারিত তথ্যের জন্য: <a href="http://www.kkrfsylhet.org" class="text-primary-600 hover:underline">www.kkrfsylhet.org</a>
   </div>

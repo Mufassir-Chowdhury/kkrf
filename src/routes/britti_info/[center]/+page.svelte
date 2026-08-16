@@ -14,29 +14,30 @@
 </svelte:head>
 
 <div class="space-y-12">
-    <section class="text-center pt-8">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
-        <h2 class="text-2xl md:text-3xl font-bold text-secondary-700">সেন্টার - {center_name[center]}</h2>
+    <section class="text-center pt-4">
+        <span class="section-eyebrow">সীট প্লান</span>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-primary-900 mb-3 tracking-tight">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
+        <h2 class="text-xl md:text-2xl font-bold text-gray-500">সেন্টার - {center_name[center]}</h2>
     </section>
 
-    <section class="bg-gradient-to-r from-primary-500 to-primary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
+    <section class="bg-primary-900 text-white p-8 md:p-12 rounded-xl shadow-card-lg text-center">
         <h2 class="text-3xl font-bold mb-4">পরীক্ষার তারিখ</h2>
         <p class="text-4xl font-extrabold tracking-tight">১ নভেম্বর, ২০২৫</p>
         <p class="text-xl text-primary-100">(শনিবার)</p>
     </section>
       
-    <section class="bg-white rounded-2xl shadow-xl p-4 md:p-6">
-        <h3 class="text-3xl font-bold text-primary-700 mb-6 text-center">সীট প্লান</h3>
-        <div class="overflow-hidden rounded-lg shadow-md">
+    <section class="bg-white rounded-xl shadow-card border border-primary-100/60 p-4 md:p-6">
+        <h3 class="text-2xl font-bold text-primary-900 mb-6 text-center">সীট প্লান</h3>
+        <div class="overflow-hidden rounded-lg border border-gray-200">
             <img src="/{center}.jpg" alt="{center} Seat Plan" class="w-full h-auto object-contain">
         </div>
-        <div class="overflow-hidden rounded-lg shadow-md">
+        <div class="overflow-hidden rounded-lg border border-gray-200">
             <img src="/{center}-2.jpg" alt="{center} Seat Plan" class="w-full h-auto object-contain">
         </div>
     </section>
       
-    <div class="bg-amber-50 p-6 rounded-lg shadow-md">
-			<h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
+    <div class="bg-secondary-50 border border-secondary-200 p-6 rounded-lg">
+			<h4 class="text-lg font-semibold text-primary-900 mb-4">যোগাযোগের ঠিকানা:</h4>
 			<ul class="space-y-2 text-gray-700">
 				<li>০১৩০০২০৮১৮৮ (তৌহিদুল ইসলাম)</li>
 				<li>০১৭৮২৮৪৭৪৩৯ (রেজাউল করিম)</li>
@@ -45,7 +46,7 @@
 			</ul>
 		</div>
   
-    <div class="text-sm text-gray-500 text-center py-8 border-t">
+    <div class="text-sm text-gray-500 text-center py-8 border-t border-gray-200">
       আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর<br>
       বিস্তারিত তথ্যের জন্য: <a href="http://www.kkrfsylhet.org" class="text-primary-600 hover:underline">www.kkrfsylhet.org</a>
     </div>

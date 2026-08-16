@@ -20,11 +20,16 @@
     }
     .grid-item {
         padding: 10px;
-        background-color: #f0f0f0;
+        background-color: #f0f4f8;
         text-align: center;
         text-decoration: none;
-        color: inherit;
-        border: 1px solid #ccc;
-        border-radius: 4px;
+        color: #102a43;
+        font-weight: 500;
+        border: 1px solid #d9e2ec;
+        border-radius: 6px;
+        transition: background-color 0.2s ease;
+    }
+    .grid-item:hover {
+        background-color: #d9e2ec;
     }
 </style>

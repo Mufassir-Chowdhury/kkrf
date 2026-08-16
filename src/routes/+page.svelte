@@ -68,44 +68,45 @@
   <title>কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর - হোম</title>
 </svelte:head>
 
-<div class="space-y-16">
-  <section class="text-center pt-8">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">কিশোরকণ্ঠ পাঠক ফোরাম</h1>
-    <p class="text-xl md:text-2xl text-secondary-700">সিলেট মহানগর</p>
+<div class="space-y-20">
+  <section class="text-center pt-4">
+    <span class="section-eyebrow">প্রতিষ্ঠাকাল ১৯৮৪</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-900 mb-3 tracking-tight">কিশোরকণ্ঠ পাঠক ফোরাম</h1>
+    <p class="text-lg md:text-xl text-gray-500">সিলেট মহানগর</p>
   </section>
 
-  <section class="relative w-full max-w-4xl mx-auto h-96 rounded-2xl shadow-2xl overflow-hidden">
+  <section class="relative w-full max-w-4xl mx-auto h-96 rounded-xl shadow-card-lg overflow-hidden border border-primary-100">
     {#each carouselItems as item, index}
       <div
         class="absolute inset-0 transition-opacity duration-1000 ease-in-out"
         style="opacity: {index === currentIndex ? 1 : 0};"
       >
         <img src={item.image} alt={item.alt} class="w-full h-full object-cover" />
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/70 to-transparent p-8">
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary-950/80 to-transparent p-8">
           <h3 class="text-2xl font-bold text-white">{item.caption}</h3>
         </div>
       </div>
     {/each}
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-    <h2 class="text-3xl font-bold text-primary-700 mb-6 text-center">আমাদের সম্পর্কে</h2>
+  <section class="card">
+    <h2 class="section-title mb-6 text-center">আমাদের সম্পর্কে</h2>
     <p class="text-lg text-gray-600 leading-relaxed max-w-3xl mx-auto text-center">
       কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর ১৯৮৪ সালে প্রতিষ্ঠিত একটি স্বেচ্ছাসেবী সংগঠন। আমরা শিক্ষা ও সংস্কৃতির উন্নয়নে নিবেদিত। আমাদের লক্ষ্য হলো যুব সমাজকে জ্ঞান, দক্ষতা এবং মূল্যবোধে সমৃদ্ধ করে তোলা।
     </p>
   </section>
 
   <section>
-    <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">আমাদের কার্যক্রম</h2>
-    <div class="space-y-4 max-w-3xl mx-auto">
+    <h2 class="section-title mb-8 text-center">আমাদের কার্যক্রম</h2>
+    <div class="space-y-3 max-w-3xl mx-auto">
       {#each activities as activity}
-        <div class="bg-white rounded-lg shadow-md overflow-hidden">
+        <div class="bg-white rounded-lg shadow-card border border-primary-100/60 overflow-hidden">
           <button
             class="w-full text-left p-5 focus:outline-none flex justify-between items-center transition-colors hover:bg-primary-50"
             on:click={() => toggleAccordion(activity.id)}
           >
-            <span class="text-xl font-semibold text-primary-800">{activity.title}</span>
-            <span class="transform transition-transform duration-300 text-primary-600" class:rotate-180={activeAccordion === activity.id}>
+            <span class="text-lg font-semibold text-primary-900">{activity.title}</span>
+            <span class="transform transition-transform duration-300 text-secondary-600" class:rotate-180={activeAccordion === activity.id}>
               <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
             </span>
           </button>
@@ -124,26 +125,27 @@
   </section>
 
   <section>
-    <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">কমিটি</h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <h2 class="section-title mb-8 text-center">কমিটি</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       {#each members as member}
-        <div class="bg-white rounded-2xl shadow-lg p-6 text-center transform hover:-translate-y-2 transition-transform duration-300">
-          <img src={member.image} alt={member.name} class="w-32 h-32 rounded-full mx-auto mb-6 shadow-md border-4 border-white" />
-          <h3 class="text-2xl font-semibold text-primary-800">{member.name}</h3>
-          <p class="text-secondary-600 font-medium">{member.role}</p>
+        <div class="card text-center p-8">
+          <img src={member.image} alt={member.name} class="w-28 h-28 rounded-full mx-auto mb-5 shadow-card border-4 border-white ring-1 ring-primary-100" />
+          <h3 class="text-xl font-semibold text-primary-900">{member.name}</h3>
+          <p class="text-secondary-600 font-medium text-sm mt-1 tracking-wide uppercase">{member.role}</p>
           <!-- <p class="text-gray-500 mt-2">{member.phone}</p> -->
         </div>
       {/each}
     </div>
   </section>
 
-  <section class="bg-gradient-to-r from-primary-600 to-primary-700 text-white p-8 md:p-12 rounded-2xl shadow-xl">
+  <section class="bg-primary-900 text-white p-8 md:p-12 rounded-xl shadow-card-lg">
     <div class="text-center">
-      <h3 class="text-3xl font-bold mb-4">আসন্ন কার্যক্রম</h3>
-      <p class="text-lg text-primary-100 mb-6 max-w-2xl mx-auto">
+      <span class="inline-block text-xs md:text-sm font-semibold tracking-widest uppercase text-secondary-400 mb-3">আসন্ন কার্যক্রম</span>
+      <h3 class="text-2xl md:text-3xl font-bold mb-4">মেধাবৃত্তি কার্যক্রম</h3>
+      <p class="text-lg text-primary-200 mb-6 max-w-2xl mx-auto">
         আমাদের বার্ষিক বৃত্তি কার্যক্রম শুরু হতে যাচ্ছে। আগ্রহী শিক্ষার্থীদের জন্য নিবন্ধন খোলা রয়েছে।
       </p>
-      <a href="/medhabritti-2025" class="bg-white text-primary-600 py-3 px-8 rounded-full hover:bg-primary-50 transition-colors inline-block text-lg font-semibold shadow-md">
+      <a href="/medhabritti-2025" class="btn-secondary">
         বৃত্তি সম্পর্কে জানুন
       </a>
     </div>
@@ -164,16 +166,16 @@
   </section>
 
   <section>
-    <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">যোগাযোগ করুন</h2>
-    <div class="bg-white rounded-2xl shadow-xl p-8 md:p-12 max-w-3xl mx-auto">
+    <h2 class="section-title mb-8 text-center">যোগাযোগ করুন</h2>
+    <div class="card max-w-3xl mx-auto">
       <p class="text-lg text-gray-700 mb-4">
-        <strong>ঠিকানা:</strong> রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট।
+        <strong class="text-primary-900">ঠিকানা:</strong> রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট।
       </p>
       <p class="text-lg text-gray-700 mb-4">
-        <strong>ফোন:</strong> ০১৭৫২-৮৩১১৮৪
+        <strong class="text-primary-900">ফোন:</strong> ০১৭৫২-৮৩১১৮৪
       </p>
       <p class="text-lg text-gray-700">
-        <strong>অফিস সময়:</strong> বিকাল ৫:০০ থেকে রাত ৮:০০ ঘটিকা
+        <strong class="text-primary-900">অফিস সময়:</strong> বিকাল ৫:০০ থেকে রাত ৮:০০ ঘটিকা
       </p>
     </div>
   </section>

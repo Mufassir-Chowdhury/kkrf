@@ -16,7 +16,7 @@
         <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52"><circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none" /><path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8" /></svg>
         </div>
     </div>
-<h1 class="text-center text-3xl font-semibold text-gray-900 dark:text-white">আপনার রেজিস্ট্রেশন সম্পন্ন হয়েছে। আরেকটি এন্ট্রি করুন - <a href="/offline/{branch}"><button class="px-2 py-1 bg-black rounded-lg text-white">Form</button></a> </h1>
+<h1 class="text-center text-3xl font-semibold text-gray-900 dark:text-white">আপনার রেজিস্ট্রেশন সম্পন্ন হয়েছে। আরেকটি এন্ট্রি করুন - <a href="/offline/{branch}"><button class="px-3 py-1.5 bg-primary-800 rounded-md text-white hover:bg-primary-900 transition-colors">Form</button></a> </h1>
 
 <style>
     .success-animation { margin:150px auto;}

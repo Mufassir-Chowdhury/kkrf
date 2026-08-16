@@ -173,9 +173,9 @@
   ]} />
 
 
-	<h1 class="text-3xl font-bold text-center text-teal-700">শাখাঃ {data.thana[branch]}</h1>
-	
-	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>
+	<h1 class="text-3xl font-bold text-center text-primary-900">শাখাঃ {data.thana[branch]}</h1>
+
+	<h3 class="text-xl font-bold text-center text-secondary-700 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>
 
 	<form on:submit|preventDefault={handleSubmit} class="space-y-6">
     <div class="flex flex-col md:flex-row justify-between md:space-x-4">
@@ -260,7 +260,7 @@
             id="class"
             bind:value={formData.class} 
             required 
-            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="" disabled selected>শ্রেণি নির্বাচন করুন</option>
             {#each classOptions as option}
@@ -297,7 +297,7 @@
   
   
     <div class="text-center">
-      <button type="submit" class="bg-cyan-600 text-white py-2 px-4 rounded-md hover:bg-cyan-700 transition-colors" disabled={submitting}>
+      <button type="submit" class="bg-primary-800 text-white py-2.5 px-6 rounded-md hover:bg-primary-900 transition-colors font-semibold shadow-card disabled:bg-gray-400" disabled={submitting}>
         {submitting ? 'Submitting...' : 'নিবন্ধন সম্পন্ন করুন'}
       </button>
     </div>

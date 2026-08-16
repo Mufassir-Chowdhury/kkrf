@@ -18,15 +18,28 @@
 </script>
 
 <div class="min-h-screen bg-gray-50 print:bg-white font-solaimanlipi">
-  <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 print:hidden">
+  <div class="bg-primary-900 text-primary-100 text-xs md:text-sm print:hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-9 flex items-center justify-between">
+      <p class="truncate">রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট &nbsp;•&nbsp; ০১৭৫২-৮৩১১৮৪</p>
+      <div class="hidden sm:flex items-center space-x-4">
+        <a href="mailto:info@kkrfsylhet.org" class="hover:text-white transition-colors">info@kkrfsylhet.org</a>
+      </div>
+    </div>
+  </div>
+
+  <header class="bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50 print:hidden">
     <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         <div class="flex items-center">
-          <a href="/" class="flex-shrink-0">
-            <img class="h-12 w-12" src="/favicon.png" alt="কিশোরকণ্ঠ Logo">
+          <a href="/" class="flex-shrink-0 flex items-center space-x-3">
+            <img class="h-11 w-11" src="/favicon.png" alt="কিশোরকণ্ঠ Logo">
+            <span class="hidden sm:block leading-tight">
+              <span class="block text-base font-bold text-primary-900">কিশোরকণ্ঠ পাঠক ফোরাম</span>
+              <span class="block text-xs font-medium text-secondary-600 tracking-wide">সিলেট মহানগর</span>
+            </span>
           </a>
           <div class="hidden md:block ml-10">
-            <div class="flex items-baseline space-x-4">
+            <div class="flex items-baseline space-x-1">
               <a href="/" class="nav-link" class:active={$page.url.pathname === '/'}>Home</a>
               <a href="/about" class="nav-link" class:active={$page.url.pathname === '/about'}>About</a>
               <a href="/medhabritti-2025" class="nav-link" class:active={$page.url.pathname === '/medhabritti-2025'}>মেধাবৃত্তি - ২০২৫</a>
@@ -36,7 +49,7 @@
           </div>
         </div>
         <div class="md:hidden">
-          <button on:click={toggleMenu} class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary-600 hover:bg-primary-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
+          <button on:click={toggleMenu} class="inline-flex items-center justify-center p-2 rounded-md text-gray-600 hover:text-primary-700 hover:bg-primary-50 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500">
             <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
               <path class:hidden={isOpen} stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
               <path class:hidden={!isOpen} stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -45,9 +58,9 @@
         </div>
       </div>
     </nav>
-    
+
     {#if isOpen}
-      <div class="md:hidden" transition:fly={{ y: -20, duration: 300 }}>
+      <div class="md:hidden border-t border-gray-100" transition:fly={{ y: -20, duration: 300 }}>
         <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
           <a href="/" class="mobile-nav-link" class:active={$page.url.pathname === '/'}>Home</a>
           <a href="/about" class="mobile-nav-link" class:active={$page.url.pathname === '/about'}>About</a>
@@ -58,29 +71,55 @@
       </div>
     {/if}
   </header>
-  
+
   <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 print:m-0 print:p-0 print:max-w-none">
     {#if mounted}
-      <div in:fly="{{ y: 20, duration: 500, delay: 300 }}">
+      <div in:fly="{{ y: 12, duration: 400, delay: 150 }}">
         <slot></slot>
       </div>
     {/if}
   </main>
 
-  <footer class="bg-white border-t border-gray-200 print:hidden">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-        <p class="text-sm text-gray-500">© {new Date().getFullYear()} কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর। সর্বস্বত্ব সংরক্ষিত।</p>
-        <div class="flex space-x-6">
-          <a href="https://www.facebook.com/KKSylhet" class="text-gray-400 hover:text-primary-600 transition-colors">
+  <footer class="bg-primary-950 text-primary-200 print:hidden">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
+        <div>
+          <div class="flex items-center space-x-3 mb-4">
+            <img class="h-10 w-10" src="/favicon.png" alt="কিশোরকণ্ঠ Logo">
+            <span class="text-white font-bold text-lg">কিশোরকণ্ঠ পাঠক ফোরাম</span>
+          </div>
+          <p class="text-sm text-primary-300 leading-relaxed">শিক্ষা ও সংস্কৃতির উন্নয়নে নিবেদিত একটি স্বেচ্ছাসেবী সংগঠন। প্রতিষ্ঠাকাল ১৯৮৪।</p>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4 text-sm tracking-wide uppercase">Quick Links</h4>
+          <div class="flex flex-col space-y-2 text-sm">
+            <a href="/about" class="hover:text-white transition-colors">About</a>
+            <a href="/medhabritti-2025" class="hover:text-white transition-colors">মেধাবৃত্তি - ২০২৫</a>
+            <a href="/results" class="hover:text-white transition-colors">ফলাফল ২০২৫</a>
+            <a href="/contact" class="hover:text-white transition-colors">Contact</a>
+          </div>
+        </div>
+        <div>
+          <h4 class="text-white font-semibold mb-4 text-sm tracking-wide uppercase">যোগাযোগ</h4>
+          <div class="text-sm space-y-2 text-primary-300">
+            <p>রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট।</p>
+            <p><a href="tel:01752831184" class="hover:text-white transition-colors">০১৭৫২-৮৩১১৮৪</a></p>
+            <p><a href="mailto:info@kkrfsylhet.org" class="hover:text-white transition-colors">info@kkrfsylhet.org</a></p>
+          </div>
+        </div>
+      </div>
+      <div class="mt-10 pt-6 border-t border-primary-800 flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
+        <p class="text-sm text-primary-400">© {new Date().getFullYear()} কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর। সর্বস্বত্ব সংরক্ষিত।</p>
+        <div class="flex space-x-5">
+          <a href="https://www.facebook.com/KKSylhet" class="text-primary-400 hover:text-white transition-colors">
             <span class="sr-only">Facebook</span>
-            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path fill-rule="evenodd" d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z" clip-rule="evenodd" />
             </svg>
           </a>
-          <a href="https://www.instagram.com/kksylhet" class="text-gray-400 hover:text-primary-600 transition-colors">
+          <a href="https://www.instagram.com/kksylhet" class="text-primary-400 hover:text-white transition-colors">
             <span class="sr-only">Instagram</span>
-            <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path fill-rule="evenodd" d="M12.315 2c2.43 0 2.784.013 3.808.06 1.064.049 1.791.218 2.427.465a4.902 4.902 0 011.772 1.153 4.902 4.902 0 011.153 1.772c.247.636.416 1.363.465 2.427.048 1.067.06 1.407.06 4.123v.08c0 2.643-.012 2.987-.06 4.043-.049 1.064-.218 1.791-.465 2.427a4.902 4.902 0 01-1.153 1.772 4.902 4.902 0 01-1.772 1.153c-.636.247-1.363.416-2.427.465-1.067.048-1.407.06-4.123.06h-.08c-2.643 0-2.987-.012-4.043-.06-1.064-.049-1.791-.218-2.427-.465a4.902 4.902 0 01-1.772-1.153 4.902 4.902 0 01-1.153-1.772c-.247-.636-.416-1.363-.465-2.427-.047-1.024-.06-1.379-.06-3.808v-.63c0-2.43.013-2.784.06-3.808.049-1.064.218-1.791.465-2.427a4.902 4.902 0 011.153-1.772A4.902 4.902 0 015.45 2.525c.636-.247 1.363-.416 2.427-.465C8.901 2.013 9.256 2 11.685 2h.63zm-.081 1.802h-.468c-2.456 0-2.784.011-3.807.058-.975.045-1.504.207-1.857.344-.467.182-.8.398-1.15.748-.35.35-.566.683-.748 1.15-.137.353-.3.882-.344 1.857-.047 1.023-.058 1.351-.058 3.807v.468c0 2.456.011 2.784.058 3.807.045.975.207 1.504.344 1.857.182.466.399.8.748 1.15.35.35.683.566 1.15.748.353.137.882.3 1.857.344 1.054.048 1.37.058 4.041.058h.08c2.597 0 2.917-.01 3.96-.058.976-.045 1.505-.207 1.858-.344.466-.182.8-.398 1.15-.748.35-.35.566-.683.748-1.15.137-.353.3-.882.344-1.857.048-1.055.058-1.37.058-4.041v-.08c0-2.597-.01-2.917-.058-3.96-.045-.976-.207-1.505-.344-1.858a3.097 3.097 0 00-.748-1.15 3.098 3.098 0 00-1.15-.748c-.353-.137-.882-.3-1.857-.344-1.023-.047-1.351-.058-3.807-.058zM12 6.865a5.135 5.135 0 110 10.27 5.135 5.135 0 010-10.27zm0 1.802a3.333 3.333 0 100 6.666 3.333 3.333 0 000-6.666zm5.338-3.205a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z" clip-rule="evenodd" />
             </svg>
           </a>
@@ -92,21 +131,25 @@
 
 <style>
   .nav-link {
-    @apply px-3 py-2 rounded-md text-sm font-medium text-gray-600 transition-colors duration-300;
+    @apply relative px-3 py-2 text-sm font-medium text-gray-600 transition-colors duration-200;
   }
   .nav-link:hover {
-    @apply text-primary-600 bg-primary-50;
+    @apply text-primary-800;
   }
   .nav-link.active {
-    @apply bg-primary-600 text-white shadow-sm;
+    @apply text-primary-900 font-semibold;
+  }
+  .nav-link.active::after {
+    content: '';
+    @apply absolute left-3 right-3 -bottom-[1px] h-0.5 bg-secondary-500 rounded-full;
   }
   .mobile-nav-link {
-    @apply block px-3 py-2 rounded-md text-base font-medium text-gray-700 transition-colors duration-300;
+    @apply block px-3 py-2 rounded-md text-base font-medium text-gray-700 transition-colors duration-300 border-l-2 border-transparent;
   }
   .mobile-nav-link:hover {
-    @apply text-primary-600 bg-primary-50;
+    @apply text-primary-800 bg-primary-50;
   }
   .mobile-nav-link.active {
-    @apply bg-primary-600 text-white shadow-sm;
+    @apply bg-primary-50 text-primary-900 border-secondary-500 font-semibold;
   }
 </style>

@@ -17,11 +17,12 @@
 </svelte:head>
 
 <div class="space-y-16">
-  <section class="text-center pt-8">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
+  <section class="text-center pt-4">
+    <span class="section-eyebrow">সীট প্লান ও এডমিট কার্ড</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-900 mb-3 tracking-tight">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
   </section>
 
-  <section class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
+  <section class="bg-secondary-600 text-white p-8 md:p-12 rounded-xl shadow-card-lg text-center">
       <h2 class="text-3xl font-bold mb-4">পরীক্ষার তারিখ</h2>
       <p class="text-4xl font-extrabold tracking-tight">
         ১ নভেম্বর, ২০২৫
@@ -29,9 +30,9 @@
       <p class="text-xl text-secondary-100">(শনিবার)</p>
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12 text-center">
+  <section class="card text-center">
     <h2 class="text-3xl font-bold text-primary-700 mb-6">এডমিট কার্ড ডাউনলোড করুন</h2>
-    <a href="/admit" class="bg-primary-600 text-white py-3 px-8 rounded-full hover:bg-primary-700 transition-colors inline-block text-lg font-semibold shadow-md">
+    <a href="/admit" class="btn-primary">
       ডাউনলোড
     </a>
     <p class="mt-4 text-gray-600">
@@ -39,22 +40,22 @@
     </p>
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+  <section class="card">
     <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">সীট প্লান দেখুন</h2>
     <div class="grid md:grid-cols-3 gap-8">
-        <a href="/britti_info/mirabazar" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg shadow-md">
+        <a href="/britti_info/mirabazar" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg border border-primary-100 shadow-card">
             <h3 class="text-2xl font-bold text-primary-800">শাহজালাল জামেয়া ইসলামিয়া স্কুল এন্ড কলেজ, মিরাবাজার</h3>
         </a>
-        <a href="/britti_info/ptj" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg shadow-md">
+        <a href="/britti_info/ptj" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg border border-primary-100 shadow-card">
             <h3 class="text-2xl font-bold text-primary-800">শাহজালাল জামেয়া ইসলামিয়া কামিল মাদরাসা, পাঠানটুলা</h3>
         </a>
-        <a href="/britti_info/alamin" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg shadow-md">
+        <a href="/britti_info/alamin" class="block text-center bg-primary-50 hover:bg-primary-100 transition-colors p-8 rounded-lg border border-primary-100 shadow-card">
             <h3 class="text-2xl font-bold text-primary-800">আল-আমীন জামেয়া স্কুল এন্ড কলেজ, মেজরটিলা</h3>
         </a>
     </div>
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
+  <section class="card">
     <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">বৃত্তি সম্পর্কিত তথ্য</h2>
     <ul class="space-y-4">
       {#each examRules as rule}
@@ -66,8 +67,8 @@
     </ul>
   </section>
 
-  <div class="bg-amber-50 p-6 rounded-lg shadow-md">
-			<h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
+  <div class="bg-secondary-50 border border-secondary-200 p-6 rounded-lg">
+			<h4 class="text-lg font-semibold text-primary-900 mb-4">যোগাযোগের ঠিকানা:</h4>
 			<ul class="space-y-2 text-gray-700">
 				<li>০১৩০০২০৮১৮৮ (তৌহিদুল ইসলাম)</li>
 				<li>০১৭৮২৮৪৭৪৩৯ (রেজাউল করিম)</li>
@@ -76,7 +77,7 @@
 			</ul>
 		</div>
 
-  <div class="text-sm text-gray-500 text-center py-8 border-t">
+  <div class="text-sm text-gray-500 text-center py-8 border-t border-gray-200">
     আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর<br>
     বিস্তারিত তথ্যের জন্য: <a href="http://www.kkrfsylhet.org" class="text-primary-600 hover:underline">www.kkrfsylhet.org</a>
   </div>

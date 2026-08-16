@@ -116,11 +116,12 @@
 </svelte:head>
 
 <div class="space-y-8">
-	<h1 class="text-3xl font-bold text-center text-teal-700">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
-	<h2 class="text-xl font-semibold text-center text-teal-600">
+	<span class="section-eyebrow block text-center">নিবন্ধন</span>
+	<h1 class="text-3xl font-bold text-center text-primary-900">কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫</h1>
+	<h2 class="text-lg font-semibold text-center text-gray-500">
 		আয়োজনে: কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর
 	</h2>
-	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রেজিস্ট্রেশন বন্ধ আছে</h3>
+	<h3 class="text-xl font-bold text-center text-secondary-700 mb-6">রেজিস্ট্রেশন বন্ধ আছে</h3>
 	<!-- <div class="bg-gradient-to-r from-teal-500 to-amber-500 text-white p-6 rounded-lg shadow-md">
 		<h3 class="text-2xl font-bold mb-4 text-center">রেজিস্ট্রেশন ফি জমা দিন</h3>
 		<div class="grid md:grid-cols-2 gap-4">
@@ -210,7 +211,7 @@
             id="class"
             bind:value={formData.class} 
             required 
-            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+            class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="" disabled selected>শ্রেণি নির্বাচন করুন</option>
             {#each classOptions as option}
@@ -307,8 +308,8 @@
 	{/if}
 
 	<div class="mt-8 space-y-4">
-		<div class="bg-amber-50 p-6 rounded-lg shadow-md">
-			<h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
+		<div class="bg-secondary-50 border border-secondary-200 p-6 rounded-lg">
+			<h4 class="text-lg font-semibold text-primary-900 mb-4">যোগাযোগের ঠিকানা:</h4>
 			<ul class="space-y-2 text-gray-700">
 				<li>০১৩০০২০৮১৮৮ (তৌহিদুল ইসলাম)</li>
 				<li>০১৭৮২৮৪৭৪৩৯ (রেজাউল করিম)</li>
@@ -320,7 +321,7 @@
 		<div class="text-sm text-gray-600 text-center">
 			বিস্তারিত তথ্যের জন্য: <a
 				href="http://www.kkrfsylhet.org"
-				class="text-teal-600 hover:underline">www.kkrfsylhet.org</a
+				class="text-primary-700 hover:underline">www.kkrfsylhet.org</a
 			>
 		</div>
 	</div>

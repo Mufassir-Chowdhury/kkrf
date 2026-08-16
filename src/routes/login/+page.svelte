@@ -28,8 +28,8 @@
 
 <div class="flex items-center justify-center min-h-[70vh]">
     <div class="w-full max-w-md px-4">
-        <div class="bg-white rounded-2xl shadow-2xl p-8 md:p-12">
-            <h1 class="text-4xl font-bold text-center text-primary-800 mb-8">Admin Login</h1>
+        <div class="card">
+            <h1 class="text-2xl font-bold text-center text-primary-900 mb-8">Admin Login</h1>
             
             <form on:submit|preventDefault={handleLogin} class="space-y-6">
                 <div>
@@ -39,7 +39,7 @@
                         id="password" 
                         bind:value={password} 
                         required 
-                        class="w-full border border-gray-300 rounded-lg shadow-sm py-3 px-4 text-lg focus:ring-primary-500 focus:border-primary-500 transition"
+                        class="w-full border border-gray-300 rounded-md shadow-sm py-3 px-4 text-base focus:ring-primary-500 focus:border-primary-500 transition"
                         placeholder="Enter your password"
                     />
                 </div>
@@ -51,7 +51,7 @@
                 <div class="text-center pt-4">
                     <button 
                         type="submit" 
-                        class="w-full bg-primary-600 text-white py-3 px-8 rounded-full hover:bg-primary-700 transition-transform transform hover:scale-105 text-xl font-semibold shadow-lg disabled:bg-gray-400 disabled:scale-100"
+                        class="w-full bg-primary-800 text-white py-3 px-8 rounded-md hover:bg-primary-900 transition-colors text-base font-semibold shadow-card disabled:bg-gray-400"
                         disabled={loading}
                     >
                         {loading ? 'Logging in...' : 'Login'}

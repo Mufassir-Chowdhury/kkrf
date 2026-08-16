@@ -48,23 +48,24 @@
 
 <div class="max-w-7xl mx-auto px-4 py-12">
   <section class="text-center mb-12">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">মেধাবৃত্তি পরীক্ষার ফলাফল - ২০২৫</h1>
+    <span class="section-eyebrow">ফলাফল</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-900 mb-4 tracking-tight">মেধাবৃত্তি পরীক্ষার ফলাফল - ২০২৫</h1>
   </section>
 
   <div class="space-y-4">
     {#each classes as classLevel}
-      <div class="bg-white rounded-2xl shadow-lg overflow-hidden transition-shadow hover:shadow-xl">
+      <div class="bg-white rounded-xl shadow-card border border-primary-100/60 overflow-hidden transition-shadow hover:shadow-card-lg">
         <button
           class="w-full px-6 py-5 text-left bg-white hover:bg-primary-50/50 transition-colors flex justify-between items-center"
           on:click={() => toggleSection(classLevel)}
         >
           <div>
-            <span class="text-2xl font-bold text-primary-700">{classLevel} শ্রেণি</span>
-            <span class="text-base text-gray-500 ml-3">
+            <span class="text-xl font-bold text-primary-900">{classLevel} শ্রেণি</span>
+            <span class="text-sm text-gray-500 ml-3">
               (মোট: {resultsData.filter(r => r.Class === classLevel).length} জন)
             </span>
           </div>
-          <span class="transform transition-transform duration-300 text-primary-600" class:rotate-180={expandedSections.has(classLevel)}>
+          <span class="transform transition-transform duration-300 text-secondary-600" class:rotate-180={expandedSections.has(classLevel)}>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
           </span>
         </button>
@@ -87,7 +88,7 @@
                 {:else}
                   <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
                     {#each getResultsByClassAndCategory(classLevel, category) as result}
-                      <div class="bg-primary-50 text-primary-800 font-semibold p-3 text-center rounded-lg shadow-sm text-lg">
+                      <div class="bg-primary-50 text-primary-900 font-semibold p-3 text-center rounded-md border border-primary-100 text-base">
                         {result.ROLL}
                       </div>
                     {/each}

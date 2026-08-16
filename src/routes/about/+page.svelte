@@ -4,13 +4,14 @@
 </svelte:head>
 
 <div class="space-y-12">
-  <section class="text-center py-8">
-    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-800 mb-4">আমাদের সম্পর্কে</h1>
-    <p class="text-xl md:text-2xl text-secondary-700">কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</p>
+  <section class="text-center py-4">
+    <span class="section-eyebrow">আমাদের পরিচিতি</span>
+    <h1 class="text-4xl md:text-5xl font-extrabold text-primary-900 mb-3 tracking-tight">আমাদের সম্পর্কে</h1>
+    <p class="text-lg md:text-xl text-gray-500">কিশোরকণ্ঠ পাঠক ফোরাম, সিলেট মহানগর</p>
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-    <h2 class="text-3xl font-bold text-primary-700 mb-6 text-center">একটি সংক্ষিপ্ত পরিচিতি</h2>
+  <section class="card">
+    <h2 class="section-title mb-6 text-center">একটি সংক্ষিপ্ত পরিচিতি</h2>
     <div class="prose max-w-none text-gray-700 leading-loose">
         <p>
             বাংলাদেশ! আমাদের প্রিয় জন্মভূমি। মাথার ওপর নীল ছামিয়ানা উঁচিয়ে সদা দণ্ডায়মান আসমান। দিগন্ত বিস্তৃত ফসলের মাঠে দোল দিয়ে যায় ঝিরিঝিরি বাতাস, অন্তরে বুলিয়ে দেয় প্রশান্তির ছোঁয়া। কুলুকুলু রব তুলে বহমান পদ্মা, মেঘনা, যমুনাসহ অজস্র নদী-নালার বুকে বয়ে চলে নৌকা। বাংলার দক্ষিণ অঞ্চলকে ঘিরে রেখেছে পৃথিবীর সর্ববৃহৎ ম্যানগ্রোভ সুন্দরবন। এতো এতো রূপ-রস-গন্ধে ভরা এই অনিন্দ্য সুন্দর দেশটির প্রতি আকৃষ্ট হয়ে সুদূর সাইবেরিয়া থেকে শীতের মৌসুমে অতিথি পাখিরা এসে ভিড় জমায়। কার না ভালো লাগে এই দেশ! তাইতো একেক সময় একেক দেশ তাদের কুনজর নিয়ে শাসন করতে এসেছিল এদেশকে। কিন্তু শাসনের নামে তাদের সেই শোষণকে মেনে নিতে পারেনি দেশপ্রেমিক মানুষ। বাংলামায়ের দামাল ছেলেরা তাদেরকে রুখে দিয়েছে। তথাপি এখনও থেমে নেই বিদেশীদের লোলুপ দৃষ্টি। তাই এই সুজলা-সুফলা-শস্যশ্যামলা বাংলাদেশের অপার সম্ভাবনার সম্ভারকে রক্ষা ও তার পরিচর্যার জন্য প্রয়োজন একদল সৎ, দক্ষ ও দেশপ্রেমিক মানুষের এবং সেই সাথে প্রয়োজন আমাদের গৌরবময় ইতিহাস-ঐতিহ্য তুলে ধরার মতো নির্ভিক কলমসৈনিক।
@@ -24,42 +25,42 @@
     </div>
   </section>
 
-  <section class="bg-white rounded-2xl shadow-xl p-8 md:p-12">
-    <h2 class="text-3xl font-bold text-primary-700 mb-8 text-center">আমাদের কার্যক্রম</h2>
+  <section class="card">
+    <h2 class="section-title mb-8 text-center">আমাদের কার্যক্রম</h2>
     <ul class="grid grid-cols-1 md:grid-cols-2 gap-6 text-lg">
       <li class="flex items-start space-x-3">
-        <span class="text-primary-500 mt-1">✓</span>
+        <span class="text-secondary-600 mt-1">✓</span>
         <span>মেধা, দেশপ্রেম ও চারিত্রিক মূল্যবোধ সৃষ্টি</span>
       </li>
       <li class="flex items-start space-x-3">
-        <span class="text-primary-500 mt-1">✓</span>
+        <span class="text-secondary-600 mt-1">✓</span>
         <span>ফ্রি কোচিং ক্লাস, দরিদ্র মেধাবী ছাত্রদেরকে বৃত্তি ও আর্থিক সহায়তা প্রদান</span>
       </li>
       <li class="flex items-start space-x-3">
-        <span class="text-primary-500 mt-1">✓</span>
+        <span class="text-secondary-600 mt-1">✓</span>
         <span>দেয়ালিকা ও ফোল্ডার স্টিকার, ক্লাস রুটিন, ক্যালেন্ডার এবং ঈদ কার্ড প্রকাশ</span>
       </li>
       <li class="flex items-start space-x-3">
-        <span class="text-primary-500 mt-1">✓</span>
+        <span class="text-secondary-600 mt-1">✓</span>
         <span>আন্তঃস্কুল ক্রিকেট ও ফুটবল টুর্নামেন্ট, বৃক্ষরোপন, স্কুল আঙ্গিনা পরিষ্কার অভিযান, অলিম্পিয়াড এর আয়োজন</span>
       </li>
       <li class="flex items-start space-x-3">
-        <span class="text-primary-500 mt-1">✓</span>
+        <span class="text-secondary-600 mt-1">✓</span>
         <span>জেএসসি, জেডিসি কৃতি এবং এসএসসি ও দাখিল জিপিএ-৫ প্রাপ্তদের সংবর্ধনা</span>
       </li>
       <li class="flex items-start space-x-3">
-        <span class="text-primary-500 mt-1">✓</span>
+        <span class="text-secondary-600 mt-1">✓</span>
         <span>কিশোরকণ্ঠ পাঠ, সাধারণ জ্ঞানের আসর, বিতর্ক ও রচনা প্রতিযোগিতা</span>
       </li>
       <li class="flex items-start space-x-3">
-        <span class="text-primary-500 mt-1">✓</span>
+        <span class="text-secondary-600 mt-1">✓</span>
         <span>শিক্ষা সফর, সামষ্টিক ভোজ ও পাঠচক্রের আয়োজন</span>
       </li>
     </ul>
   </section>
 
-  <section class="bg-gradient-to-r from-secondary-500 to-secondary-600 text-white p-8 md:p-12 rounded-2xl shadow-xl text-center">
-    <h2 class="text-3xl font-bold mb-4">যোগাযোগ করুন</h2>
+  <section class="bg-primary-900 text-white p-8 md:p-12 rounded-xl shadow-card-lg text-center">
+    <h2 class="text-2xl md:text-3xl font-bold mb-4">যোগাযোগ করুন</h2>
     <p class="text-lg mb-2">ঠিকানা: রশিদ ভবন (৩য় তলা), রিকাবী বাজার, সিলেট।</p>
     <p class="text-lg mb-2">ফোন: ০১৭৫২-৮৩১১৮৪</p>
     <p class="text-lg">অফিস সময়: বিকাল ৫:০০ থেকে রাত ৮:০০ ঘটিকা</p>

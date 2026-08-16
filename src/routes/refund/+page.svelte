@@ -70,12 +70,13 @@
 </svelte:head>
 
 <div class="space-y-8">
-	<h1 class="text-3xl font-bold text-center text-teal-700">রিফান্ড আবেদন</h1>
-	<h2 class="text-xl font-semibold text-center text-teal-600">
+	<span class="section-eyebrow block text-center">রিফান্ড</span>
+	<h1 class="text-3xl font-bold text-center text-primary-900">রিফান্ড আবেদন</h1>
+	<h2 class="text-lg font-semibold text-center text-gray-500">
 		কিশোরকণ্ঠ মেধাবৃত্তি পরীক্ষা ২০২৫
 	</h2>
 
-	<div class="bg-gradient-to-r from-red-500 to-orange-500 text-white p-6 rounded-lg shadow-md">
+	<div class="bg-red-600 text-white p-6 rounded-lg shadow-card">
 		<h3 class="text-2xl font-bold mb-4 text-center">গুরুত্বপূর্ণ বিজ্ঞপ্তি</h3>
 		<div in:fly={{ y: 50, duration: 500 }} class="bg-white bg-opacity-20 p-6 rounded-lg space-y-4">
 			<p class="text-lg leading-relaxed">
@@ -95,9 +96,9 @@
 		</div>
 	</div>
 
-	<h3 class="text-2xl font-bold text-center text-teal-800 mb-6">রিফান্ড আবেদন ফরম</h3>
+	<h3 class="text-xl font-bold text-center text-primary-900 mb-6">রিফান্ড আবেদন ফরম</h3>
 
-	<form on:submit|preventDefault={handleSubmit} class="space-y-6 bg-white p-6 rounded-lg shadow-md">
+	<form on:submit|preventDefault={handleSubmit} class="space-y-6 card">
 		<div>
 			<label class="block text-sm font-medium text-gray-700 mb-2">
 				ছাত্র/ছাত্রীর নাম (বাংলায়) <span class="text-red-500">*</span>
@@ -106,7 +107,7 @@
 				type="text" 
 				bind:value={formData.studentName} 
 				required 
-				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-teal-500 focus:border-teal-500"
+				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary-500 focus:border-primary-500"
 				placeholder="যেমন: মোহাম্মদ রহিম"
 			>
 		</div>
@@ -119,7 +120,7 @@
 				type="tel" 
 				bind:value={formData.senderNumber} 
 				required 
-				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-teal-500 focus:border-teal-500"
+				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary-500 focus:border-primary-500"
 				placeholder="01XXXXXXXXX"
 			>
 			<p class="text-xs text-gray-500 mt-1">যে নাম্বার থেকে টাকা পাঠানো হয়েছিল</p>
@@ -133,7 +134,7 @@
 				type="text" 
 				bind:value={formData.transactionID} 
 				required 
-				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-teal-500 focus:border-teal-500"
+				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary-500 focus:border-primary-500"
 				placeholder="যেমন: 9BK5ABCD12"
 			>
 			<p class="text-xs text-gray-500 mt-1">যে আইডি রেজিস্ট্রেশনে ব্যবহার করা হয়েছিল</p>
@@ -147,7 +148,7 @@
 				type="tel" 
 				bind:value={formData.refundNumber} 
 				required 
-				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-teal-500 focus:border-teal-500"
+				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary-500 focus:border-primary-500"
 				placeholder="01XXXXXXXXX"
 			>
 			<p class="text-xs text-gray-500 mt-1">যে নাম্বারে রিফান্ড পেতে চান</p>
@@ -161,7 +162,7 @@
 				type="text" 
 				bind:value={formData.bkashTime} 
 				required 
-				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-teal-500 focus:border-teal-500"
+				class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2 focus:ring-primary-500 focus:border-primary-500"
 				placeholder="যেমন: ২০ অক্টোবর, ২০২৫ - দুপুর ২টা"
 			>
 			<p class="text-xs text-gray-500 mt-1">কখন টাকা পাঠানো হয়েছিল</p>
@@ -170,7 +171,7 @@
 		<div class="text-center pt-4">
 			<button 
 				type="submit" 
-				class="bg-teal-600 text-white py-3 px-8 rounded-md hover:bg-teal-700 transition-colors text-lg font-semibold disabled:bg-gray-400 disabled:cursor-not-allowed" 
+				class="bg-primary-800 text-white py-3 px-8 rounded-md hover:bg-primary-900 transition-colors text-lg font-semibold shadow-card disabled:bg-gray-400 disabled:cursor-not-allowed"
 				disabled={submitting}
 			>
 				{submitting ? 'জমা দেওয়া হচ্ছে...' : 'রিফান্ড আবেদন জমা দিন'}
@@ -199,8 +200,8 @@
 	{/if}
 
 	<div class="mt-8 space-y-4">
-		<div class="bg-amber-50 p-6 rounded-lg shadow-md">
-			<h4 class="text-xl font-semibold text-teal-700 mb-4">যোগাযোগের ঠিকানা:</h4>
+		<div class="bg-secondary-50 border border-secondary-200 p-6 rounded-lg">
+			<h4 class="text-lg font-semibold text-primary-900 mb-4">যোগাযোগের ঠিকানা:</h4>
 			<ul class="space-y-2 text-gray-700">
 				<li>০১৩০০২০৮১৮৮ (তৌহিদুল ইসলাম)</li>
 				<li>০১৭৮২৮৪৭৪৩৯ (রেজাউল করিম)</li>
@@ -212,7 +213,7 @@
 		<div class="text-sm text-gray-600 text-center">
 			বিস্তারিত তথ্যের জন্য: <a
 				href="http://www.kkrfsylhet.org"
-				class="text-teal-600 hover:underline">www.kkrfsylhet.org</a
+				class="text-primary-700 hover:underline">www.kkrfsylhet.org</a
 			>
 		</div>
 	</div>
