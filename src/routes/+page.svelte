@@ -1,7 +1,7 @@
 <script>
   import { onMount, onDestroy } from 'svelte';
   import { fly } from 'svelte/transition';
-  
+
   let activeAccordion = null;
   let currentIndex = 0;
   let interval;
@@ -11,7 +11,7 @@
       currentIndex = (currentIndex + 1) % carouselItems.length;
     }, 5000); // Change slide every 5 seconds
   });
- 
+
   onDestroy(() => {
     if (interval) clearInterval(interval);
   });
@@ -23,7 +23,7 @@
   ];
 
   const members = [
-    // { id: 1, name: "নাবিল মাহমুদ নিলয়", role: "পরিচালক", image: "niloy.png", phone: "০১৭০১৪৫৯৮৮১" },
+    // { id: 1, name: "নাবিল মাহমুদ নিলয়", role: "পরিচালক", image: "niloy.png", phone: "০১৭০১৪৫৯৮৮১" },
     { id: 1, name: "আহসান হাবীব", role: "পরিচালক", image: "habib.png", phone: "০১৯৭৩৮৮১৪৯৮" },
     { id: 2, name: "শহিদুল ইসলাম ফেরদৌস", role: "সহকারী পরিচালক", image: "ferdous.png", phone: ""},
     // { id: 3, name: "মুফাসসির আহমদ চৌধুরী", role: "সহকারী পরিচালক", image: "mufassir.jpg", phone: "০১৭৭১১৪৪৩০৮" },

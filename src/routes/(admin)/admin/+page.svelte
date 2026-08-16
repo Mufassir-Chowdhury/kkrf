@@ -17,7 +17,14 @@
 		<a href="/admin/scholarship" class="block group">
 			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-900">
 				<h3 class="text-lg font-semibold text-primary-900 mb-1">Scholarship Settings</h3>
-				<p class="text-gray-500 text-sm">Start a new year, toggle registration, edit site info</p>
+				<p class="text-gray-500 text-sm">Start a new year, toggle registration, edit syllabus</p>
+			</div>
+		</a>
+
+		<a href="/admin/site-info" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-900">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Institution Info</h3>
+				<p class="text-gray-500 text-sm">Address, contact numbers, social links</p>
 			</div>
 		</a>
 

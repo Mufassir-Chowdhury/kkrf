@@ -8,10 +8,7 @@
 		getAllScholarships,
 		saveScholarship,
 		setRegistrationOpen,
-		getSiteInfo,
-		saveSiteInfo,
-		EMPTY_SCHOLARSHIP,
-		DEFAULT_SITE_INFO
+		EMPTY_SCHOLARSHIP
 	} from '$lib/siteData';
 
 	// Full 2025 dataset, used only to pre-fill the very first scholarship ever created
@@ -62,13 +59,10 @@
 	let generalSettings = { activeScholarshipId: null };
 	let activeScholarship = null;
 	let allScholarships = [];
-	let siteInfo = { ...DEFAULT_SITE_INFO };
 
 	// Form state (structured copies, edited then saved explicitly)
 	let form = { ...EMPTY_SCHOLARSHIP };
 	let examRulesText = '';
-	let syllabusText = '[]';
-	let syllabusError = '';
 
 	// New year form
 	let newYear = '';
@@ -81,8 +75,13 @@
 	function loadFormFromScholarship(s) {
 		form = { ...EMPTY_SCHOLARSHIP, ...s };
 		examRulesText = (form.examRules || []).join('\n');
-		syllabusText = JSON.stringify(form.syllabus || [], null, 2);
-		syllabusError = '';
+		form.syllabus = (form.syllabus || []).map((c) => ({
+			class: c.class || '',
+			subjects: (c.subjects || []).map((sub) => ({
+				name: sub.name || '',
+				topics: sub.topics || []
+			}))
+		}));
 	}
 
 	async function loadAll() {
@@ -93,7 +92,6 @@
 				? await getScholarship(generalSettings.activeScholarshipId)
 				: null;
 			allScholarships = await getAllScholarships();
-			siteInfo = await getSiteInfo();
 
 			if (activeScholarship) {
 				loadFormFromScholarship(activeScholarship);
@@ -184,17 +182,45 @@
 		form.offices = form.offices.filter((_, i) => i !== index);
 	}
 
+	function addSyllabusClass() {
+		form.syllabus = [...(form.syllabus || []), { class: '', subjects: [] }];
+	}
+	function removeSyllabusClass(classIndex) {
+		if (!confirm('এই শ্রেণিটি এবং এর সকল বিষয় মুছে ফেলতে চান?')) return;
+		form.syllabus = form.syllabus.filter((_, i) => i !== classIndex);
+	}
+	function addSubject(classIndex) {
+		form.syllabus[classIndex].subjects = [
+			...(form.syllabus[classIndex].subjects || []),
+			{ name: '', topics: [''] }
+		];
+		form.syllabus = form.syllabus;
+	}
+	function removeSubject(classIndex, subjectIndex) {
+		form.syllabus[classIndex].subjects = form.syllabus[classIndex].subjects.filter(
+			(_, i) => i !== subjectIndex
+		);
+		form.syllabus = form.syllabus;
+	}
+	function updateTopics(classIndex, subjectIndex, text) {
+		form.syllabus[classIndex].subjects[subjectIndex].topics = text.split('\n');
+		form.syllabus = form.syllabus;
+	}
+
 	async function handleSaveScholarship() {
 		if (!activeScholarship) return;
 
-		let parsedSyllabus;
-		try {
-			parsedSyllabus = JSON.parse(syllabusText);
-			syllabusError = '';
-		} catch (err) {
-			syllabusError = 'সিলেবাস JSON সঠিক নয়। অনুগ্রহ করে ফরম্যাট যাচাই করুন।';
-			return;
-		}
+		const cleanedSyllabus = (form.syllabus || [])
+			.map((c) => ({
+				class: (c.class || '').trim(),
+				subjects: (c.subjects || [])
+					.map((sub) => ({
+						name: (sub.name || '').trim(),
+						topics: (sub.topics || []).map((t) => t.trim()).filter(Boolean)
+					}))
+					.filter((sub) => sub.name || sub.topics.length)
+			}))
+			.filter((c) => c.class || c.subjects.length);
 
 		const payload = {
 			...form,
@@ -203,7 +229,7 @@
 				.map((r) => r.trim())
 				.filter(Boolean),
 			offices: (form.offices || []).filter((o) => o.name || o.address || o.phone),
-			syllabus: parsedSyllabus
+			syllabus: cleanedSyllabus
 		};
 		delete payload.id;
 
@@ -231,29 +257,6 @@
 		}
 	}
 
-	function addContactPerson() {
-		siteInfo.contactPersons = [...(siteInfo.contactPersons || []), { name: '', phone: '' }];
-	}
-	function removeContactPerson(index) {
-		siteInfo.contactPersons = siteInfo.contactPersons.filter((_, i) => i !== index);
-	}
-
-	async function handleSaveSiteInfo() {
-		saving = true;
-		try {
-			const payload = {
-				...siteInfo,
-				contactPersons: (siteInfo.contactPersons || []).filter((p) => p.name || p.phone)
-			};
-			await saveSiteInfo(payload);
-			alert('তথ্য সংরক্ষণ করা হয়েছে।');
-		} catch (err) {
-			console.error('Error saving site info:', err);
-			alert('তথ্য সংরক্ষণ করতে সমস্যা হয়েছে।');
-		} finally {
-			saving = false;
-		}
-	}
 </script>
 
 <svelte:head>
@@ -469,21 +472,81 @@
 				</div>
 
 				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-1">
-						সিলেবাস (JSON ফরম্যাট)
-					</label>
-					<p class="text-xs text-gray-400 mb-2">
-						ফরম্যাট: [{'{'}"class": "৪র্থ শ্রেণি", "subjects": [{'{'}"name": "বাংলা", "topics":
-						["..."]{'}'}]{'}'}]
-					</p>
-					<textarea
-						bind:value={syllabusText}
-						rows="10"
-						class="w-full border border-gray-300 rounded-md p-2 font-mono text-xs focus:ring-primary-500 focus:border-primary-500"
-					></textarea>
-					{#if syllabusError}
-						<p class="text-red-600 text-sm mt-1">{syllabusError}</p>
-					{/if}
+					<div class="flex justify-between items-center mb-2">
+						<div>
+							<label class="block text-sm font-medium text-gray-700">সিলেবাস</label>
+							<p class="text-xs text-gray-400 mt-0.5">
+								প্রতিটি শ্রেণির জন্য একটি বক্স যোগ করুন, তারপর সেই শ্রেণির প্রতিটি বিষয় ও তার টপিকগুলো লিখুন।
+							</p>
+						</div>
+						<button
+							on:click={addSyllabusClass}
+							class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
+						>
+							+ শ্রেণি যোগ করুন
+						</button>
+					</div>
+
+					<div class="space-y-4">
+						{#each form.syllabus || [] as classData, ci}
+							<div class="border border-gray-200 rounded-lg p-4 bg-gray-50/50 space-y-3">
+								<div class="flex items-center gap-2">
+									<input
+										type="text"
+										bind:value={classData.class}
+										placeholder="শ্রেণির নাম (যেমনঃ ১০ম শ্রেণি (স্কুল/মাদরাসা))"
+										class="flex-1 border border-gray-300 rounded-md p-2 text-sm font-semibold focus:ring-primary-500 focus:border-primary-500"
+									/>
+									<button
+										on:click={() => removeSyllabusClass(ci)}
+										class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+										title="শ্রেণি মুছে ফেলুন"
+									>
+										✕
+									</button>
+								</div>
+
+								<div class="space-y-3 pl-2 border-l-2 border-primary-100">
+									{#each classData.subjects || [] as subject, si}
+										<div class="grid grid-cols-1 sm:grid-cols-[1fr_2fr_auto] gap-2 items-start pl-2">
+											<input
+												type="text"
+												bind:value={subject.name}
+												placeholder="বিষয়ের নাম (যেমনঃ বাংলা)"
+												class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+											/>
+											<textarea
+												value={(subject.topics || []).join('\n')}
+												on:input={(e) => updateTopics(ci, si, e.target.value)}
+												rows="3"
+												placeholder="টপিকসমূহ (প্রতি লাইনে একটি)"
+												class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+											></textarea>
+											<button
+												on:click={() => removeSubject(ci, si)}
+												class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+												title="বিষয় মুছে ফেলুন"
+											>
+												✕
+											</button>
+										</div>
+									{/each}
+									{#if !(classData.subjects || []).length}
+										<p class="text-sm text-gray-400 pl-2">কোনো বিষয় যোগ করা হয়নি।</p>
+									{/if}
+									<button
+										on:click={() => addSubject(ci)}
+										class="text-sm font-medium text-primary-700 hover:text-primary-900 pl-2"
+									>
+										+ বিষয় যোগ করুন
+									</button>
+								</div>
+							</div>
+						{/each}
+						{#if !(form.syllabus || []).length}
+							<p class="text-sm text-gray-400">কোনো শ্রেণি যোগ করা হয়নি।</p>
+						{/if}
+					</div>
 				</div>
 
 				<div class="flex justify-end">
@@ -538,110 +601,5 @@
 				</div>
 			</div>
 		{/if}
-
-		<!-- Organization Info -->
-		<div class="card space-y-6">
-			<h2 class="section-title">প্রতিষ্ঠানের তথ্য</h2>
-			<p class="text-gray-500 text-sm -mt-4">
-				এই তথ্য পুরো ওয়েবসাইট জুড়ে (ফুটার, যোগাযোগ পাতা, হোমপেজ) ব্যবহৃত হয়।
-			</p>
-
-			<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-				<div class="md:col-span-2">
-					<label class="block text-sm font-medium text-gray-700 mb-1">অফিসের ঠিকানা</label>
-					<input
-						type="text"
-						bind:value={siteInfo.address}
-						class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-					/>
-				</div>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-1">প্রধান ফোন নাম্বার</label>
-					<input
-						type="text"
-						bind:value={siteInfo.phone}
-						class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-					/>
-				</div>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-1">ইমেইল</label>
-					<input
-						type="text"
-						bind:value={siteInfo.email}
-						class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-					/>
-				</div>
-				<div class="md:col-span-2">
-					<label class="block text-sm font-medium text-gray-700 mb-1">অফিস সময়</label>
-					<input
-						type="text"
-						bind:value={siteInfo.officeTime}
-						class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-					/>
-				</div>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-1">Facebook URL</label>
-					<input
-						type="text"
-						bind:value={siteInfo.facebook}
-						class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-					/>
-				</div>
-				<div>
-					<label class="block text-sm font-medium text-gray-700 mb-1">Instagram URL</label>
-					<input
-						type="text"
-						bind:value={siteInfo.instagram}
-						class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-					/>
-				</div>
-			</div>
-
-			<div>
-				<div class="flex justify-between items-center mb-2">
-					<label class="block text-sm font-medium text-gray-700">যোগাযোগের ব্যক্তিবর্গ</label>
-					<button
-						on:click={addContactPerson}
-						class="text-sm font-medium text-primary-700 hover:text-primary-900"
-					>
-						+ যোগ করুন
-					</button>
-				</div>
-				<div class="space-y-3">
-					{#each siteInfo.contactPersons || [] as person, i}
-						<div class="grid grid-cols-1 sm:grid-cols-[1fr_1fr_auto] gap-2 items-start">
-							<input
-								type="text"
-								bind:value={person.name}
-								placeholder="নাম"
-								class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-							/>
-							<input
-								type="text"
-								bind:value={person.phone}
-								placeholder="ফোন নাম্বার"
-								class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-							/>
-							<button
-								on:click={() => removeContactPerson(i)}
-								class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
-								title="মুছে ফেলুন"
-							>
-								✕
-							</button>
-						</div>
-					{/each}
-					{#if !(siteInfo.contactPersons || []).length}
-						<p class="text-sm text-gray-400">কোনো যোগাযোগের ব্যক্তি যোগ করা হয়নি।</p>
-					{/if}
-				</div>
-			</div>
-
-			<div class="flex justify-end">
-				<button on:click={handleSaveSiteInfo} disabled={saving} class="btn-primary disabled:opacity-50">
-					{saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
-				</button>
-			</div>
-		</div>
 	</div>
 {/if}
