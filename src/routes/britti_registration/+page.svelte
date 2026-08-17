@@ -1,30 +1,16 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { initializeApp } from 'firebase/app';
-	import { getFirestore, collection, addDoc } from 'firebase/firestore';
+	import { addDoc } from 'firebase/firestore';
 	import { fly } from 'svelte/transition';
 	import { getActiveScholarship, getSiteInfo } from '$lib/siteData';
+	import { applicationsCol } from '$lib/yearScope';
 
-	// Your Firebase configuration
-	const firebaseConfig = {
-		apiKey: 'AIzaSyBy8i9BLWzUMulNQJkJsbDX8m6MFYz6T_k',
-		authDomain: 'kkrf-sylhet.firebaseapp.com',
-		projectId: 'kkrf-sylhet',
-		storageBucket: 'kkrf-sylhet.appspot.com',
-		messagingSenderId: '973839955936',
-		appId: '1:973839955936:web:eefd07d1a4b7be73b91d85'
-	};
-
-	let app;
-	let db;
 	let loading = true;
 	let scholarship = null;
 	let siteInfo = null;
 
 	onMount(async () => {
-		app = initializeApp(firebaseConfig);
-		db = getFirestore(app);
 		[scholarship, siteInfo] = await Promise.all([getActiveScholarship(), getSiteInfo()]);
 		loading = false;
 	});
@@ -67,10 +53,16 @@
 		submitSuccess = false;
 		submitError = '';
 
+		if (!scholarship) {
+			submitError = 'An error occurred while submitting the form. Please try again.';
+			submitting = false;
+			return;
+		}
+
 		try {
 			formData.creationTime = new Date().toISOString();
 			formData.confirmed = false; // Ensure confirmed is set to false
-			const docRef = await addDoc(collection(db, 'scholarshipApplications-2025'), formData);
+			const docRef = await addDoc(applicationsCol(scholarship.id), formData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
 			goto('/britti_registration/successful');

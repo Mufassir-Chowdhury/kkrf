@@ -1,32 +1,22 @@
 <script>
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
-	import { initializeApp } from 'firebase/app';
-	import { getFirestore, collection, addDoc } from 'firebase/firestore';
+	import { addDoc } from 'firebase/firestore';
     import { page } from '$app/stores';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
+	import { getActiveScholarship } from '$lib/siteData';
+	import { offlineCol } from '$lib/yearScope';
 
 	export let data;
-	// Your Firebase configuration
-	const firebaseConfig = {
-		apiKey: 'AIzaSyBy8i9BLWzUMulNQJkJsbDX8m6MFYz6T_k',
-		authDomain: 'kkrf-sylhet.firebaseapp.com',
-		projectId: 'kkrf-sylhet',
-		storageBucket: 'kkrf-sylhet.appspot.com',
-		messagingSenderId: '973839955936',
-		appId: '1:973839955936:web:eefd07d1a4b7be73b91d85'
-	};
 
-	let app;
-	let db;
 	let institutions = [];
 	let filteredInstitutions = [];
 	let showDropdown = false;
+	let scholarship = null;
 
 	onMount(async () => {
-		app = initializeApp(firebaseConfig);
-		db = getFirestore(app);
-		
+		scholarship = await getActiveScholarship();
+
 		// Load institutions from JSON file
 		try {
 			const response = await fetch('/institutions.json');
@@ -123,6 +113,12 @@
             return;
         }
 
+        if (!scholarship) {
+            submitError = 'An error occurred while submitting the form. Please try again.';
+            submitting = false;
+            return;
+        }
+
 		try {
             // Trim whitespace from all string fields before submitting
             const cleanedFormData = Object.fromEntries(
@@ -134,7 +130,7 @@
 			cleanedFormData.creationTime = new Date().toISOString();
             cleanedFormData.branch = branch;
 
-			const docRef = await addDoc(collection(db, `offline-2025`), cleanedFormData);
+			const docRef = await addDoc(offlineCol(scholarship.id), cleanedFormData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
 			goto(`/offline/${branch}/successful`);

@@ -69,5 +69,12 @@
 				<p class="text-gray-500 text-sm">Manage results</p>
 			</div>
 		</a>
+
+		<a href="/admin/migrate" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-gray-400">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Data Migration</h3>
+				<p class="text-gray-500 text-sm">One-off: copy legacy year data to the new schema</p>
+			</div>
+		</a>
 	</div>
 </div>
