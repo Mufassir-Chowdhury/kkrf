@@ -84,4 +84,17 @@ Status:
   Dropped each page's duplicate `initializeApp`/`getFirestore` calls in favor of the shared instance.
   All three now no-op with a submit error if there's no active scholarship configured (previously
   would have crashed/thrown on missing `db`).
-- Waiting on approval to start Step 4 (update admin read/write modules to the new schema).
+- Step 4 done: every admin read/write module and public admit-card lookup now uses the
+  `scholarships/{year}/...` schema via `yearScope.js` helpers, resolved through
+  `loadAdminYear()`/`getCurrentYear()` (defaults to the active scholarship's year). Files touched:
+  `admin/db.js`, `admin/refund/db.js` + `refund/+page.svelte`, `admin/online/+page.svelte`,
+  `admin/list/[branch]/db.js` + `+page.svelte` (roll-number cache included), `admin/list/+page.svelte`,
+  `admin/list/edit/[id]/+page.svelte` (year threaded via `?year=` query param), `admin/list/[branch]/admit/*`
+  (year via query param too), `admin/institutions/+page.svelte` (merge-rules/groups cache included),
+  `admin/result/+page.svelte` + `UploadResultModal.svelte`, and the public `admit/+page.svelte` /
+  `admit/[roll]/AdmitCard.svelte` (scoped to the active year, matching prior behavior). Admin panel and
+  public forms are now consistent again — new registrations submitted after Step 3 are visible in the
+  admin panel. Left untouched as out-of-scope: `admin/search/search-db.js`'s dead/broken `searchByMobile`
+  function (was already missing imports before this work) and the Algolia-backed global search index
+  (external service, not Firestore).
+- Waiting on approval to start Step 5 (year switcher UI in the admin panel).

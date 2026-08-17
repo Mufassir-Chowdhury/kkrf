@@ -1,9 +1,9 @@
 <script>
     import { goto } from '$app/navigation';
     import { encodeRoll } from '$lib/hash';
-    import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc, where, setDoc, writeBatch, limit } from 'firebase/firestore';
-    import { db } from '$lib/firebase';
-  
+    import { getDocs, query, where, limit } from 'firebase/firestore';
+    import { getCurrentYear, offlineCol } from '$lib/yearScope';
+
     let roll = '';
     let error = '';
     let loading = false;
@@ -34,9 +34,10 @@
         
         try {
             const trimmedRoll = resendRoll.trim();
-            
+
+            const year = await getCurrentYear();
             const q = query(
-                collection(db, 'offline-2025'),
+                offlineCol(year),
                 where('roll', '==', trimmedRoll),
                 limit(1)
             );

@@ -5,9 +5,10 @@
 // Schema: scholarships/{year}/applications|offline|refunds/{id}
 //         scholarships/{year}/cache/{start_roll|online_serial|institution_groups|merge_rules}
 import { collection, doc } from 'firebase/firestore';
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { browser } from '$app/environment';
 import { db } from './firebase';
+import { getActiveScholarship } from './siteData';
 
 function yearId(year) {
 	if (!year) throw new Error('yearScope: year is required');
@@ -83,4 +84,20 @@ export function initAdminYear(fallbackYear) {
 
 export function setAdminYear(year) {
 	selectedYear.set(year ? String(year) : null);
+}
+
+// Resolves the active scholarship's year (the id of the scholarships/{id} doc
+// pointed to by settings/general.activeScholarshipId). Used as the default
+// year for both public forms and admin pages.
+export async function getCurrentYear() {
+	const scholarship = await getActiveScholarship();
+	return scholarship?.id || null;
+}
+
+// For admin pages: resolves the active year and seeds the selectedYear store
+// (without overriding a year the admin already picked this session).
+export async function loadAdminYear() {
+	const year = await getCurrentYear();
+	initAdminYear(year);
+	return get(selectedYear) || year;
 }

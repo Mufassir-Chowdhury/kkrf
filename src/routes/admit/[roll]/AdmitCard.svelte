@@ -2,8 +2,8 @@
   import { onMount } from 'svelte';
   import { encodeRoll, decodeHash } from '$lib/hash';
 
-  import { collection, getDocs, query, where } from 'firebase/firestore';
-  import { db } from '$lib/firebase';
+  import { getDocs, query, where } from 'firebase/firestore';
+  import { getCurrentYear, offlineCol } from '$lib/yearScope';
   import { page } from '$app/stores';
   // import html2pdf from 'html2pdf.js';
 
@@ -38,8 +38,9 @@
       }
 
       // Query Firestore using where clause
+      const year = await getCurrentYear();
       const q = query(
-        collection(db, 'offline-2025'),
+        offlineCol(year),
         where('roll', '==', roll)
       );
       

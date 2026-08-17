@@ -2,8 +2,8 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
-	import { db } from '$lib/firebase';
-	import { doc, getDoc, updateDoc } from 'firebase/firestore';
+	import { getDoc, updateDoc } from 'firebase/firestore';
+	import { getCurrentYear, offlineDocRef } from '$lib/yearScope';
 
 	let formData = {
 		serial: '',
@@ -25,6 +25,7 @@
 	let updating = false;
 	let error = null;
 	let success = false;
+	let year = null;
 	const id = $page.params.id;
 
 	let classOptions = [
@@ -39,7 +40,8 @@
 
 	onMount(async () => {
 		try {
-			const docRef = doc(db, 'offline-2025', id);
+			year = $page.url.searchParams.get('year') || (await getCurrentYear());
+			const docRef = offlineDocRef(year, id);
 			const docSnap = await getDoc(docRef);
 
 			if (docSnap.exists()) {
@@ -61,7 +63,7 @@
 		error = null;
 
 		try {
-			const docRef = doc(db, 'offline-2025', id);
+			const docRef = offlineDocRef(year, id);
 			await updateDoc(docRef, formData);
 			success = true;
 			goto(`/admin/list/${formData.branch}`);

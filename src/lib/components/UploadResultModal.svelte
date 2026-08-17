@@ -1,11 +1,13 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
 	import readXlsxFile from 'read-excel-file';
-	import { doc, writeBatch } from 'firebase/firestore';
+	import { writeBatch } from 'firebase/firestore';
 	import { db } from '$lib/firebase';
+	import { offlineDocRef } from '$lib/yearScope';
 
 	export let show = false;
 	export let registrations = [];
+	export let year;
 
 	const dispatch = createEventDispatcher();
 	let files = [];
@@ -189,7 +191,7 @@
 			for (const chunk of chunks) {
 				const subBatch = writeBatch(db);
 				for (const id of chunk) {
-					const ref = doc(db, 'offline-2025', id);
+					const ref = offlineDocRef(year, id);
 					subBatch.update(ref, updatesById[id]);
 				}
 				await subBatch.commit();

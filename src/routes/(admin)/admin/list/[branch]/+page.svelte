@@ -8,9 +8,11 @@
 	import { loadRegistrations, deleteRegistration, assignRollNumbers } from './db';
 	import { writeBatch } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
+	import { loadAdminYear, offlineDocRef } from '$lib/yearScope';
 
 	export let data;
 	let branch = $page.params.branch;
+	let year = null;
 	let registrations = [];
 	let filteredRegistrations = [];
 	let searchTerm = '';
@@ -81,7 +83,7 @@
 
 		try {
 			assigningRolls = true;
-			await assignRollNumbers(confirmedRegs, center);
+			await assignRollNumbers(confirmedRegs, center, year);
 			showRollModal = false;
 			centerNumber = '';
 			await handleLoad();
@@ -108,7 +110,7 @@
 			const batch = writeBatch(db);
 
 			for (const id of selectedIds) {
-				const ref = doc(db, 'offline-2025', id);
+				const ref = offlineDocRef(year, id);
 				batch.update(ref, { confirm: true });
 			}
 
@@ -165,7 +167,7 @@
 			const batch = writeBatch(db);
 
 			for (const reg of regsInRange) {
-				const ref = doc(db, 'offline-2025', reg.id);
+				const ref = offlineDocRef(year, reg.id);
 				batch.update(ref, { confirm: true });
 			}
 
@@ -182,10 +184,11 @@
 	}
 
 	onMount(async () => {
+		year = await loadAdminYear();
 		await handleLoad();
 	});
 
-	import { updateDoc, doc } from 'firebase/firestore';
+	import { updateDoc } from 'firebase/firestore';
 	import { db } from '$lib/firebase';
 
 	let incompleteRegs = [];
@@ -196,7 +199,7 @@
 
 	async function handleBulkUpdate() {
 		for (const reg of incompleteRegs) {
-			const ref = doc(db, 'offline-2025', reg.id);
+			const ref = offlineDocRef(year, reg.id);
 			await updateDoc(ref, {
 				gender: reg.gender ?? '',
 				institutionType: reg.institutionType ?? ''
@@ -204,13 +207,13 @@
 		}
 		// refresh only the temporary list
 		const branch = $page.params.branch;
-		registrations = await loadRegistrations(branch);
+		registrations = await loadRegistrations(branch, year);
 		handleLoad();
 	}
 
 	async function handleLoad() {
 		loading = true;
-		registrations = await loadRegistrations(branch);
+		registrations = await loadRegistrations(branch, year);
 		computeSerialRange(branch);
 		computeIncomplete();
 		confirmedCount = registrations.filter((r) => r.confirm === true).length;
@@ -275,12 +278,12 @@
 	}
 
 	async function handleDelete(id) {
-		await deleteRegistration(id);
+		await deleteRegistration(year, id);
 		await handleLoad();
 	}
 
 	function handleEdit(id) {
-		goto(`/admin/list/edit/${id}`);
+		goto(`/admin/list/edit/${id}?year=${encodeURIComponent(year)}`);
 	}
 
 	async function handleSendSMS() {
@@ -510,7 +513,7 @@
 				</button>
 
 				<a
-					href="/admin/list/{branch}/admit"
+					href="/admin/list/{branch}/admit?year={encodeURIComponent(year)}"
 					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-gray-900 transition-colors"
 					title="Admit Card"
 				>

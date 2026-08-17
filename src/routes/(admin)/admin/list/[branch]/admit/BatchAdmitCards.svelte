@@ -1,21 +1,16 @@
 <script>
-  import {
-    collection,
-    getDocs,
-    query,
-    orderBy,
-    where
-  } from 'firebase/firestore';
-  import { db } from '$lib/firebase';
+  import { getDocs, query, orderBy, where } from 'firebase/firestore';
+  import { offlineCol } from '$lib/yearScope';
   import { onMount } from 'svelte';
-  
+
   // 'allRegistrations' will hold the master list from Firestore
-  let allRegistrations = []; 
+  let allRegistrations = [];
   // 'csvData' is now a reactive variable, derived from the master list and filters
-  let csvData = []; 
+  let csvData = [];
   let error = null;
   export let branch;
   export let branchName;
+  export let year;
 
   // --- NEW: State for serial number range ---
   let serialStart = '';
@@ -31,7 +26,7 @@
   onMount(async () => {
     try {
       const q = query(
-        collection(db, 'offline-2025'),
+        offlineCol(year),
         where('branch', '==', branch),
         where('roll', '!=', null),
         orderBy('serial', 'desc')

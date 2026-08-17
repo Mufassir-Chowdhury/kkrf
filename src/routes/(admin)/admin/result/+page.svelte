@@ -1,10 +1,12 @@
 <script>
 	import { onMount } from 'svelte';
-	import { collection, getDocs, orderBy, query, writeBatch, doc } from 'firebase/firestore';
+	import { getDocs, orderBy, query, writeBatch } from 'firebase/firestore';
 	import { db } from '$lib/firebase';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import UploadResultModal from '$lib/components/UploadResultModal.svelte';
+	import { loadAdminYear, offlineCol, offlineDocRef } from '$lib/yearScope';
 
+	let year = null;
 	let allRegistrations = [];
 	let filteredRegistrations = [];
 	let loading = true;
@@ -34,7 +36,8 @@
 	async function loadData() {
 		try {
 			loading = true;
-			const q = query(collection(db, 'offline-2025'), orderBy('serial', 'desc'));
+			year = year || (await loadAdminYear());
+			const q = query(offlineCol(year), orderBy('serial', 'desc'));
 			const querySnapshot = await getDocs(q);
 			allRegistrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 
@@ -170,7 +173,7 @@
 		try {
 			const batch = writeBatch(db);
 			selectedIds.forEach((id) => {
-				const docRef = doc(db, 'offline-2025', id);
+				const docRef = offlineDocRef(year, id);
 				batch.update(docRef, { grade: grade || null });
 			});
 			await batch.commit();
@@ -553,6 +556,7 @@
 	<UploadResultModal
 		show={showUploadModal}
 		registrations={allRegistrations}
+		{year}
 		on:close={() => {
 			showUploadModal = false;
 			loadData();

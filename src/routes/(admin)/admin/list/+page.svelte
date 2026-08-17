@@ -1,23 +1,17 @@
 <script>
 	import { onMount } from 'svelte';
-	import {
-		getFirestore,
-		collection,
-		getDocs,
-		query,
-		where,
-		getCountFromServer,
-		orderBy
-	} from 'firebase/firestore';
-	import { db } from '$lib/firebase';
+	import { getDocs, query, where, getCountFromServer, orderBy } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
+	import { loadAdminYear, offlineCol } from '$lib/yearScope';
 
 	export let data;
 	let thanaWithCounts = [];
 	let total = 0;
+	let year = null;
 	onMount(async () => {
+		year = await loadAdminYear();
 		const countPromises = Object.entries(data.thana).map(async ([key, value]) => {
-			const q = query(collection(db, 'offline-2025'), where('branch', '==', key));
+			const q = query(offlineCol(year), where('branch', '==', key));
 			const querySnapshot = await getCountFromServer(q);
 			return {
 				key,
@@ -25,14 +19,14 @@
 				count: querySnapshot.data().count
 			};
 		});
-		const q = query(collection(db, 'offline-2025'));
+		const q = query(offlineCol(year));
 		const querySnapshot = await getCountFromServer(q);
 
 		total = querySnapshot.data().count;
 		thanaWithCounts = await Promise.all(countPromises);
 	});
 	async function handleExportCSV() {
-		const q = query(collection(db, 'offline-2025'), orderBy('creationTime', 'desc'));
+		const q = query(offlineCol(year), orderBy('creationTime', 'desc'));
 		const querySnapshot = await getDocs(q);
 		let registrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
 		if (!registrations || registrations.length === 0) {

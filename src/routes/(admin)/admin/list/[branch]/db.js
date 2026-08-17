@@ -1,10 +1,11 @@
-import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc, where, setDoc, writeBatch } from 'firebase/firestore';
+import { getDocs, deleteDoc, query, orderBy, getDoc, where, setDoc, writeBatch } from 'firebase/firestore';
+import { offlineCol, offlineDocRef, cacheDocRef } from '$lib/yearScope';
 import { db } from '$lib/firebase';
 
-export async function loadRegistrations(branch) {
+export async function loadRegistrations(branch, year) {
     try {
       const q = query(
-        collection(db, 'offline-2025'),
+        offlineCol(year),
         where('branch', '==', branch),
         orderBy('serial', 'desc')
     );
@@ -19,10 +20,10 @@ export async function loadRegistrations(branch) {
   }
 
 
-export async function deleteRegistration(id) {
+export async function deleteRegistration(year, id) {
     if (confirm('Are you sure you want to delete this registration?')) {
         try {
-          await deleteDoc(doc(db, 'offline-2025', id));
+          await deleteDoc(offlineDocRef(year, id));
         } catch (err) {
           console.error("Error deleting registration:", err);
           throw err;
@@ -45,10 +46,10 @@ function getClassDigit(className) {
 }
 
 // Build or update cache for roll number starting points
-async function ensureRollCache(registrations, centerNumber) {
-  const cacheRef = doc(db, '_cache', 'start_roll');
+async function ensureRollCache(registrations, centerNumber, year) {
+  const cacheRef = cacheDocRef(year, 'start_roll');
   let cacheData = {};
-  
+
   try {
     const cacheDoc = await getDoc(cacheRef);
     if (cacheDoc.exists()) {
@@ -60,16 +61,16 @@ async function ensureRollCache(registrations, centerNumber) {
 
   // Group registrations by class and gender
   const groups = {};
-  
+
   registrations.forEach(reg => {
     const classDigit = getClassDigit(reg.class);
     const gender = reg.gender || 'male';
     const key = `${centerNumber}${classDigit}`;
-    
+
     if (!groups[key]) {
       groups[key] = { male: [], female: [] };
     }
-    
+
     if (gender === 'female') {
       groups[key].female.push(reg);
     } else {
@@ -81,12 +82,12 @@ async function ensureRollCache(registrations, centerNumber) {
   for (const [key, group] of Object.entries(groups)) {
     const maleKey = `${key}_male`;
     const femaleKey = `${key}_female`;
-    
+
     // Initialize male starting point if not exists
     if (!cacheData[maleKey]) {
       cacheData[maleKey] = parseInt(`${key}0001`);
     }
-    
+
     // Initialize female starting point if not exists
     if (!cacheData[femaleKey]) {
       cacheData[femaleKey] = parseInt(`${key}5001`);
@@ -98,24 +99,24 @@ async function ensureRollCache(registrations, centerNumber) {
   return cacheData;
 }
 
-export async function assignRollNumbers(registrations, centerNumber) {
+export async function assignRollNumbers(registrations, centerNumber, year) {
   try {
     // Ensure cache exists and is up to date
-    const cache = await ensureRollCache(registrations, centerNumber);
-    const cacheRef = doc(db, '_cache', 'start_roll');
-    
+    const cache = await ensureRollCache(registrations, centerNumber, year);
+    const cacheRef = cacheDocRef(year, 'start_roll');
+
     // Group registrations by class and gender
     const groups = {};
-    
+
     registrations.forEach(reg => {
       const classDigit = getClassDigit(reg.class);
       const gender = reg.gender || 'male';
       const key = `${centerNumber}${classDigit}`;
-      
+
       if (!groups[key]) {
         groups[key] = { male: [], female: [] };
       }
-      
+
       if (gender === 'female') {
         groups[key].female.push(reg);
       } else {
@@ -131,9 +132,9 @@ export async function assignRollNumbers(registrations, centerNumber) {
       // Assign male rolls
       const maleKey = `${key}_male`;
       let maleRoll = updatedCache[maleKey];
-      
+
       for (const reg of group.male) {
-        const regRef = doc(db, 'offline-2025', reg.id);
+        const regRef = offlineDocRef(year, reg.id);
         batch.update(regRef, { roll: maleRoll.toString() });
         maleRoll++;
       }
@@ -142,9 +143,9 @@ export async function assignRollNumbers(registrations, centerNumber) {
       // Assign female rolls
       const femaleKey = `${key}_female`;
       let femaleRoll = updatedCache[femaleKey];
-      
+
       for (const reg of group.female) {
-        const regRef = doc(db, 'offline-2025', reg.id);
+        const regRef = offlineDocRef(year, reg.id);
         batch.update(regRef, { roll: femaleRoll.toString() });
         femaleRoll++;
       }
@@ -153,10 +154,10 @@ export async function assignRollNumbers(registrations, centerNumber) {
 
     // Update cache with new starting points
     batch.set(cacheRef, updatedCache);
-    
+
     // Commit all changes
     await batch.commit();
-    
+
   } catch (err) {
     console.error("Error assigning roll numbers:", err);
     throw err;

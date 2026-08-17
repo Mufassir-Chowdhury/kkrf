@@ -1,11 +1,8 @@
 <script>
 	import { onMount, onDestroy } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { db } from '$lib/firebase';
 	import {
-		collection,
 		getDocs,
-		deleteDoc,
 		doc,
 		query,
 		orderBy,
@@ -14,13 +11,14 @@
 		limit,
 		startAfter,
 		getCountFromServer,
-		addDoc,
-		writeBatch,
-		setDoc
+		writeBatch
 	} from 'firebase/firestore';
 	import { sendConfirmationSMS, handleExportCSV, sendIncompleteRegistrationSMS } from '../util';
 	import { deleteRegistration, loadAllRegistrations } from '../db';
+	import { loadAdminYear, applicationsCol, applicationDocRef, offlineCol, cacheDocRef } from '$lib/yearScope';
+	import { db } from '$lib/firebase';
 
+	let year = null;
 	let registrations = [];
 	let filteredRegistrations = [];
 	let searchTerm = '';
@@ -55,6 +53,7 @@
 		loading = true;
 
 		try {
+			year = await loadAdminYear();
 			const { items, total, last, hasMoreItems } = await loadMoreRegistrations(null);
 			registrations = items;
 			totalItems = total;
@@ -90,7 +89,7 @@
 	}
 
 	async function loadMoreRegistrations(lastDoc) {
-		const registrationsRef = collection(db, 'scholarshipApplications-2025');
+		const registrationsRef = applicationsCol(year);
 		let q;
 
 		if (lastDoc === null) {
@@ -173,7 +172,7 @@
 	}
 
 	async function getNextSerialNumber(count) {
-		const cacheRef = doc(db, '_cache', 'online-serial');
+		const cacheRef = cacheDocRef(year, 'online_serial');
 		const cacheDoc = await getDoc(cacheRef);
 
 		let currentSerial = 99001;
@@ -224,11 +223,11 @@
 				};
 
 				// Add to offline collection
-				const offlineRef = doc(collection(db, 'offline-2025'));
+				const offlineRef = doc(offlineCol(year));
 				batch.set(offlineRef, offlineData);
 
-				// Delete from scholarshipApplications-2025
-				const onlineRef = doc(db, 'scholarshipApplications-2025', reg.id);
+				// Delete from applications
+				const onlineRef = applicationDocRef(year, reg.id);
 				batch.delete(onlineRef);
 			});
 
@@ -256,7 +255,7 @@
 	}
 
 	async function handleDelete(id) {
-		await deleteRegistration(id);
+		await deleteRegistration(year, id);
 		// Remove from local array instead of reloading everything
 		registrations = registrations.filter((reg) => reg.id !== id);
 		totalItems--;
@@ -271,7 +270,7 @@
 
 	async function handleExportAllCSV() {
 		try {
-			const allRegistrations = await loadAllRegistrations();
+			const allRegistrations = await loadAllRegistrations(year);
 			handleExportCSV(allRegistrations);
 		} catch (err) {
 			console.error('Error exporting CSV:', err);
@@ -285,8 +284,8 @@
 
 	async function confirmRegistration(id) {
 		try {
-			await updateDoc(doc(db, 'scholarshipApplications-2025', id), { confirmed: true });
-			const registrationDoc = await getDoc(doc(db, 'scholarshipApplications-2025', id));
+			await updateDoc(applicationDocRef(year, id), { confirmed: true });
+			const registrationDoc = await getDoc(applicationDocRef(year, id));
 			const registrationData = registrationDoc.data();
 			await sendConfirmationSMS(registrationData.mobile);
 
@@ -304,7 +303,7 @@
 
 	async function cancelConfirmation(id) {
 		try {
-			await updateDoc(doc(db, 'scholarshipApplications-2025', id), { confirmed: false });
+			await updateDoc(applicationDocRef(year, id), { confirmed: false });
 
 			// Update local array
 			registrations = registrations.map((reg) =>

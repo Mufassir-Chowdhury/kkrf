@@ -1,9 +1,11 @@
 <script>
 	import { onMount } from 'svelte';
-	import { collection, getDocs, writeBatch, doc, getDoc, setDoc } from 'firebase/firestore';
+	import { getDocs, writeBatch, getDoc, setDoc } from 'firebase/firestore';
 	import { db } from '$lib/firebase';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
+	import { loadAdminYear, offlineCol, offlineDocRef, cacheDocRef } from '$lib/yearScope';
 
+	let year = null;
 	let loading = true;
 	let institutionGroups = [];
 	let selectedInstitutions = new Set();
@@ -15,6 +17,7 @@
 	let pendingMerges = []; // Array of merge rules for display
 
 	onMount(async () => {
+		year = await loadAdminYear();
 		await loadInstitutions();
 		await loadMergeRules();
 	});
@@ -23,7 +26,7 @@
 		loading = true;
 		try {
 			// Try to load from cache first
-			const cacheDoc = await getDoc(doc(db, '_cache', 'institution-groups'));
+			const cacheDoc = await getDoc(cacheDocRef(year, 'institution_groups'));
 
 			if (cacheDoc.exists()) {
 				const cached = cacheDoc.data();
@@ -45,7 +48,7 @@
 
 	async function loadMergeRules() {
 		try {
-			const rulesDoc = await getDoc(doc(db, '_cache', 'merge-rules'));
+			const rulesDoc = await getDoc(cacheDocRef(year, 'merge_rules'));
 			if (rulesDoc.exists()) {
 				const data = rulesDoc.data();
 				mergeRules = new Map(Object.entries(data.rules || {}));
@@ -59,7 +62,7 @@
 	async function saveMergeRules() {
 		try {
 			const rulesObject = Object.fromEntries(mergeRules);
-			await setDoc(doc(db, '_cache', 'merge-rules'), {
+			await setDoc(cacheDocRef(year, 'merge_rules'), {
 				rules: rulesObject,
 				lastUpdated: new Date().toISOString()
 			});
@@ -92,7 +95,7 @@
 	}
 
 	async function rebuildCache() {
-		const querySnapshot = await getDocs(collection(db, 'offline-2025'));
+		const querySnapshot = await getDocs(offlineCol(year));
 		const registrations = querySnapshot.docs.map((d) => ({ id: d.id, ...d.data() }));
 
 		const institutionMap = new Map();
@@ -122,7 +125,7 @@
 		}));
 
 		// Save to cache
-		await setDoc(doc(db, '_cache', 'institution-groups'), {
+		await setDoc(cacheDocRef(year, 'institution_groups'), {
 			groups: institutionGroups,
 			lastUpdated: new Date().toISOString()
 		});
@@ -244,7 +247,7 @@
 				const batch = writeBatch(db);
 
 				chunk.forEach((update) => {
-					const ref = doc(db, 'offline-2025', update.id);
+					const ref = offlineDocRef(year, update.id);
 					batch.update(ref, { institution: update.newName });
 				});
 

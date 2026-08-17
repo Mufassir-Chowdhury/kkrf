@@ -1,9 +1,10 @@
 <script>
     import { onMount, onDestroy } from 'svelte';
-    import { db } from '$lib/firebase';
-    import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, limit, startAfter, getCountFromServer, addDoc, writeBatch, setDoc } from 'firebase/firestore';
+    import { getDocs, query, orderBy, updateDoc, limit, startAfter, getCountFromServer } from 'firebase/firestore';
     import { deleteRegistration } from './db';
-    
+    import { loadAdminYear, refundsCol, refundDocRef } from '$lib/yearScope';
+
+    let year = null;
     let registrations = [];
     let filteredRegistrations = [];
     let searchTerm = '';
@@ -32,8 +33,9 @@
 
     async function handleInitialLoad() {
         loading = true;
-        
+
         try {
+            year = await loadAdminYear();
             const { items, total, last, hasMoreItems } = await loadMoreRegistrations(null);
             registrations = items;
             totalItems = total;
@@ -69,7 +71,7 @@
     }
 
     async function loadMoreRegistrations(lastDoc) {
-        const registrationsRef = collection(db, 'refund-2025');
+        const registrationsRef = refundsCol(year);
         let q;
 
         if (lastDoc === null) {
@@ -128,7 +130,7 @@
     }
 
     async function handleDelete(id) {
-        await deleteRegistration(id);
+        await deleteRegistration(year, id);
         // Remove from local array instead of reloading everything
         registrations = registrations.filter(reg => reg.id !== id);
         totalItems--;
@@ -143,7 +145,7 @@
 
     async function confirmRegistration(id) {
         try {
-            await updateDoc(doc(db, 'refund-2025', id), { confirmed: true });            
+            await updateDoc(refundDocRef(year, id), { confirmed: true });
             // Update local array
             registrations = registrations.map(reg => 
                 reg.id === id ? { ...reg, confirmed: true } : reg

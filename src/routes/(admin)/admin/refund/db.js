@@ -1,10 +1,9 @@
-import { collection, getDocs, deleteDoc, doc, query, orderBy, updateDoc, getDoc } from 'firebase/firestore';
-import { db } from '$lib/firebase';
+import { getDocs, deleteDoc, query, orderBy } from 'firebase/firestore';
+import { refundsCol, refundDocRef } from '$lib/yearScope';
 
-
-export async function loadRegistrations() {
+export async function loadRegistrations(year) {
     try {
-      const q = query(collection(db, 'refund-2025'), orderBy('submissionTime', 'desc'));
+      const q = query(refundsCol(year), orderBy('submissionTime', 'desc'));
       const querySnapshot = await getDocs(q);
       let registrations = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
       return registrations;
@@ -14,9 +13,9 @@ export async function loadRegistrations() {
     }
   }
 
-export async function loadAllRegistrations() {
+export async function loadAllRegistrations(year) {
     try {
-      const q = query(collection(db, 'refund-2025'), orderBy('submissionTime', 'desc'));
+      const q = query(refundsCol(year), orderBy('submissionTime', 'desc'));
       const querySnapshot = await getDocs(q);
       let registrations = querySnapshot.docs.map(doc => ({id: doc.id, ...doc.data()}));
       return registrations;
@@ -25,10 +24,10 @@ export async function loadAllRegistrations() {
       throw err;
     }
 }
-export async function deleteRegistration(id) {
+export async function deleteRegistration(year, id) {
     if (confirm('Are you sure you want to delete this registration?')) {
         try {
-          await deleteDoc(doc(db, 'refund-2025', id));
+          await deleteDoc(refundDocRef(year, id));
         } catch (err) {
           console.error("Error deleting registration:", err);
           throw err;
