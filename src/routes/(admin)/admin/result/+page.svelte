@@ -4,7 +4,7 @@
 	import { db } from '$lib/firebase';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import UploadResultModal from '$lib/components/UploadResultModal.svelte';
-	import { loadAdminYear, offlineCol, offlineDocRef } from '$lib/yearScope';
+	import { selectedYear, loadAdminYear, offlineCol, offlineDocRef } from '$lib/yearScope';
 
 	let year = null;
 	let allRegistrations = [];
@@ -30,13 +30,19 @@
 	const tabs = ['৪র্থ', '৫ম', '৬ষ্ঠ', '৭ম', '৮ম', '৯ম', '১০ম'];
 
 	onMount(() => {
-		loadData();
+		loadAdminYear();
 	});
+
+	$: if ($selectedYear && $selectedYear !== year) {
+		year = $selectedYear;
+		selectedIds = new Set();
+		selectAll = false;
+		loadData();
+	}
 
 	async function loadData() {
 		try {
 			loading = true;
-			year = year || (await loadAdminYear());
 			const q = query(offlineCol(year), orderBy('serial', 'desc'));
 			const querySnapshot = await getDocs(q);
 			allRegistrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));

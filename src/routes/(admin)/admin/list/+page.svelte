@@ -2,14 +2,23 @@
 	import { onMount } from 'svelte';
 	import { getDocs, query, where, getCountFromServer, orderBy } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
-	import { loadAdminYear, offlineCol } from '$lib/yearScope';
+	import { selectedYear, loadAdminYear, offlineCol } from '$lib/yearScope';
 
 	export let data;
 	let thanaWithCounts = [];
 	let total = 0;
 	let year = null;
-	onMount(async () => {
-		year = await loadAdminYear();
+
+	onMount(() => {
+		loadAdminYear();
+	});
+
+	$: if ($selectedYear && $selectedYear !== year) {
+		year = $selectedYear;
+		loadCounts();
+	}
+
+	async function loadCounts() {
 		const countPromises = Object.entries(data.thana).map(async ([key, value]) => {
 			const q = query(offlineCol(year), where('branch', '==', key));
 			const querySnapshot = await getCountFromServer(q);
@@ -24,7 +33,7 @@
 
 		total = querySnapshot.data().count;
 		thanaWithCounts = await Promise.all(countPromises);
-	});
+	}
 	async function handleExportCSV() {
 		const q = query(offlineCol(year), orderBy('creationTime', 'desc'));
 		const querySnapshot = await getDocs(q);

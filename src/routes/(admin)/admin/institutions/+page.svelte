@@ -3,7 +3,7 @@
 	import { getDocs, writeBatch, getDoc, setDoc } from 'firebase/firestore';
 	import { db } from '$lib/firebase';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
-	import { loadAdminYear, offlineCol, offlineDocRef, cacheDocRef } from '$lib/yearScope';
+	import { selectedYear, loadAdminYear, offlineCol, offlineDocRef, cacheDocRef } from '$lib/yearScope';
 
 	let year = null;
 	let loading = true;
@@ -16,11 +16,19 @@
 	let mergeRules = new Map(); // Tracks: oldName -> newName
 	let pendingMerges = []; // Array of merge rules for display
 
-	onMount(async () => {
-		year = await loadAdminYear();
-		await loadInstitutions();
-		await loadMergeRules();
+	onMount(() => {
+		loadAdminYear();
 	});
+
+	$: if ($selectedYear && $selectedYear !== year) {
+		year = $selectedYear;
+		selectedInstitutions = new Set();
+		standardName = '';
+		mergeRules = new Map();
+		pendingMerges = [];
+		loadInstitutions();
+		loadMergeRules();
+	}
 
 	async function loadInstitutions() {
 		loading = true;

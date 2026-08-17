@@ -15,7 +15,7 @@
 	} from 'firebase/firestore';
 	import { sendConfirmationSMS, handleExportCSV, sendIncompleteRegistrationSMS } from '../util';
 	import { deleteRegistration, loadAllRegistrations } from '../db';
-	import { loadAdminYear, applicationsCol, applicationDocRef, offlineCol, cacheDocRef } from '$lib/yearScope';
+	import { selectedYear, loadAdminYear, applicationsCol, applicationDocRef, offlineCol, cacheDocRef } from '$lib/yearScope';
 	import { db } from '$lib/firebase';
 
 	let year = null;
@@ -40,8 +40,8 @@
 	let hasMore = true;
 	let scrollContainer;
 
-	onMount(async () => {
-		await handleInitialLoad();
+	onMount(() => {
+		loadAdminYear();
 		window.addEventListener('scroll', handleScroll);
 	});
 
@@ -49,11 +49,16 @@
 		window.removeEventListener('scroll', handleScroll);
 	});
 
+	$: if ($selectedYear && $selectedYear !== year) {
+		year = $selectedYear;
+		selectedIds = new Set();
+		handleInitialLoad();
+	}
+
 	async function handleInitialLoad() {
 		loading = true;
 
 		try {
-			year = await loadAdminYear();
 			const { items, total, last, hasMoreItems } = await loadMoreRegistrations(null);
 			registrations = items;
 			totalItems = total;

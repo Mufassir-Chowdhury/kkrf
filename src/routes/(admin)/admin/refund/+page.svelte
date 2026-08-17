@@ -2,7 +2,7 @@
     import { onMount, onDestroy } from 'svelte';
     import { getDocs, query, orderBy, updateDoc, limit, startAfter, getCountFromServer } from 'firebase/firestore';
     import { deleteRegistration } from './db';
-    import { loadAdminYear, refundsCol, refundDocRef } from '$lib/yearScope';
+    import { selectedYear, loadAdminYear, refundsCol, refundDocRef } from '$lib/yearScope';
 
     let year = null;
     let registrations = [];
@@ -22,8 +22,8 @@
     let lastVisible = null;
     let hasMore = true;
 
-    onMount(async () => {
-        await handleInitialLoad();
+    onMount(() => {
+        loadAdminYear();
         window.addEventListener('scroll', handleScroll);
     });
 
@@ -31,11 +31,16 @@
         window.removeEventListener('scroll', handleScroll);
     });
 
+    $: if ($selectedYear && $selectedYear !== year) {
+        year = $selectedYear;
+        selectedIds.clear();
+        handleInitialLoad();
+    }
+
     async function handleInitialLoad() {
         loading = true;
 
         try {
-            year = await loadAdminYear();
             const { items, total, last, hasMoreItems } = await loadMoreRegistrations(null);
             registrations = items;
             totalItems = total;

@@ -8,7 +8,7 @@
 	import { loadRegistrations, deleteRegistration, assignRollNumbers } from './db';
 	import { writeBatch } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
-	import { loadAdminYear, offlineDocRef } from '$lib/yearScope';
+	import { selectedYear, loadAdminYear, offlineDocRef } from '$lib/yearScope';
 
 	export let data;
 	let branch = $page.params.branch;
@@ -183,10 +183,16 @@
 		}
 	}
 
-	onMount(async () => {
-		year = await loadAdminYear();
-		await handleLoad();
+	onMount(() => {
+		loadAdminYear();
 	});
+
+	$: if ($selectedYear && $selectedYear !== year) {
+		year = $selectedYear;
+		selectedIds = new Set();
+		selectAll = false;
+		handleLoad();
+	}
 
 	import { updateDoc } from 'firebase/firestore';
 	import { db } from '$lib/firebase';

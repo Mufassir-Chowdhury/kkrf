@@ -3,6 +3,7 @@
     import { auth } from '$lib/firebase';
     import { browser } from '$app/environment';
     import { goto } from '$app/navigation';
+    import YearSwitcher from '$lib/components/YearSwitcher.svelte';
 
     let loggedIn = false;
     let error = null;
@@ -39,12 +40,15 @@
                     <img class="h-8 w-8" src="/favicon.png" alt="কিশোরকণ্ঠ Logo">
                     <span class="font-bold text-white">Admin Panel</span>
                 </a>
-                <button
-                    on:click={handleLogout}
-                    class="bg-white/10 text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-white/20 transition-colors border border-white/20"
-                >
-                    Logout
-                </button>
+                <div class="flex items-center gap-3">
+                    <YearSwitcher />
+                    <button
+                        on:click={handleLogout}
+                        class="bg-white/10 text-white text-sm font-semibold px-4 py-2 rounded-md hover:bg-white/20 transition-colors border border-white/20"
+                    >
+                        Logout
+                    </button>
+                </div>
             </div>
         </header>
 

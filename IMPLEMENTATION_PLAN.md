@@ -70,6 +70,19 @@ scholarships/{year}/cache/merge_rules         was _cache/merge-rules
    test year.
 8. **Cleanup (only after you sign off).** Delete the old `-2025` top-level collections and `_cache`
    doc. Manual/optional — not automated.
+9. **Create the missing `scholarships/2025` doc.** The migration (Step 2) copied the *data*
+   (`applications`/`offline`/`refunds`/`cache`) into `scholarships/2025/...`, but no `scholarships/2025`
+   parent doc was ever created — historically that year's info (exam date, fee, syllabus, etc.) lived in
+   static page content, not in the `scholarships` collection introduced later. Because
+   `getAllScholarships()` (and therefore `YearSwitcher`) only lists docs that exist in the `scholarships`
+   collection, 2025 doesn't show up as a pickable year and its migrated data is currently unreachable
+   from the admin panel. Fix: create a `scholarships/2025` doc (via `/admin/scholarship`, e.g. using the
+   existing `SEED_2025` fallback data as a starting point, or a small one-off script) so it appears in
+   the switcher and its subcollections become reachable.
+10. **Make the year switcher more prominent.** Currently a small `<select>` in the admin header next to
+    Logout — easy to miss. Redesign so the selected year is clearly visible at a glance (e.g. larger/
+    styled control, a visible "Year: 2026" label, or move it into the page body near each section's
+    title) so admins don't act on the wrong year by mistake.
 
 ---
 Status:
@@ -97,4 +110,19 @@ Status:
   admin panel. Left untouched as out-of-scope: `admin/search/search-db.js`'s dead/broken `searchByMobile`
   function (was already missing imports before this work) and the Algolia-backed global search index
   (external service, not Firestore).
-- Waiting on approval to start Step 5 (year switcher UI in the admin panel).
+- Step 5 done: added `src/lib/components/YearSwitcher.svelte` (a `<select>` sourced from
+  `getAllScholarships()`, bound to the `selectedYear` store) and mounted it once in the admin header
+  (`(admin)/+layout.svelte`), next to Logout — so it's visible on every admin page instead of being
+  duplicated per page. `admin/online`, `admin/refund`, `admin/list`, `admin/list/[branch]`,
+  `admin/institutions`, and `admin/result` each now have a `$: if ($selectedYear !== year) { ... }`
+  reactive block that reloads their data (and resets selection/merge state where relevant) the moment
+  the admin picks a different year — no page navigation needed. Left as-is (already year-scoped via
+  `?year=` query param from their parent list page, not global switcher targets):
+  `admin/list/edit/[id]`, `admin/list/[branch]/admit`. `admin/search` (Algolia) is unaffected — it's a
+  separate global search index, not Firestore.
+- Found during manual testing (2026-08-18): no `scholarships/2025` doc exists, so the migrated 2025 data
+  is currently unreachable from the admin panel (see Step 9), and the year switcher is too subtle/easy
+  to miss (see Step 10). Added both as new steps above.
+- Waiting on approval to continue with Step 6 (verify new-year creation needs nothing extra), Step 7
+  (end-to-end test), Step 9 (create the missing `scholarships/2025` doc), and Step 10 (more prominent
+  year switcher).
