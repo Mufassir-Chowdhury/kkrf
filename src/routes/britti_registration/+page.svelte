@@ -110,9 +110,16 @@
 		}
 
 		try {
-			formData.creationTime = new Date().toISOString();
-			formData.confirmed = false; // Ensure confirmed is set to false
-			const docRef = await addDoc(applicationsCol(scholarship.id), formData);
+			// Trim whitespace from all string fields before submitting
+			const cleanedFormData = Object.fromEntries(
+				Object.entries(formData).map(([key, value]) =>
+					typeof value === 'string' ? [key, value.trim()] : [key, value]
+				)
+			);
+
+			cleanedFormData.creationTime = new Date().toISOString();
+			cleanedFormData.confirmed = false; // Ensure confirmed is set to false
+			const docRef = await addDoc(applicationsCol(scholarship.id), cleanedFormData);
 			console.log('Document written with ID: ', docRef.id);
 			submitSuccess = true;
 			goto('/britti_registration/successful');
