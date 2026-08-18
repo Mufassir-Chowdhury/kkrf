@@ -4,26 +4,20 @@
 	import { addDoc } from 'firebase/firestore';
     import { page } from '$app/stores';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
+	import InstitutionInput from '$lib/components/InstitutionInput.svelte';
 	import { getActiveScholarship } from '$lib/siteData';
 	import { offlineCol } from '$lib/yearScope';
+	import { loadInstitutions, addInstitutionIfMissing } from '$lib/institutions';
 
 	export let data;
 
 	let institutions = [];
-	let filteredInstitutions = [];
-	let showDropdown = false;
 	let scholarship = null;
 
 	onMount(async () => {
 		scholarship = await getActiveScholarship();
-
-		// Load institutions from JSON file
-		try {
-			const response = await fetch('/institutions.json');
-			const jsonData = await response.json();
-			institutions = jsonData.institutions || [];
-		} catch (error) {
-			console.error('Error loading institutions:', error);
+		if (scholarship) {
+			institutions = await loadInstitutions(scholarship.id);
 		}
 	});
 
@@ -47,30 +41,6 @@
 	let submitSuccess = false;
 	let submitError = '';
     let branch = $page.params.branch;
-
-	function handleInstitutionInput() {
-		const value = formData.institution.toLowerCase();
-		if (value.length > 0) {
-			filteredInstitutions = institutions.filter(inst => 
-				inst.toLowerCase().includes(value)
-			).slice(0, 10); // Limit to 10 suggestions
-			showDropdown = filteredInstitutions.length > 0;
-		} else {
-			showDropdown = false;
-		}
-	}
-
-	function selectInstitution(institution) {
-		formData.institution = institution;
-		showDropdown = false;
-	}
-
-	function handleInstitutionBlur() {
-		// Delay hiding dropdown to allow click events to register
-		setTimeout(() => {
-			showDropdown = false;
-		}, 200);
-	}
 
     const banglaRegex = /^[ঀ-৿\s.,()-]+$/;
 
@@ -157,6 +127,7 @@
 
 			const docRef = await addDoc(offlineCol(scholarship.id), cleanedFormData);
 			console.log('Document written with ID: ', docRef.id);
+			await addInstitutionIfMissing(scholarship.id, cleanedFormData.institution, institutions);
 			submitSuccess = true;
 			goto(`/offline/${branch}/successful`);
 			
@@ -254,35 +225,7 @@
             <p class="text-red-500 text-sm mt-1">{formErrors.fatherName}</p>
         {/if}
       </div>
-      <div class="relative">
-        <label class="block text-sm font-medium text-gray-700">শিক্ষা প্রতিষ্ঠান (শুধুমাত্র বাংলায় লিখুন)</label>
-        <input
-          type="text"
-          bind:value={formData.institution}
-          on:input={handleInstitutionInput}
-          on:blur={handleInstitutionBlur}
-          on:focus={handleInstitutionInput}
-          required
-          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-          autocomplete="off"
-        >
-        {#if showDropdown}
-          <div class="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto">
-            {#each filteredInstitutions as institution}
-              <button
-                type="button"
-                class="w-full text-left px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                on:click={() => selectInstitution(institution)}
-              >
-                {institution}
-              </button>
-            {/each}
-          </div>
-        {/if}
-        {#if formErrors.institution}
-            <p class="text-red-500 text-sm mt-1">{formErrors.institution}</p>
-        {/if}
-      </div>
+      <InstitutionInput bind:value={formData.institution} {institutions} error={formErrors.institution} />
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label for="class" class="block text-sm font-medium text-gray-700">শ্রেণি</label>

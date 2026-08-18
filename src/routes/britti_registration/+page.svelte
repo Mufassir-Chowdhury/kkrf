@@ -3,16 +3,22 @@
 	import { onMount } from 'svelte';
 	import { addDoc } from 'firebase/firestore';
 	import { fly } from 'svelte/transition';
+	import InstitutionInput from '$lib/components/InstitutionInput.svelte';
 	import { getActiveScholarship, getSiteInfo } from '$lib/siteData';
 	import { applicationsCol } from '$lib/yearScope';
+	import { loadInstitutions, addInstitutionIfMissing } from '$lib/institutions';
 
 	let loading = true;
 	let scholarship = null;
 	let siteInfo = null;
+	let institutions = [];
 
 	onMount(async () => {
 		[scholarship, siteInfo] = await Promise.all([getActiveScholarship(), getSiteInfo()]);
 		loading = false;
+		if (scholarship) {
+			institutions = await loadInstitutions(scholarship.id);
+		}
 	});
 
 	let formData = {
@@ -121,6 +127,7 @@
 			cleanedFormData.confirmed = false; // Ensure confirmed is set to false
 			const docRef = await addDoc(applicationsCol(scholarship.id), cleanedFormData);
 			console.log('Document written with ID: ', docRef.id);
+			await addInstitutionIfMissing(scholarship.id, cleanedFormData.institution, institutions);
 			submitSuccess = true;
 			goto('/britti_registration/successful');
 			// Reset form after successful submission
@@ -268,13 +275,7 @@
             <p class="text-red-500 text-sm mt-1">{formErrors.fatherName}</p>
         {/if}
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">শিক্ষা প্রতিষ্ঠান (শুধুমাত্র বাংলায় লিখুন)</label>
-        <input type="text" bind:value={formData.institution} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
-        {#if formErrors.institution}
-            <p class="text-red-500 text-sm mt-1">{formErrors.institution}</p>
-        {/if}
-      </div>
+      <InstitutionInput bind:value={formData.institution} {institutions} error={formErrors.institution} />
       <div class="grid grid-cols-2 gap-2">
         <div>
           <label for="class" class="block text-sm font-medium text-gray-700">শ্রেণি</label>

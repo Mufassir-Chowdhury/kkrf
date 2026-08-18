@@ -4,6 +4,8 @@
 	import { db } from '$lib/firebase';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { selectedYear, loadAdminYear, offlineCol, offlineDocRef, cacheDocRef } from '$lib/yearScope';
+	import { rebuildInstitutionListFromRegistrations } from '$lib/institutions';
+	let rebuildingPublicList = false;
 
 	let year = null;
 	let loading = true;
@@ -412,6 +414,32 @@
 					class="border border-primary-300 text-primary-800 px-4 py-2 rounded-md hover:bg-primary-50 transition-colors text-sm font-medium whitespace-nowrap"
 				>
 					🔄 Refresh Cache
+				</button>
+				<button
+					disabled={rebuildingPublicList}
+					on:click={async () => {
+						if (
+							confirm(
+								'Rebuild the public form institution dropdown list (used on /britti_registration and /offline/[branch]) from real offline registrations for this year?'
+							)
+						) {
+							rebuildingPublicList = true;
+							try {
+								const result = await rebuildInstitutionListFromRegistrations(year);
+								alert(
+									`Public institution list rebuilt: ${result.names.length} unique names from ${result.offlineReadCount} offline registration(s).`
+								);
+							} catch (err) {
+								console.error('Error rebuilding public institution list:', err);
+								alert('Error rebuilding public institution list.');
+							} finally {
+								rebuildingPublicList = false;
+							}
+						}
+					}}
+					class="border border-primary-300 text-primary-800 px-4 py-2 rounded-md hover:bg-primary-50 transition-colors text-sm font-medium whitespace-nowrap disabled:opacity-50"
+				>
+					🔄 Rebuild Public Form List
 				</button>
 			</div>
 			<p class="text-gray-500 mb-6">
