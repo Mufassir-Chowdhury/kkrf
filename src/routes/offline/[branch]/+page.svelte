@@ -35,7 +35,6 @@
 		fatherName: '',
 		institution: '',
 		class: '',
-		section: '',
 		classRoll: '',
 		mobile: '',
 		presentAddress: '',
@@ -73,10 +72,16 @@
 		}, 200);
 	}
 
+    const banglaRegex = /^[ঀ-৿\s.,()-]+$/;
+
+    function stripSpaces(field) {
+        formData[field] = formData[field].replace(/\s/g, '');
+    }
+
     function validateForm() {
         formErrors = {};
         const serialRegex = new RegExp(`^${branch}[0-9]{3}$`);
-        const mobileRegex = /^\d{11}$/;
+        const mobileRegex = /^01\d{9}$/;
 
         // Institution Type validation
         if (!formData.institutionType) {
@@ -93,9 +98,29 @@
             formErrors.serial = `Serial must be in English digits and format ${branch}001 to ${branch}999 without spaces.`;
         }
 
+        // Name validation (Bangla only)
+        if (!formData.name || !banglaRegex.test(formData.name.trim())) {
+            formErrors.name = 'পরীক্ষার্থীর নাম শুধুমাত্র বাংলায় লিখুন।';
+        }
+
+        // Father's name validation (Bangla only)
+        if (!formData.fatherName || !banglaRegex.test(formData.fatherName.trim())) {
+            formErrors.fatherName = 'পিতার নাম শুধুমাত্র বাংলায় লিখুন।';
+        }
+
+        // Institution validation (Bangla only)
+        if (!formData.institution || !banglaRegex.test(formData.institution.trim())) {
+            formErrors.institution = 'শিক্ষা প্রতিষ্ঠানের নাম শুধুমাত্র বাংলায় লিখুন।';
+        }
+
+        // Class validation
+        if (!formData.class) {
+            formErrors.class = 'শ্রেণি নির্বাচন করুন।';
+        }
+
         // Mobile validation
         if (!formData.mobile || !mobileRegex.test(formData.mobile.trim())) {
-            formErrors.mobile = 'Mobile number must be exactly 11 English digits without spaces.';
+            formErrors.mobile = 'Mobile number must be exactly 11 English digits, in the format 01xxxxxxxxx.';
         }
 
         return Object.keys(formErrors).length === 0;
@@ -216,22 +241,28 @@
         {/if}
         </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">পরীক্ষার্থীর নাম (বাংলায়)</label>
+        <label class="block text-sm font-medium text-gray-700">পরীক্ষার্থীর নাম (শুধুমাত্র বাংলায় লিখুন)</label>
         <input type="text" bind:value={formData.name} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        {#if formErrors.name}
+            <p class="text-red-500 text-sm mt-1">{formErrors.name}</p>
+        {/if}
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">পিতার নাম (বাংলায়)</label>
+        <label class="block text-sm font-medium text-gray-700">পিতার নাম (শুধুমাত্র বাংলায় লিখুন)</label>
         <input type="text" bind:value={formData.fatherName} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        {#if formErrors.fatherName}
+            <p class="text-red-500 text-sm mt-1">{formErrors.fatherName}</p>
+        {/if}
       </div>
       <div class="relative">
-        <label class="block text-sm font-medium text-gray-700">শিক্ষা প্রতিষ্ঠান</label>
-        <input 
-          type="text" 
-          bind:value={formData.institution} 
+        <label class="block text-sm font-medium text-gray-700">শিক্ষা প্রতিষ্ঠান (শুধুমাত্র বাংলায় লিখুন)</label>
+        <input
+          type="text"
+          bind:value={formData.institution}
           on:input={handleInstitutionInput}
           on:blur={handleInstitutionBlur}
           on:focus={handleInstitutionInput}
-          required 
+          required
           class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
           autocomplete="off"
         >
@@ -248,14 +279,17 @@
             {/each}
           </div>
         {/if}
+        {#if formErrors.institution}
+            <p class="text-red-500 text-sm mt-1">{formErrors.institution}</p>
+        {/if}
       </div>
-      <div class="grid grid-cols-3 gap-2">
+      <div class="grid grid-cols-2 gap-2">
         <div>
           <label for="class" class="block text-sm font-medium text-gray-700">শ্রেণি</label>
-          <select 
+          <select
             id="class"
-            bind:value={formData.class} 
-            required 
+            bind:value={formData.class}
+            required
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
           >
             <option value="" disabled selected>শ্রেণি নির্বাচন করুন</option>
@@ -263,10 +297,9 @@
               <option value={option.value}>{option.label}</option>
             {/each}
           </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium text-gray-700">শাখা (না থাকলে নাই লিখবেন)</label>
-          <input type="text" bind:value={formData.section} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+          {#if formErrors.class}
+              <p class="text-red-500 text-sm mt-1">{formErrors.class}</p>
+          {/if}
         </div>
         <div>
           <label class="block text-sm font-medium text-gray-700">রোল</label>
@@ -274,8 +307,8 @@
         </div>
       </div>
       <div>
-        <label class="block text-sm font-medium text-gray-700">মোবাইল (ইংরেজিতে ১১ ডিজিট, ডাবল চেক করবেন)</label>
-        <input type="tel" maxlength="11" minlength="11" bind:value={formData.mobile} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
+        <label class="block text-sm font-medium text-gray-700">মোবাইল (ইংরেজিতে ১১ ডিজিট, ফরম্যাটঃ 01xxxxxxxxx, ডাবল চেক করবেন)</label>
+        <input type="tel" maxlength="11" minlength="11" bind:value={formData.mobile} on:input={() => stripSpaces('mobile')} required class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm">
         {#if formErrors.mobile}
             <p class="text-red-500 text-sm mt-1">{formErrors.mobile}</p>
         {/if}
