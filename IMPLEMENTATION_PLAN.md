@@ -154,9 +154,20 @@ Status:
   2025 + fresh year), and the year switcher across `/admin/list`, `/admin/online`, `/admin/refund` — all
   worked correctly, no cross-year data bleed.
 
-All of Steps 1-7, 9, and 10 are now done. Only Step 8 (delete old `-2025` top-level collections and
-`_cache` doc) remains, and it's explicitly optional/manual — only do it once the user separately signs
-off, since it's a destructive, irreversible cleanup of the pre-migration backup data.
+All of Steps 1-7, 9, and 10 are now done.
+
+- Step 8 tooling built: `src/lib/deleteLegacyYear.js` (`deleteLegacyYear(year, onLog)`) deletes
+  `scholarshipApplications-{year}`, `offline-{year}`, `refund-{year}`, and the `_cache/*` docs — but
+  refuses to delete any of the three collections whose migrated `scholarships/{year}/...` counterpart
+  has fewer docs than the legacy source (skips with a logged mismatch instead of deleting), and only
+  deletes `_cache` if none of the three collections mismatched. Added a red, clearly-marked "Step 8"
+  section to `/admin/migrate` requiring the year to be typed twice (once to select, once to confirm)
+  plus a native `confirm()` dialog before running. Firestore rules already allow delete on these legacy
+  paths (`allow write: if true` / `if request.auth != null`) — no rules change needed.
+- Not yet run against production — this is destructive and irreversible, so it needs the admin to
+  actually click the button after confirming they're satisfied with Step 7's results. Recommend running
+  it only for years that have been fully verified end-to-end (2025 qualifies per the Step 7 sign-off
+  above).
 - Step 9's button has been run in production (user confirmed 2026-08-18): `scholarships/2025` doc now
   exists, so 2025 is reachable in the YearSwitcher and its migrated subcollection data is visible.
 - All of Steps 1-6, 9, and 10 are now done. Remaining: Step 7 (manual E2E test, human-in-the-loop) and
