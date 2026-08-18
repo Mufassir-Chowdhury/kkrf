@@ -18,13 +18,18 @@
 </script>
 
 {#if !loading && scholarships.length > 0}
-	<select
-		value={$selectedYear}
-		on:change={handleChange}
-		class="bg-white/10 text-white border border-white/20 rounded-md px-3 py-2 text-sm font-medium focus:outline-none focus:ring-2 focus:ring-white/40"
+	<label
+		class="flex items-center gap-2 bg-amber-400 text-primary-950 border border-amber-300 rounded-md pl-3 pr-2 py-1.5 shadow-sm"
 	>
-		{#each scholarships as s}
-			<option value={s.id} class="text-gray-900">{s.year || s.id}</option>
-		{/each}
-	</select>
+		<span class="text-xs font-bold uppercase tracking-wide opacity-80">বছর</span>
+		<select
+			value={$selectedYear}
+			on:change={handleChange}
+			class="bg-transparent text-primary-950 font-extrabold text-base focus:outline-none cursor-pointer"
+		>
+			{#each scholarships as s}
+				<option value={s.id} class="text-gray-900 font-semibold">{s.year || s.id}</option>
+			{/each}
+		</select>
+	</label>
 {/if}

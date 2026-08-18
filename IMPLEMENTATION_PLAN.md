@@ -123,6 +123,41 @@ Status:
 - Found during manual testing (2026-08-18): no `scholarships/2025` doc exists, so the migrated 2025 data
   is currently unreachable from the admin panel (see Step 9), and the year switcher is too subtle/easy
   to miss (see Step 10). Added both as new steps above.
-- Waiting on approval to continue with Step 6 (verify new-year creation needs nothing extra), Step 7
-  (end-to-end test), Step 9 (create the missing `scholarships/2025` doc), and Step 10 (more prominent
-  year switcher).
+- Step 9 done: `SEED_2025` moved from `admin/scholarship/+page.svelte` into `src/lib/siteData.js`
+  (exported) so it's a single source of truth. Added a "create scholarships/2025 doc" button to
+  `/admin/migrate` (`handleSeed2025Doc`) that calls `saveScholarship('2025', SEED_2025)` — but only
+  after checking `getScholarship('2025')` returns nothing, and without ever touching
+  `settings/general.activeScholarshipId`, so running it can't change which year is live on the
+  public site. Once run, 2025 will appear in `getAllScholarships()`/`YearSwitcher` and its migrated
+  subcollection data becomes reachable from the admin panel. Not yet run against production —
+  admin needs to click the button.
+- Step 10 done: `YearSwitcher.svelte` now renders an amber badge (`বছর: <year>`) instead of a plain
+  `<select>` blended into the header, so the active admin year is clearly visible at a glance against
+  the dark header bar. No structural change — still the same `selectedYear` store/`getAllScholarships()`
+  wiring from Step 5.
+- Step 6 done: verified `admin/list`, `admin/list/[branch]` (+ `db.js`), `admin/online`, `admin/refund`,
+  `admin/institutions`, `admin/result`, and their cache docs (`start_roll`, `online_serial`,
+  `institution_groups`, `merge_rules`) all handle a brand-new year with zero subcollection docs cleanly:
+  every cache read checks `.exists()` before calling `.data()`, empty query results render proper
+  "no data" states, and roll/serial assignment initializes sane defaults (`center0001`/`99001`) when no
+  cache doc exists yet. `admin/scholarship`'s "create new year" flow only writes the
+  `scholarships/{year}` doc and never touches subcollections, confirming they auto-create on first
+  write with no code changes needed. No code changes required for this step.
+- Step 7 partially done: no browser automation available this session (Chrome extension declined), so
+  ran a route-level smoke test instead — `dev` server started (`vite dev`, port 5174) and curl'd `/`,
+  `/britti_registration`, `/offline/dhaka`, `/refund`, `/admit`, `/login`, `/admin`, `/admin/migrate` —
+  all 200, no SSR/build errors under the new schema. The actual data-flow E2E test (submit an online
+  registration, submit an offline registration, submit a refund request, confirm roll-number assignment,
+  upload results, generate an admit card, run search) needs a human in a real browser — checklist below.
+- Step 7 confirmed done (user, 2026-08-18): ran the manual checklist — online registration, offline
+  registration, refund submission, roll assignment/institutions, results upload, admit cards (migrated
+  2025 + fresh year), and the year switcher across `/admin/list`, `/admin/online`, `/admin/refund` — all
+  worked correctly, no cross-year data bleed.
+
+All of Steps 1-7, 9, and 10 are now done. Only Step 8 (delete old `-2025` top-level collections and
+`_cache` doc) remains, and it's explicitly optional/manual — only do it once the user separately signs
+off, since it's a destructive, irreversible cleanup of the pre-migration backup data.
+- Step 9's button has been run in production (user confirmed 2026-08-18): `scholarships/2025` doc now
+  exists, so 2025 is reachable in the YearSwitcher and its migrated subcollection data is visible.
+- All of Steps 1-6, 9, and 10 are now done. Remaining: Step 7 (manual E2E test, human-in-the-loop) and
+  Step 8 (cleanup of old `-2025` collections, only after sign-off — explicitly deferred/optional).
