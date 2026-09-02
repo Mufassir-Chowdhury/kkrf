@@ -292,7 +292,7 @@
 			await updateDoc(applicationDocRef(year, id), { confirmed: true });
 			const registrationDoc = await getDoc(applicationDocRef(year, id));
 			const registrationData = registrationDoc.data();
-			await sendConfirmationSMS(registrationData.mobile);
+			await sendConfirmationSMS(registrationData.mobile, year);
 
 			// Update local array
 			registrations = registrations.map((reg) =>
@@ -327,10 +327,10 @@
 		smsModalOpen = true;
 	}
 
-	async function handleIncompleteRegistrationSMS(selectedUnconfirmedReg) {
+	async function handleIncompleteRegistrationSMS() {
 		if (!selectedUnconfirmedReg) return;
 		try {
-			await sendIncompleteRegistrationSMS(selectedUnconfirmedReg.mobile);
+			await sendIncompleteRegistrationSMS(selectedUnconfirmedReg.mobile, year);
 		} finally {
 			smsModalOpen = false;
 			selectedUnconfirmedReg = null;
@@ -543,7 +543,7 @@
 				</div>
 				<div class="items-center px-4 py-3">
 					<button
-						on:click={handleIncompleteRegistrationSMS}
+						on:click={() => handleIncompleteRegistrationSMS()}
 						class="px-4 py-2 bg-yellow-500 text-white text-base font-medium rounded-md w-full shadow-sm hover:bg-yellow-700 focus:outline-none focus:ring-2 focus:ring-yellow-300"
 					>
 						Send SMS

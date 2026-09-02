@@ -1,5 +1,5 @@
 
-export async function sendConfirmationSMS(phoneNumber) {
+export async function sendConfirmationSMS(phoneNumber, year) {
     const url = "https://api.bdbulksms.net/api.php?json";
     const t1 = "59702300401725";
     const t2 = "814840c01d5e52";
@@ -7,7 +7,7 @@ export async function sendConfirmationSMS(phoneNumber) {
     const SMS_API_TOKEN = `${t1}${t2}${t3}`;
     const data = new FormData();
     data.set('token', SMS_API_TOKEN);
-    data.set('message', 'আপনার রেজিস্ট্রেশন কনফার্ম হয়েছে। কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫');
+    data.set('message', `আপনার রেজিস্ট্রেশন কনফার্ম হয়েছে। কিশোরকণ্ঠ মেধাবৃত্তি - ${year}`);
     data.set('to', phoneNumber);
 
     try {
@@ -22,7 +22,7 @@ export async function sendConfirmationSMS(phoneNumber) {
     }
 }
 
-export async function sendIncompleteRegistrationSMS(phoneNumber) {
+export async function sendIncompleteRegistrationSMS(phoneNumber, year) {
 
         const url = "https://api.bdbulksms.net/api.php?json";
         const t1 = "59702300401725";
@@ -31,7 +31,7 @@ export async function sendIncompleteRegistrationSMS(phoneNumber) {
         const SMS_API_TOKEN = `${t1}${t2}${t3}`;
         const data = new FormData();
         data.set('token', SMS_API_TOKEN);
-        data.set('message', 'আপনার রেজিস্ট্রেশন সম্পূর্ণ হয়নি। অনুগ্রহ করে পেমেন্ট সম্পন্ন করে আমাদের সাথে যোগাযোগ করুন। - কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫');
+        data.set('message', `আপনার রেজিস্ট্রেশন সম্পূর্ণ হয়নি। অনুগ্রহ করে পেমেন্ট সম্পন্ন করে আমাদের সাথে যোগাযোগ করুন। - কিশোরকণ্ঠ মেধাবৃত্তি - ${year}`);
         data.set('to', phoneNumber);
 
         try {
