@@ -11,6 +11,7 @@
 		EMPTY_SCHOLARSHIP,
 		SEED_2025
 	} from '$lib/siteData';
+	import { cloneDefaultBranches } from '$lib/branches';
 
 	let loading = true;
 	let saving = false;
@@ -94,6 +95,9 @@
 			registrationOpen: false // new years always start closed until admin opens them
 		};
 		delete newData.id;
+		if (!Array.isArray(newData.branches) || newData.branches.length === 0) {
+			newData.branches = cloneDefaultBranches();
+		}
 
 		if (
 			!confirm(
@@ -190,6 +194,8 @@
 			syllabus: cleanedSyllabus
 		};
 		delete payload.id;
+		// Branches are edited on /admin/branches; don't overwrite them with the copy loaded here.
+		delete payload.branches;
 
 		saving = true;
 		try {

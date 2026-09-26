@@ -4,6 +4,9 @@
 	import { page } from '$app/stores';
 	import { getDoc, updateDoc } from 'firebase/firestore';
 	import { getCurrentYear, offlineDocRef } from '$lib/yearScope';
+	import { getBranches, findBranch } from '$lib/branches';
+
+	let branches = [];
 
 	let formData = {
 		serial: '',
@@ -42,7 +45,8 @@
 		try {
 			year = $page.url.searchParams.get('year') || (await getCurrentYear());
 			const docRef = offlineDocRef(year, id);
-			const docSnap = await getDoc(docRef);
+			const [docSnap, yearBranches] = await Promise.all([getDoc(docRef), getBranches(year)]);
+			branches = yearBranches;
 
 			if (docSnap.exists()) {
 				formData = { ...docSnap.data() };
@@ -241,13 +245,19 @@
 				/>
 			</div>
 			<div>
-				<label class="block text-sm font-medium text-gray-700">থানা</label>
-				<input
-					type="text"
+				<label class="block text-sm font-medium text-gray-700">শাখা</label>
+				<select
 					bind:value={formData.branch}
 					required
 					class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm"
-				/>
+				>
+					{#if formData.branch && !findBranch(branches, formData.branch)}
+						<option value={formData.branch}>{formData.branch} (তালিকায় নেই)</option>
+					{/if}
+					{#each branches as b}
+						<option value={b.code}>{b.code} — {b.name}</option>
+					{/each}
+				</select>
 			</div>
 			<div>
 				<label class="block text-sm font-medium text-gray-700">ওয়ার্ড</label>

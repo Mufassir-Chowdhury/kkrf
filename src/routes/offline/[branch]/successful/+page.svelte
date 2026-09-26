@@ -1,13 +1,20 @@
 <script>
     import { page } from '$app/stores';
+    import { onMount } from 'svelte';
     import BreadCrumb from '$lib/components/BreadCrumb.svelte';
-    export let data;
+    import { getActiveScholarship } from '$lib/siteData';
+    import { branchesOf, branchName } from '$lib/branches';
     let branch = $page.params.branch;
+    let branchLabel = branch;
+
+    onMount(async () => {
+        branchLabel = branchName(branchesOf(await getActiveScholarship()), branch);
+    });
 </script>
 
 <BreadCrumb links={[
     { url: '/offline', label: 'Home' },
-    { url: `/offline/${branch}`, label: data.thana[branch] },
+    { url: `/offline/${branch}`, label: branchLabel },
     { url: `#`, label: 'Successful' }
   ]} />
 

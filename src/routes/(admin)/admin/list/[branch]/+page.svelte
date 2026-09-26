@@ -9,10 +9,11 @@
 	import { writeBatch } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { selectedYear, loadAdminYear, offlineDocRef } from '$lib/yearScope';
+	import { getBranches, branchName } from '$lib/branches';
 
-	export let data;
 	let branch = $page.params.branch;
 	let year = null;
+	let branchLabel = branch;
 	let registrations = [];
 	let filteredRegistrations = [];
 	let searchTerm = '';
@@ -191,6 +192,7 @@
 		year = $selectedYear;
 		selectedIds = new Set();
 		selectAll = false;
+		getBranches(year).then((list) => (branchLabel = branchName(list, branch)));
 		handleLoad();
 	}
 
@@ -391,7 +393,7 @@
 	links={[
 		{ url: '/admin', label: 'Home' },
 		{ url: `/admin/list`, label: 'Registrations' },
-		{ url: `/admin/list/${branch}`, label: data.thana[branch] },
+		{ url: `/admin/list/${branch}`, label: branchLabel },
 		{ url: `#`, label: 'List' }
 	]}
 />
@@ -407,7 +409,7 @@
 {:else}
 	<div class="space-y-6">
 		<h2 class="section-title text-center">
-			Registrations: {data.thana[branch]} <span class="text-gray-400 font-normal">[{registrations.length}]</span>
+			Registrations: {branchLabel} <span class="text-gray-400 font-normal">[{registrations.length}]</span>
 		</h2>
 		<p class="text-center text-gray-600">Serial Range: {serialRange}</p>
 		<p class="text-center text-blue-600 font-semibold">Confirmed Registrations: {confirmedCount}</p>

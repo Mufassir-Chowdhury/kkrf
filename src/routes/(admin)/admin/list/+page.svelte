@@ -3,10 +3,11 @@
 	import { getDocs, query, where, getCountFromServer, orderBy } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { selectedYear, loadAdminYear, offlineCol } from '$lib/yearScope';
+	import { getBranches } from '$lib/branches';
 
-	export let data;
-	let thanaWithCounts = [];
+	let branchesWithCounts = [];
 	let total = 0;
+	let unlistedCount = 0;
 	let year = null;
 
 	onMount(() => {
@@ -19,20 +20,27 @@
 	}
 
 	async function loadCounts() {
-		const countPromises = Object.entries(data.thana).map(async ([key, value]) => {
-			const q = query(offlineCol(year), where('branch', '==', key));
+		const loadingYear = year;
+		const branches = await getBranches(loadingYear);
+		const countPromises = branches.map(async ({ code, name }) => {
+			const q = query(offlineCol(loadingYear), where('branch', '==', code));
 			const querySnapshot = await getCountFromServer(q);
 			return {
-				key,
-				value,
+				key: code,
+				value: name,
 				count: querySnapshot.data().count
 			};
 		});
-		const q = query(offlineCol(year));
+		const q = query(offlineCol(loadingYear));
 		const querySnapshot = await getCountFromServer(q);
+		const counts = await Promise.all(countPromises);
 
+		// The year was switched while counts were loading; a newer load owns the UI.
+		if (loadingYear !== year) return;
 		total = querySnapshot.data().count;
-		thanaWithCounts = await Promise.all(countPromises);
+		branchesWithCounts = counts;
+		// Registrations whose branch code isn't in this year's list (e.g. a branch removed later).
+		unlistedCount = total - counts.reduce((sum, b) => sum + b.count, 0);
 	}
 	async function handleExportCSV() {
 		const q = query(offlineCol(year), orderBy('creationTime', 'desc'));
@@ -112,8 +120,14 @@
 			</button>
 		</div>
 	</div>
+	{#if unlistedCount > 0}
+		<p class="text-sm text-orange-600">
+			{unlistedCount}টি রেজিস্ট্রেশনের শাখা কোড {year} সালের শাখার তালিকায় নেই।
+			<a href="/admin/branches" class="underline">শাখার তালিকা দেখুন</a>
+		</p>
+	{/if}
 	<div class="grid">
-		{#each thanaWithCounts as { key, value, count }}
+		{#each branchesWithCounts as { key, value, count }}
 			<a href={`/admin/list/${key}`} class="grid-item">
 				{value}
 				<br />

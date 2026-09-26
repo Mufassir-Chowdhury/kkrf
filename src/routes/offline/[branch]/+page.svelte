@@ -8,15 +8,18 @@
 	import { getActiveScholarship } from '$lib/siteData';
 	import { offlineCol } from '$lib/yearScope';
 	import { loadInstitutions, addInstitutionIfMissing } from '$lib/institutions';
-
-	export let data;
+	import { branchesOf, findBranch } from '$lib/branches';
 
 	let institutions = [];
 	let scholarship = null;
+	let branchInfo = null;
+	let loadingBranch = true;
 
 	onMount(async () => {
 		scholarship = await getActiveScholarship();
-		if (scholarship) {
+		branchInfo = findBranch(branchesOf(scholarship), branch);
+		loadingBranch = false;
+		if (scholarship && branchInfo) {
 			institutions = await loadInstitutions(scholarship.id);
 		}
 	});
@@ -108,7 +111,7 @@
             return;
         }
 
-        if (!scholarship) {
+        if (!scholarship || !branchInfo) {
             submitError = 'An error occurred while submitting the form. Please try again.';
             submitting = false;
             return;
@@ -160,12 +163,20 @@
 
   <BreadCrumb links={[
     { url: '/offline', label: 'Home' },
-    { url: `/offline/${branch}`, label: data.thana[branch] },
+    { url: `/offline/${branch}`, label: branchInfo?.name ?? branch },
     { url: `#`, label: 'Form' }
   ]} />
 
+  {#if loadingBranch}
+	<p class="text-center text-gray-500 py-12">Loading...</p>
+  {:else if !branchInfo}
+	<div class="text-center space-y-4 py-12">
+		<p class="text-xl font-semibold text-red-600">এই শাখাটি ({branch}) চলতি বছরের শাখার তালিকায় নেই।</p>
+		<a href="/offline" class="inline-block px-4 py-2 bg-primary-800 rounded-md text-white hover:bg-primary-900 transition-colors">শাখার তালিকায় ফিরে যান</a>
+	</div>
+  {:else}
 
-	<h1 class="text-3xl font-bold text-center text-primary-900">শাখাঃ {data.thana[branch]}</h1>
+	<h1 class="text-3xl font-bold text-center text-primary-900">শাখাঃ {branchInfo.name}</h1>
 
 	<h3 class="text-xl font-bold text-center text-secondary-700 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>
 
@@ -286,4 +297,5 @@
 			{submitError}
 		</div>
 	{/if}
+  {/if}
 </div>

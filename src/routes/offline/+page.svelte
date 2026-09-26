@@ -1,17 +1,30 @@
 <script>
-    export let data;
+    import { onMount } from 'svelte';
+    import { getActiveScholarship } from '$lib/siteData';
+    import { branchesOf } from '$lib/branches';
+
+    let branches = [];
+    let loading = true;
+
+    onMount(async () => {
+        branches = branchesOf(await getActiveScholarship());
+        loading = false;
+    });
 </script>
 
 <div>
-    <div class="grid">
-        {#each Object.entries(data.thana) as [key, value]}
-            <a href={`/offline/${key}`} class="grid-item">{value}</a>
-        {/each}
-    </div>
+    {#if loading}
+        <p class="text-center text-gray-500 py-12">Loading...</p>
+    {:else}
+        <div class="grid">
+            {#each branches as { code, name }}
+                <a href={`/offline/${code}`} class="grid-item">{name}</a>
+            {/each}
+        </div>
+    {/if}
 
     
 </div>
-
 <style>
     .grid {
         display: grid;

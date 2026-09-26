@@ -3,11 +3,16 @@
 	import { page } from '$app/stores';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { getCurrentYear } from '$lib/yearScope';
+	import { getBranches, branchName } from '$lib/branches';
 
-	export let data;
 	let branch = $page.params.branch;
+	let branchLabel = branch;
 
-	let yearPromise = (async () => $page.url.searchParams.get('year') || (await getCurrentYear()))();
+	let yearPromise = (async () => {
+		const year = $page.url.searchParams.get('year') || (await getCurrentYear());
+		branchLabel = branchName(await getBranches(year), branch);
+		return year;
+	})();
 </script>
 
 <div class="print:hidden">
@@ -15,13 +20,13 @@
 		links={[
 			{ url: '/admin', label: 'Home' },
 			{ url: `/admin/list`, label: 'Registrations' },
-			{ url: `/admin/list/${branch}`, label: data.thana[branch] },
+			{ url: `/admin/list/${branch}`, label: branchLabel },
 			{ url: `#`, label: 'Admit' }
 		]}
 	/>
 </div>
 <div>
 	{#await yearPromise then year}
-		<BatchAdmitCards {branch} branchName={data.thana[branch]} {year} />
+		<BatchAdmitCards {branch} branchName={branchLabel} {year} />
 	{/await}
 </div>

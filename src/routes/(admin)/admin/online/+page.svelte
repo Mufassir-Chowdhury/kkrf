@@ -17,6 +17,7 @@
 	import { deleteRegistration, loadAllRegistrations } from '../db';
 	import { selectedYear, loadAdminYear, applicationsCol, applicationDocRef, offlineCol, cacheDocRef } from '$lib/yearScope';
 	import { db } from '$lib/firebase';
+	import { ONLINE_BRANCH_CODE } from '$lib/branches';
 
 	let year = null;
 	let registrations = [];
@@ -223,7 +224,7 @@
 					mobile: reg.mobile || '',
 					presentAddress: reg.presentAddress || '',
 					creationTime: reg.creationTime || '',
-					branch: '99',
+					branch: ONLINE_BRANCH_CODE,
 					ward: ''
 				};
 

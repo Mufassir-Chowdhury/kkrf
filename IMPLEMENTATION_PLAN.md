@@ -1,63 +1,90 @@
-# Online registration form: validation + institution combo box
+# Dynamic, per-year branch (শাখা/থানা) list
 
 ## Context
 
-The previous plan (Firestore year-scoping) is complete and cleaned up (Steps 1-10 all done,
-committed). This plan covers two follow-up gaps on the **online registration form**
-(`src/routes/britti_registration/+page.svelte`), found by comparing it against the **offline
-registration form** (`src/routes/offline/[branch]/+page.svelte`), which already has both features
-this form is missing:
+The previous plan (online form validation + institution combo box) is done and committed.
 
-1. **No data validation.** The online form relies entirely on HTML `required` attributes — no format
-   checks. The offline form has a `validateForm()` function with regex checks (`mobileRegex`,
-   `serialRegex`) and a `formErrors` object rendered under each field. The online form has a
-   `formErrors` variable declared (`+page.svelte:46`) but it's never populated or used in the markup —
-   dead code from a removed/unfinished validation pass.
-2. **No institution combo box.** The online form's institution field (`+page.svelte:209-211`) is a
-   plain free-text `<input>`. The offline form's institution field (`[branch]/+page.svelte:226-251`) is
-   an autocomplete combo box sourced from `static/institutions.json` (filter-as-you-type dropdown,
-   `handleInstitutionInput`/`selectInstitution`/`handleInstitutionBlur`). Free-text institution names on
-   the online form are exactly what causes the duplicate/typo variants that `/admin/institutions`
-   exists to manually clean up after the fact — the combo box is what stops it at the source, same as
-   it already does for offline registrations.
+The list of branches (offline data-entry points: thanas, colleges, libraries, `99 = অনলাইন`, …) is
+a hardcoded object in `src/routes/+layout.js` (`thana`), returned as `data.thana` to **every** page.
+It changes from year to year, so it has to move into Firestore, editable from the admin panel, and
+scoped per scholarship year.
 
-## Target
+### Where the static list is used today (full scout)
 
-Bring `britti_registration/+page.svelte` to parity with the offline form for these two concerns,
-reusing the same patterns (not reinventing them) so behavior stays consistent across both forms:
+| File | Usage |
+| --- | --- |
+| `src/routes/+layout.js` | Defines the static `thana` map `{ code: name }` — the only source. |
+| `src/routes/offline/+page.svelte` | Grid of all branches → links to `/offline/{code}`. |
+| `src/routes/offline/[branch]/+page.svelte` | Breadcrumb + heading `data.thana[branch]`. Already loads the active scholarship (for `offlineCol`). Serial regex `^{branch}\d{3}$` uses the code. |
+| `src/routes/offline/[branch]/successful/+page.svelte` | Breadcrumb label `data.thana[branch]`. |
+| `src/routes/(admin)/admin/list/+page.svelte` | Iterates `data.thana` to run a count query per branch for `$selectedYear`. |
+| `src/routes/(admin)/admin/list/[branch]/+page.svelte` | Breadcrumb + heading `data.thana[branch]` (year = `$selectedYear`). |
+| `src/routes/(admin)/admin/list/[branch]/admit/+page.svelte` | Breadcrumb + passes `branchName={data.thana[branch]}` to `BatchAdmitCards` (printed on admit cards). Year = `?year=` or current. |
 
-- Institution field becomes an autocomplete combo box against `static/institutions.json`, same
-  filter/select/blur behavior as the offline form.
-- Add a `validateForm()` pass before submit, with `formErrors` actually wired into the markup. Fields to
-  validate (online form has no `serial`, but has fields the offline form doesn't — `nameEnglish`,
-  `birthDate`, `transactionID`, full address block):
-  - `mobile` / `guardianMobile`: exactly 11 digits (same `mobileRegex` as offline).
-  - `transactionID`: required, non-empty after trim (bKash trx IDs are alphanumeric, no fixed length to
-    enforce beyond presence — confirm exact rule with the user if a stricter format is wanted).
-  - `birthDate`: required, must be a real past date (not empty, not in the future).
-  - Existing `required` text fields (`name`, `nameEnglish`, `fatherName`, `motherName`, `institution`,
-    `section`, `classRoll`, `religion`, address fields, `guardianName`, `relation`): non-empty after
-    `.trim()`, mirroring the offline form's `cleanedFormData` trim-before-submit step (online form
-    currently doesn't trim at all).
-  - Radio groups (`institutionType`, `gender`): already `required` at the HTML level like offline, but
-    add explicit checks + `formErrors` messages for consistency with the offline form's radio validation.
+Related (not using `data.thana`, but tied to branch codes):
 
-## Steps (approve one at a time)
+- `src/routes/(admin)/admin/online/+page.svelte:226` — online→offline transfer hardcodes `branch: '99'`
+  (the অনলাইন branch). Code `99` must therefore always exist → treat as reserved.
+- `src/routes/(admin)/admin/list/edit/[id]/+page.svelte` — "থানা" is a free-text input for the branch
+  code; should become a dropdown of that year's branches.
+- `src/routes/(admin)/admin/search/search-db.js` — counts `byBranch` by code only; not displayed. No change.
+- `BatchAdmitCards.svelte` also has a hardcoded exam `center` map — **out of scope** (not branches),
+  noted for a possible follow-up.
 
-1. **Institution combo box.** Port the offline form's institution autocomplete (state vars
-   `institutions`, `filteredInstitutions`, `showDropdown`, `handleInstitutionInput`,
-   `selectInstitution`, `handleInstitutionBlur`, the `fetch('/institutions.json')` in `onMount`) into
-   `britti_registration/+page.svelte`, replacing the current plain `<input>` at line 209-211 with the
-   offline form's dropdown markup.
-2. **Validation function.** Add `validateForm()` mirroring the offline form's structure (regex + trim
-   checks per field above), wire `formErrors` into the markup under each field (offline form's pattern:
-   `{#if formErrors.fieldName}<p class="text-red-500 text-sm mt-1">...</p>{/if}`), and call it from
-   `handleSubmit()` before the Firestore write — abort submit if invalid, same as offline form.
-3. **Trim on submit.** Match the offline form's `cleanedFormData` step — trim all string fields
-   (including nested `permanentAddress`) before writing to Firestore.
-4. **Manual test.** Submit the online form with a mix of valid/invalid data (bad mobile format, empty
-   required field, future birth date, picking an institution from the dropdown vs. typing a new one) and
-   confirm errors show correctly and the Firestore doc looks right in `/admin/online`.
+## Design
+
+**Storage:** a `branches` array on the year's scholarship doc, `scholarships/{year}`:
+
+```js
+branches: [{ code: '1', name: 'কোতোয়ালী পূর্ব' }, …, { code: '99', name: 'অনলাইন' }]
+```
+
+- Array (not map) so admin-defined order is preserved. `code` stored as a string, matching the
+  `branch` field already saved on offline registrations.
+- Lives next to the other per-year data (`offices`, `syllabus`, …). The doc is already public-read /
+  auth-write in `firestore.rules`, and already fetched by public pages → **no rules change**, no extra
+  collection.
+- Creating a new year on `/admin/scholarship` with "clone from active" copies `branches` automatically
+  (it spreads the active doc). For a non-cloned new year, seed with the default list.
+
+**Fallback:** `DEFAULT_BRANCHES` = today's static list, moved into `src/lib/branches.js`. If a year's
+doc has no `branches` field (2025 and any existing years), `getBranches(year)` returns the defaults, so
+nothing breaks before an admin saves a list.
+
+**Year resolution (per the request):**
+
+- `/offline/**` → active scholarship (`getActiveScholarship()`), same as the online registration and
+  scholarship-details pages.
+- `/admin/list` and `/admin/list/[branch]` → `$selectedYear` (YearSwitcher); list reloads when the year
+  changes.
+- `/admin/list/[branch]/admit` and `/admin/list/edit/[id]` → `?year=` param or current year (their
+  existing behavior).
+
+## Steps
+
+1. **`src/lib/branches.js`** — `DEFAULT_BRANCHES`, `ONLINE_BRANCH_CODE = '99'`,
+   `getBranches(year)` (doc field or defaults), `saveBranches(year, branches)`,
+   `branchName(branches, code)` (falls back to the code if unlisted).
+2. **Admin page `/admin/branches`** — edits the branch list of `$selectedYear`: rows of code + name,
+   add / remove / move up-down, "reset to default". Validation on save: code = English digits,
+   unique; name non-empty; code `99` can be renamed but not removed. Before removing a code that has
+   registrations in that year, confirm with the count. Add a card on the admin dashboard.
+3. **New-year seeding** — `/admin/scholarship`: if the base for a new year has no `branches`, set
+   `DEFAULT_BRANCHES`.
+4. **`/offline` pages** — load branches for the active scholarship; grid, heading and breadcrumbs use
+   them. `/offline/[code]` for a code not in the current list shows an "invalid branch" message
+   instead of the form (prevents registrations into a branch that doesn't exist this year).
+5. **Admin list pages** — `/admin/list` counts per branch of the selected year, plus a line for
+   registrations whose code isn't in that year's list (`total − Σ counts`) so nothing is silently hidden.
+   `[branch]` and `admit` pages resolve the name from that year's list.
+6. **Edit page** — "থানা" becomes a `<select>` of that year's branches (keeps an unlisted current value
+   as an extra option).
+7. **Online transfer** — use `ONLINE_BRANCH_CODE` instead of the `'99'` literal.
+8. **Remove `src/routes/+layout.js`** (its only job was the static list) and all `export let data`
+   uses of `data.thana`.
+9. **Verify** — `npm run build` / `npm run check`; grep confirms no `thana` references remain.
 
 ---
-Status: not started.
+Status: Steps 1–8 implemented. Step 9: `npm run build` passes with no new warnings, and no `thana`
+references remain. Still to do: a manual run against Firestore (edit/save a year's list on
+`/admin/branches`, switch years on `/admin/list`, open `/offline` and an invalid `/offline/{code}`).
