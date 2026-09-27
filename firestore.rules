@@ -50,6 +50,12 @@ service cloud.firestore {
       }
     }
 
+    // Gemini scan usage, written from the browser by the /offline scanner (unauthenticated).
+    match /aiUsage/{day} {
+      allow read: if request.auth != null;
+      allow write: if true;
+    }
+
     match /settings/{id} {
       allow read: if true;
       allow write: if request.auth != null;

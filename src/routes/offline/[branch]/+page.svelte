@@ -5,6 +5,7 @@
     import { page } from '$app/stores';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import InstitutionInput from '$lib/components/InstitutionInput.svelte';
+	import ScanFormButton from '$lib/components/ScanFormButton.svelte';
 	import { getActiveScholarship } from '$lib/siteData';
 	import { offlineCol } from '$lib/yearScope';
 	import { loadInstitutions, addInstitutionIfMissing } from '$lib/institutions';
@@ -46,6 +47,32 @@
     let branch = $page.params.branch;
 
     const banglaRegex = /^[ঀ-৿\s.,()-]+$/;
+
+    const scanFieldLabels = {
+        institutionType: 'স্কুল/মাদরাসা',
+        gender: 'ছাত্র/ছাত্রী',
+        serial: 'সিরিয়াল',
+        name: 'পরীক্ষার্থীর নাম',
+        fatherName: 'পিতার নাম',
+        class: 'শ্রেণি',
+        classRoll: 'রোল',
+        mobile: 'মোবাইল',
+        presentAddress: 'বর্তমান ঠিকানা',
+        ward: 'ওয়ার্ড'
+    };
+    let scanned = false;
+    let scanMissing = [];
+
+    // Fill the form from the AI scan. Institution is never touched — the operator types it.
+    function applyScan(e) {
+        const data = { ...e.detail };
+        delete data.institution;
+        if (!data.serial) delete data.serial; // keep a serial the operator already typed
+        formData = { ...formData, ...data };
+        formErrors = {};
+        scanned = true;
+        scanMissing = Object.keys(scanFieldLabels).filter((f) => !formData[f]).map((f) => scanFieldLabels[f]);
+    }
 
     function stripSpaces(field) {
         formData[field] = formData[field].replace(/\s/g, '');
@@ -179,6 +206,17 @@
 	<h1 class="text-3xl font-bold text-center text-primary-900">শাখাঃ {branchInfo.name}</h1>
 
 	<h3 class="text-xl font-bold text-center text-secondary-700 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>
+
+	<ScanFormButton on:result={applyScan} />
+
+	{#if scanned}
+		<div class="p-3 bg-yellow-50 border border-yellow-300 text-yellow-900 rounded-md text-sm space-y-1">
+			<p>AI দিয়ে পূরণ করা হয়েছে — জমা দেওয়ার আগে প্রতিটি তথ্য ফরমের সাথে মিলিয়ে নিন। শিক্ষা প্রতিষ্ঠানের নাম নিজে লিখুন।</p>
+			{#if scanMissing.length}
+				<p>পড়া যায়নি / ফাঁকা: <span class="font-semibold">{scanMissing.join(', ')}</span></p>
+			{/if}
+		</div>
+	{/if}
 
 	<form on:submit|preventDefault={handleSubmit} class="space-y-6">
     <div class="flex flex-col md:flex-row justify-between md:space-x-4">
