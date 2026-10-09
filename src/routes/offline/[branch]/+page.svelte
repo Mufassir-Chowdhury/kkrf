@@ -207,7 +207,7 @@
 
 	<h3 class="text-xl font-bold text-center text-secondary-700 mb-6">রেজিস্ট্রেশন ফরম (অফলাইন)</h3>
 
-	<ScanFormButton on:result={applyScan} />
+	<!-- <ScanFormButton on:result={applyScan} /> -->
 
 	{#if scanned}
 		<div class="p-3 bg-yellow-50 border border-yellow-300 text-yellow-900 rounded-md text-sm space-y-1">
