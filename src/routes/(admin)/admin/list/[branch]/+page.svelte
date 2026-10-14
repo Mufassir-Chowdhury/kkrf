@@ -294,6 +294,16 @@
 		goto(`/admin/list/edit/${id}?year=${encodeURIComponent(year)}`);
 	}
 
+	// Short Bangla year for the SMS footer, e.g. '2026' -> '২৬
+	function shortBanglaYear(y) {
+		const bn = '০১২৩৪৫৬৭৮৯';
+		return String(y).slice(-2).replace(/\d/g, (d) => bn[d]);
+	}
+
+	function admitSMSMessage(hash) {
+		return `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '${shortBanglaYear(year)}`;
+	}
+
 	async function handleSendSMS() {
 		if (selectedIds.size === 0) {
 			alert('Please select at least one registration to send SMS');
@@ -311,7 +321,7 @@
 		// Generate preview list (first 5)
 		smsPreviewList = selectedRegs.slice(0, 5).map((r) => {
 			const hash = encodeRoll(r.roll);
-			const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
+			const message = admitSMSMessage(hash);
 			return {
 				name: r.name,
 				mobile: r.mobile,
@@ -349,7 +359,7 @@
 
 			for (const reg of selectedRegs) {
 				const hash = encodeRoll(reg.roll);
-				const message = `এডমিট কার্ড- www.kkrfsylhet.org/admit/${hash}\nকিশোরকণ্ঠ মেধাবৃত্তি '২৫`;
+				const message = admitSMSMessage(hash);
 
 				const data = new FormData();
 				data.set('token', SMS_API_TOKEN);

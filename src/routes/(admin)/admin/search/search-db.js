@@ -1,4 +1,6 @@
 import { algoliasearch } from 'algoliasearch';
+import { getDocs, query, where } from 'firebase/firestore';
+import { offlineCol } from '$lib/yearScope';
 
 const ALGOLIA_APP_ID = 'KXWYAU0VCS';
 const ALGOLIA_SEARCH_KEY = 'a27f6a1224c89a11b692f60edaa32d71';
@@ -34,10 +36,10 @@ export async function searchAllRegistrations(searchTerm, searchType = 'all') {
   }
 }
 
-export async function searchByMobile(mobile) {
+export async function searchByMobile(mobile, year) {
   try {
     const q = query(
-      collection(db, 'offline-2025'),
+      offlineCol(year),
       where('mobile', '==', mobile),
     );
     
