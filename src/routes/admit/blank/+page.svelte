@@ -1,17 +1,35 @@
 <script>
   import { onMount } from 'svelte';
-  import { getActiveScholarship } from '$lib/siteData';
+  import { page } from '$app/stores';
+  import { getActiveScholarship, getScholarship } from '$lib/siteData';
   import { admitCardOf, admitCardTitle } from '$lib/admitCard';
+
+  // Every field is optional: with no query params this is a blank card to fill
+  // by hand; the admin one-off form (/admin/admit-card) passes values here.
+  const params = $page.url.searchParams;
+  const info = Object.fromEntries(
+    ['roll', 'name', 'fatherName', 'mobile', 'institution', 'class', 'gender', 'institutionType', 'presentAddress', 'serial'].map(
+      (key) => [key, params.get(key) || '']
+    )
+  );
 
   let year = null;
   let admitCard = admitCardOf(null);
-  let centerNumber = admitCard.centers[admitCard.centers.length - 1]?.number ?? '';
+  let centerNumber = '';
+
+  function defaultCenter(centers) {
+    // Explicit ?center= wins, then the roll's first digit, then the last center.
+    const wanted = params.get('center') || info.roll[0];
+    return (centers.find((c) => String(c.number) === wanted) ?? centers[centers.length - 1])?.number ?? '';
+  }
+  centerNumber = defaultCenter(admitCard.centers);
 
   onMount(async () => {
-    const scholarship = await getActiveScholarship();
-    year = scholarship?.id || null;
+    const yearParam = params.get('year');
+    const scholarship = yearParam ? await getScholarship(yearParam) : await getActiveScholarship();
+    year = scholarship?.id || yearParam || null;
     admitCard = admitCardOf(scholarship);
-    centerNumber = admitCard.centers[admitCard.centers.length - 1]?.number ?? '';
+    centerNumber = defaultCenter(admitCard.centers);
   });
 
   $: centerName = admitCard.centers.find((c) => String(c.number) === String(centerNumber))?.name || '';
@@ -38,7 +56,7 @@
         <div class="bg-primary-800 text-white p-2 text-center mb-3 w-full flex justify-between">
           <div class="flex-1">
             <p>বৃত্তি রোল</p>
-            <div class="border mx-8 font-bold bg-white mt-2 py-4"></div>
+            <div class="border mx-8 font-bold bg-white text-primary-900 mt-2 h-8 flex items-center justify-center">{info.roll}</div>
           </div>
           <div class="flex-1">
             <h1 class="text-xl font-bold">{year ? admitCardTitle(year) : ''}</h1>
@@ -51,23 +69,23 @@
           <div class="grid grid-cols-5 gap-y-2 gap-x-4">
             <div class="mb-2 col-span-5">
               <p class="text-gray-600">পরীক্ষার্থীর নাম</p>
-              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
+              <p class="field">{info.name}</p>
             </div>
             <div class="mb-2 col-span-3">
               <p class="text-gray-600">পিতার নাম</p>
-              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
+              <p class="field">{info.fatherName}</p>
             </div>
             <div class="mb-2 col-span-2">
               <p class="text-gray-600">মোবাইল</p>
-              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
+              <p class="field">{info.mobile}</p>
             </div>
             <div class="mb-2 col-span-3">
               <p class="text-gray-600">প্রতিষ্ঠানের নাম</p>
-              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
+              <p class="field">{info.institution}</p>
             </div>
             <div class="mb-2">
               <p class="text-gray-600">শ্রেণি</p>
-              <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
+              <p class="field">{info.class}</p>
             </div>
             <div class="mb-2">
               <div class="w-full mb-2">
@@ -76,6 +94,7 @@
                     <input
                       type="radio"
                       value="male"
+                      checked={info.gender === 'male'}
                       required
                       class="form-radio"
                     />
@@ -85,6 +104,7 @@
                     <input
                       type="radio"
                       value="female"
+                      checked={info.gender === 'female'}
                       required
                       class="form-radio"
                     />
@@ -98,6 +118,7 @@
                     <input
                       type="radio"
                       value="school"
+                      checked={info.institutionType === 'school'}
                       required
                       class="form-radio"
                     />
@@ -107,6 +128,7 @@
                     <input
                       type="radio"
                       value="madrasa"
+                      checked={info.institutionType === 'madrasa'}
                       required
                       class="form-radio"
                     />
@@ -157,15 +179,15 @@
           </div>
         </div>
         <div class="text-primary-800 my-3">
-          <span class="font-semibold">ঠিকানাঃ</span> 
-                        <p class="font-semibold border border-primary-300 w-full h-12 rounded-md"></p>
+          <span class="font-semibold">ঠিকানাঃ</span>
+          <p class="field">{info.presentAddress}</p>
 
         </div>
         <div class="mt-4 flex justify-between items-end">
           <div class="mx-4 border-2 border-primary-800 pt-2 px-8 pb-2">
             <div>
               <div class="font-semibold">অফিস কর্তৃক পূরণীয়</div>
-              <div>সিরিয়ালঃ XXXXXX</div>
+              <div>সিরিয়ালঃ {info.serial || 'XXXXXX'}</div>
             </div>
           </div>
           <div class="text-center relative">
@@ -179,6 +201,10 @@
   </div>
 
 <style>
+  .field {
+    @apply font-semibold border border-primary-300 w-full h-12 rounded-md px-2 flex items-center leading-tight overflow-hidden;
+  }
+
   .a4-page {
     width: 210mm;
     min-height: 297mm;

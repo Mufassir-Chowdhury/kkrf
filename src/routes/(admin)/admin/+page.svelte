@@ -63,6 +63,13 @@
 			</div>
 		</a>
 
+		<a href="/admin/admit-card" class="block group">
+			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-700">
+				<h3 class="text-lg font-semibold text-primary-900 mb-1">Admit Cards</h3>
+				<p class="text-gray-500 text-sm">Print a blank admit card or create a one-off card</p>
+			</div>
+		</a>
+
 		<a href="/admin/refund" class="block group">
 			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-secondary-500">
 				<h3 class="text-lg font-semibold text-primary-900 mb-1">Refund Applications</h3>
