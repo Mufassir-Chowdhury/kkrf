@@ -5,7 +5,14 @@
 
 	import { handleExportCSV } from './util';
 	import { encodeRoll } from '$lib/hash';
-	import { loadRegistrations, deleteRegistration, assignRollNumbers } from './db';
+	import {
+		loadRegistrations,
+		deleteRegistration,
+		assignRollNumbers,
+		loadRollCache,
+		planRollRelease,
+		releaseRollNumbers
+	} from './db';
 	import { writeBatch } from 'firebase/firestore';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { selectedYear, loadAdminYear, offlineDocRef } from '$lib/yearScope';
@@ -39,6 +46,12 @@
 	let centerNumber = '';
 	let assigningRolls = false;
 	let centers = [];
+
+	// Roll release modal
+	let showReleaseModal = false;
+	let releasePlan = null;
+	let releaseRegs = [];
+	let releasingRolls = false;
 
 	let selectedIds = new Set();
 	let selectAll = false;
@@ -98,6 +111,54 @@
 			alert('Error assigning roll numbers. Please try again.');
 		} finally {
 			assigningRolls = false;
+		}
+	}
+
+	function rollsHeldOutsideSelection() {
+		return new Set(
+			registrations.filter((r) => r.roll && !selectedIds.has(r.id)).map((r) => String(r.roll))
+		);
+	}
+
+	async function handleOpenReleaseRolls() {
+		releaseRegs = registrations.filter((r) => selectedIds.has(r.id) && r.roll);
+		if (releaseRegs.length === 0) {
+			alert('No selected registrations have roll numbers');
+			return;
+		}
+		try {
+			const cache = await loadRollCache(year);
+			releasePlan = planRollRelease(cache, releaseRegs, rollsHeldOutsideSelection());
+			showReleaseModal = true;
+		} catch (err) {
+			console.error('Error loading roll cache:', err);
+			alert('Error loading roll cache. Please try again.');
+		}
+	}
+
+	async function handleReleaseRolls() {
+		if (
+			!confirm(
+				`This will remove the roll numbers of ${releaseRegs.length} registration(s). Their admit card links (including ones already sent by SMS) will stop working. Continue?`
+			)
+		) {
+			return;
+		}
+		try {
+			releasingRolls = true;
+			await releaseRollNumbers(releaseRegs, year, rollsHeldOutsideSelection());
+			showReleaseModal = false;
+			releasePlan = null;
+			releaseRegs = [];
+			selectedIds = new Set();
+			selectAll = false;
+			await handleLoad();
+			alert('Roll numbers freed successfully!');
+		} catch (err) {
+			console.error('Error freeing rolls:', err);
+			alert('Error freeing roll numbers. Please try again.');
+		} finally {
+			releasingRolls = false;
 		}
 	}
 
@@ -540,6 +601,26 @@
 					<span class="hidden sm:inline">Assign Roll Numbers</span>
 				</button>
 
+				<button
+					on:click={handleOpenReleaseRolls}
+					disabled={selectedIds.size === 0}
+					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 border border-red-300 bg-transparent text-red-700 hover:bg-red-50 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-400 disabled:text-gray-400 disabled:border-gray-300 disabled:cursor-not-allowed"
+					title="Reset & Free Roll Numbers"
+				>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 20 20"
+						fill="currentColor"
+						class="w-5 h-5 mr-0 sm:mr-2"
+						><path
+							fill-rule="evenodd"
+							d="M15.312 11.424a5.5 5.5 0 01-9.201 2.466l-.312-.311h2.433a.75.75 0 000-1.5H3.989a.75.75 0 00-.75.75v4.242a.75.75 0 001.5 0v-2.43l.31.31a7 7 0 0011.712-3.138.75.75 0 00-1.449-.39zm1.23-3.723a.75.75 0 00.219-.53V2.929a.75.75 0 00-1.5 0V5.36l-.31-.31A7 7 0 003.239 8.188a.75.75 0 101.448.389A5.5 5.5 0 0113.89 6.11l.311.31h-2.432a.75.75 0 000 1.5h4.243a.75.75 0 00.53-.219z"
+							clip-rule="evenodd"
+						/></svg
+					>
+					<span class="hidden sm:inline">Free Rolls ({selectedIds.size})</span>
+				</button>
+
 				<a
 					href="/admin/list/{branch}/admit?year={encodeURIComponent(year)}"
 					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-gray-900 transition-colors"
@@ -861,6 +942,99 @@
 						{assigningRolls ? 'Assigning...' : 'Assign Rolls'}
 					</button>
 				</div>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if showReleaseModal && releasePlan}
+	<div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+		<div class="bg-white rounded-lg p-6 max-w-2xl w-full shadow-xl max-h-[90vh] overflow-y-auto">
+			<h3 class="text-xl font-bold mb-4">Reset & Free Roll Numbers</h3>
+			<div class="p-3 mb-4 border border-red-300 bg-red-50 rounded text-sm text-red-700 space-y-1">
+				<p class="font-semibold">Warning</p>
+				<p>
+					Roll numbers will be removed from {releaseRegs.length} registration(s). Their admit card
+					links (including any already sent by SMS) will stop working, and the freed rolls may be
+					given to other students on the next roll assignment.
+				</p>
+				<p>
+					These registrations stay confirmed, so the next "Assign Roll Numbers" will give them new
+					rolls.
+				</p>
+			</div>
+
+			<h4 class="font-semibold mb-2">Cache changes (start_roll)</h4>
+			{#if releasePlan.pools.length === 0}
+				<p class="text-sm text-gray-500 mb-4">No changes to the cache.</p>
+			{:else}
+				<table class="w-full text-sm border mb-4">
+					<thead class="bg-gray-100">
+						<tr>
+							<th class="px-2 py-1 text-left">Pool</th>
+							<th class="px-2 py-1 text-left">Freed</th>
+							<th class="px-2 py-1 text-left">Starting roll</th>
+							<th class="px-2 py-1 text-left">Free list</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each releasePlan.pools as pool}
+							<tr class="border-t align-top">
+								<td class="px-2 py-1 font-mono">{pool.poolKey}</td>
+								<td class="px-2 py-1 font-mono">{pool.freed.join(', ')}</td>
+								<td class="px-2 py-1 font-mono whitespace-nowrap">
+									{#if pool.nextBefore === pool.nextAfter}
+										{pool.nextBefore} <span class="text-gray-400">(unchanged)</span>
+									{:else}
+										{pool.nextBefore} &rarr; <span class="text-green-700 font-bold">{pool.nextAfter}</span>
+									{/if}
+								</td>
+								<td class="px-2 py-1 font-mono">
+									<div class="text-gray-500">
+										Before: {pool.freeBefore.length ? pool.freeBefore.join(', ') : '-'}
+									</div>
+									<div>
+										After: {pool.freeAfter.length ? pool.freeAfter.join(', ') : '-'}
+									</div>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			{/if}
+
+			{#if releasePlan.skipped.length > 0}
+				<div class="p-3 mb-4 border border-orange-300 bg-orange-50 rounded text-sm text-orange-700">
+					<p class="font-semibold mb-1">
+						Cleared from the registration but not added to the free pool:
+					</p>
+					<ul class="list-disc pl-5">
+						{#each releasePlan.skipped as s}
+							<li>{s.reg.name} (roll {s.reg.roll}): {s.reason}</li>
+						{/each}
+					</ul>
+				</div>
+			{/if}
+
+			<div class="flex space-x-2 justify-end">
+				<button
+					on:click={() => {
+						showReleaseModal = false;
+						releasePlan = null;
+						releaseRegs = [];
+					}}
+					disabled={releasingRolls}
+					class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400 disabled:opacity-50"
+				>
+					Cancel
+				</button>
+				<button
+					on:click={handleReleaseRolls}
+					disabled={releasingRolls}
+					class="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 disabled:opacity-50"
+				>
+					{releasingRolls ? 'Freeing...' : `Free ${releaseRegs.length} Roll(s)`}
+				</button>
 			</div>
 		</div>
 	</div>
