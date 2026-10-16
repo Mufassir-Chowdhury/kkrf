@@ -5,19 +5,16 @@
   import { getDocs, query, where } from 'firebase/firestore';
   import { getCurrentYear, offlineCol } from '$lib/yearScope';
   import { page } from '$app/stores';
+  import { getScholarship } from '$lib/siteData';
+  import { admitCardOf, admitCardTitle, centerNameForRoll } from '$lib/admitCard';
   // import html2pdf from 'html2pdf.js';
 
   let admitCardInfo = null;
   let loading = true;
   let error = null;
+  let year = null;
+  let admitCard = admitCardOf(null);
 
-  
-
-  const center = {
-    1: 'শাহজালাল জামেয়া ইসলামিয়া স্কুল এন্ড কলেজ, মিরাবাজার',
-    2: 'শাহজালাল জামেয়া ইসলামিয়া কামিল মাদরাসা, পাঠানটুলা',
-    3: 'আল আমিন জামেয়া উচ্চ বিদ্যালয়, মেজরটিলা',
-  };
   onMount(async () => {
     try {
       const hash = $page.params.roll; // Now expecting hash instead of roll
@@ -38,7 +35,9 @@
       }
 
       // Query Firestore using where clause
-      const year = await getCurrentYear();
+      // Admin links pass ?year= so past years' cards still resolve.
+      year = $page.url.searchParams.get('year') || (await getCurrentYear());
+      admitCard = admitCardOf(await getScholarship(String(year)));
       const q = query(
         offlineCol(year),
         where('roll', '==', roll)
@@ -130,7 +129,7 @@
             <div class="border mx-16 font-bold bg-slate-400 mt-2 pb-2">{admitCardInfo.roll}</div>
           </div>
           <div class="flex-1">
-            <h1 class="text-xl font-bold">কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫</h1>
+            <h1 class="text-xl font-bold">{admitCardTitle(year)}</h1>
             <p class="text-sm border-2 rounded-full mt-2 pb-2">প্রবেশপত্র</p>
           </div>
           <div class="flex-1"></div>
@@ -215,23 +214,24 @@
           <div class="text-lg font-semibold text-primary-800 flex justify-between px-2 py-1 pb-2">
             <div>পরীক্ষার কেন্দ্রঃ</div>
             <div>
-              {center[admitCardInfo.roll[0]]}
+              {centerNameForRoll(admitCard, admitCardInfo.roll)}
             </div>
             <div></div>
           </div>
           <div class="w-full bg-primary-800 text-center text-white py-1 pb-2">পরীক্ষার সময়সূচী</div>
-          <div class="grid grid-cols-3 text-xs divide-x-2 divide-primary-800 text-center">
+          <div
+            class="grid text-xs divide-x-2 divide-primary-800 text-center"
+            style="grid-template-columns: repeat({admitCard.sessions.length + 1}, minmax(0, 1fr));"
+          >
             <div class="py-2">
-              ১ নভেম্বর, ২০২৫ <br /> শনিবার
+              {admitCard.date} <br /> {admitCard.day}
             </div>
-            <div class="divide-y-2 divide-primary-800">
-              <div class="py-1">১০:০০-১১:০০</div>
-              <div class="py-1">বাংলা ও ইংরেজি</div>
-            </div>
-            <div class="divide-y-2 divide-primary-800">
-              <div class="py-1">১১:১০-১২:১০</div>
-              <div class="py-1">গণিত ও সাধারণ জ্ঞান/সাধারণ বিজ্ঞান</div>
-            </div>
+            {#each admitCard.sessions as session}
+              <div class="divide-y-2 divide-primary-800">
+                <div class="py-1">{session.time}</div>
+                <div class="py-1">{session.subjects}</div>
+              </div>
+            {/each}
           </div>
         </div>
       </div>
@@ -243,11 +243,9 @@
         <div>
           <div class="text-center text-lg font-bold mb-3">পরীক্ষা সংক্রান্ত নিয়মাবলী</div>
           <div class="space-y-1 text-sm">
-            <div>- প্রবেশপত্র ব্যতিত কোন পরীক্ষার্থী পরীক্ষায় অংশগ্রহণ করতে পারবে না।</div>
-            <div>- প্রত্যেক পরীক্ষার্থী প্রয়োজনীয় ক্যালকুলেটর, কলম ও জ্যামিতি বক্স অবশ্যই সাথে আনতে হবে। এছাড়া অতিরিক্ত কাগজ সাথে রাখা যাবে না।</div>
-            <div>- পরীক্ষার হলে মোবাইল ফোন ও ইলেকট্রনিক ডিভাইস আনা সম্পূর্ণ নিষিদ্ধ।</div>
-            <div>- পরীক্ষা শুরুর ১৫ মিনিট পূর্বে আসন গ্রহণ করতে হবে।</div>
-            <div>- উত্তরপত্রে রোল নম্বর ও অন্যান্য তথ্য সঠিকভাবে পূরণ করতে হবে।</div>
+            {#each admitCard.rules as rule}
+              <div>- {rule}</div>
+            {/each}
           </div>
         </div>
         <div class="text-primary-800 my-3">

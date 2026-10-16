@@ -10,6 +10,8 @@
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { selectedYear, loadAdminYear, offlineDocRef } from '$lib/yearScope';
 	import { getBranches, branchName } from '$lib/branches';
+	import { getScholarship } from '$lib/siteData';
+	import { admitCardOf } from '$lib/admitCard';
 
 	let branch = $page.params.branch;
 	let year = null;
@@ -36,6 +38,7 @@
 	let showRollModal = false;
 	let centerNumber = '';
 	let assigningRolls = false;
+	let centers = [];
 
 	let selectedIds = new Set();
 	let selectAll = false;
@@ -60,12 +63,13 @@
 	}
 
 	async function handleAssignRolls() {
-		const center = parseInt(centerNumber);
+		const selectedCenter = centers.find((c) => String(c.number) === String(centerNumber));
 
-		if (!centerNumber || isNaN(center) || center < 1 || center > 3) {
-			alert('Please enter a valid center number (1-3)');
+		if (!selectedCenter) {
+			alert('Please select an exam center');
 			return;
 		}
+		const center = selectedCenter.number;
 
 		const confirmedRegs = registrations.filter((r) => r.confirm === true && !r.roll);
 
@@ -76,7 +80,7 @@
 
 		if (
 			!confirm(
-				`Assign roll numbers to ${confirmedRegs.length} confirmed registration(s) in center ${center}?`
+				`Assign roll numbers to ${confirmedRegs.length} confirmed registration(s) in center ${center} (${selectedCenter.name})?`
 			)
 		) {
 			return;
@@ -193,6 +197,12 @@
 		selectedIds = new Set();
 		selectAll = false;
 		getBranches(year).then((list) => (branchLabel = branchName(list, branch)));
+		getScholarship(year)
+			.then((s) => (centers = admitCardOf(s).centers))
+			.catch((err) => {
+				console.error('Error loading exam centers:', err);
+				centers = admitCardOf(null).centers;
+			});
 		handleLoad();
 	}
 
@@ -683,8 +693,9 @@
 
 								<td class="block lg:table-cell px-6 py-4" data-label="Actions">
 									<div class="flex justify-end items-center gap-4 h-8 w-8 px-8">
+										{#if registration.confirm && registration.roll}
 										<a
-											href="/admit/{encodeRoll(registration.roll)}"
+											href="/admit/{encodeRoll(registration.roll)}?year={encodeURIComponent(year)}"
 											target="_blank"
 											class="text-gray-600 hover:text-gray-800 h-8 w-8"
 											title="View Admit Card"
@@ -712,6 +723,9 @@
 												<circle cx="22" cy="9" r="1" fill="#535358" />
 											</svg>
 										</a>
+										{:else}
+										<span class="h-8 w-8" aria-hidden="true"></span>
+										{/if}
 										<button
 											on:click={() => handleEdit(registration.id)}
 											class="text-blue-600 hover:text-blue-800 h-8 w-8"
@@ -808,16 +822,21 @@
 			<h3 class="text-xl font-bold mb-4">Assign Roll Numbers</h3>
 			<div class="space-y-4">
 				<div>
-					<label class="block text-sm font-medium mb-1">Center Number (1-3)</label>
-					<input
-						type="number"
+					<label for="centerNumber" class="block text-sm font-medium mb-1">Exam Center</label>
+					<select
+						id="centerNumber"
 						bind:value={centerNumber}
-						placeholder="Enter 1, 2, or 3"
-						min="1"
-						max="3"
 						disabled={assigningRolls}
 						class="w-full p-2 border border-gray-300 rounded-md"
-					/>
+					>
+						<option value="" disabled>Select a center</option>
+						{#each centers as c}
+							<option value={c.number}>{c.number} — {c.name}</option>
+						{/each}
+					</select>
+					<p class="text-xs text-gray-500 mt-1">
+						Centers are managed in <a href="/admin/scholarship" class="underline">Scholarship Settings</a>.
+					</p>
 				</div>
 				<p class="text-sm text-gray-600">
 					This will assign roll numbers to all confirmed registrations without existing roll

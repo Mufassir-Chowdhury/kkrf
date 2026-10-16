@@ -2,6 +2,8 @@
   import { getDocs, query, orderBy, where } from 'firebase/firestore';
   import { offlineCol } from '$lib/yearScope';
   import { onMount } from 'svelte';
+  import { getScholarship } from '$lib/siteData';
+  import { admitCardOf, admitCardTitle, centerNameForRoll } from '$lib/admitCard';
 
   // 'allRegistrations' will hold the master list from Firestore
   let allRegistrations = [];
@@ -17,13 +19,15 @@
   let serialEnd = '';
   // --- END NEW ---
 
-  let center = {
-    1: 'শাহজালাল জামেয়া ইসলামিয়া স্কুল এন্ড কলেজ, মিরাবাজার',
-    2: 'শাহজালাল জামেয়া ইসলামিয়া কামিল মাদরাসা, পাঠানটুলা',
-    3: 'আল আমিন জামেয়া উচ্চ বিদ্যালয়, মেজরটিলা',
-  }
+  let admitCard = admitCardOf(null);
+  $: title = admitCardTitle(year);
 
   onMount(async () => {
+    try {
+      admitCard = admitCardOf(await getScholarship(String(year)));
+    } catch (err) {
+      console.error('Error loading admit card settings:', err);
+    }
     try {
       const q = query(
         offlineCol(year),
@@ -34,8 +38,8 @@
       const querySnapshot = await getDocs(q);
       let registrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       
-      // CHANGED: Store fetched data in the master list
-      allRegistrations = registrations; 
+      // Only confirmed registrations get an admit card
+      allRegistrations = registrations.filter((r) => r.confirm === true && r.roll);
     } catch (err) {
       console.error('Error loading registrations:', err);
       // Removed 'throw err;' to allow component to render error message
@@ -114,7 +118,7 @@
                   <div class="border mx-16 font-bold bg-slate-400">{card.roll}</div>
                 </div>
                 <div class="flex-1">
-                  <h1 class="text-xl font-bold">কিশোরকণ্ঠ মেধাবৃত্তি - ২০২৫</h1>
+                  <h1 class="text-xl font-bold">{title}</h1>
                   <p class="text-sm border-2 rounded-full">প্রবেশপত্র</p>
                 </div>
                 <div class="flex-1"></div>
@@ -201,23 +205,24 @@
                 <div class="text-lg font-semibold text-primary-800 flex justify-between">
                   <div>পরীক্ষার কেন্দ্রঃ</div>
                   <div>
-                    {center[card.roll[0]]}
+                    {centerNameForRoll(admitCard, card.roll)}
                   </div>
                   <div></div>
                 </div>
                 <div class="w-full bg-primary-800 text-center text-white">পরীক্ষার সময়সূচী</div>
-                <div class="grid grid-cols-3 text-xs divide-x-2 divide-primary-800 text-center">
+                <div
+                  class="grid text-xs divide-x-2 divide-primary-800 text-center"
+                  style="grid-template-columns: repeat({admitCard.sessions.length + 1}, minmax(0, 1fr));"
+                >
                   <div>
-                    ১ নভেম্বর, ২০২৫ <br /> শনিবার
+                    {admitCard.date} <br /> {admitCard.day}
                   </div>
-                  <div class="divide-y-2 divide-primary-800">
-                    <div>১০:০০-১১:০০</div>
-                    <div>বাংলা ও ইংরেজি</div>
-                  </div>
-                  <div class="divide-y-2 divide-primary-800">
-                    <div>১১:১০-১২:১০</div>
-                    <div>গণিত ও সাধারণ জ্ঞান/সাধারণ বিজ্ঞান</div>
-                  </div>
+                  {#each admitCard.sessions as session}
+                    <div class="divide-y-2 divide-primary-800">
+                      <div>{session.time}</div>
+                      <div>{session.subjects}</div>
+                    </div>
+                  {/each}
                 </div>
               </div>
             </div>
@@ -225,9 +230,9 @@
               <div>
                 <div class="text-center text-lg">পরীক্ষা সংক্রান্ত নিয়মাবলী</div>
                 <div>
-                  - প্রবেশপত্র ব্যতিত কোন পরীক্ষার্থী পরীক্ষায় অংশগ্রহণ করতে পারবে না। <br />
-                  - প্রত্যেক পরীক্ষার্থী প্রয়োজনীয় ক্যালকুলেটর, কলম ও জ্যামিতি বক্স অবশ্যই সাথে আনতে হবে।
-                  এছাড়া অতিরিক্ত কাগজ সাথে রাখা যাবে না<br />
+                  {#each admitCard.rules as rule}
+                    - {rule}<br />
+                  {/each}
                 </div>
               </div>
               <div class="text-primary-800">

@@ -11,7 +11,8 @@
 		limit,
 		startAfter,
 		getCountFromServer,
-		writeBatch
+		writeBatch,
+		where
 	} from 'firebase/firestore';
 	import { sendConfirmationSMS, handleExportCSV, sendIncompleteRegistrationSMS } from '../util';
 	import { deleteRegistration, loadAllRegistrations } from '../db';
@@ -30,8 +31,12 @@
 	let smsModalOpen = false;
 	let selectedUnconfirmedReg = null;
 
-	// Selection variables
+	// Selection variables. selectedRegs keeps the full record of each selected
+	// registration, since "select all" can pick ones that aren't loaded yet.
 	let selectedIds = new Set();
+	let selectedRegs = new Map();
+	let allConfirmedIds = new Set(); // set by the last "select all" fetch
+	let selectingAll = false;
 	let isMoving = false;
 
 	// Infinite scroll variables
@@ -52,7 +57,7 @@
 
 	$: if ($selectedYear && $selectedYear !== year) {
 		year = $selectedYear;
-		selectedIds = new Set();
+		clearSelection();
 		handleInitialLoad();
 	}
 
@@ -159,22 +164,56 @@
 		filterRegistrations();
 	}
 
-	function toggleSelection(id) {
-		if (selectedIds.has(id)) {
-			selectedIds.delete(id);
+	function clearSelection() {
+		selectedIds = new Set();
+		selectedRegs = new Map();
+		allConfirmedIds = new Set();
+	}
+
+	function toggleSelection(reg) {
+		if (selectedIds.has(reg.id)) {
+			selectedIds.delete(reg.id);
+			selectedRegs.delete(reg.id);
 		} else {
-			selectedIds.add(id);
+			selectedIds.add(reg.id);
+			selectedRegs.set(reg.id, reg);
 		}
 		selectedIds = selectedIds; // Trigger reactivity
 	}
 
-	function toggleSelectAll() {
-		if (selectedIds.size === filteredRegistrations.length) {
-			selectedIds.clear();
-		} else {
-			filteredRegistrations.forEach((reg) => selectedIds.add(reg.id));
+	// Selects every confirmed registration of the year (not just the loaded
+	// page). While searching, only the confirmed ones among the matches.
+	async function toggleSelectAll() {
+		if (allSelected) {
+			clearSelection();
+			return;
 		}
-		selectedIds = selectedIds; // Trigger reactivity
+
+		let confirmedRegs;
+		if (searchTerm) {
+			confirmedRegs = filteredRegistrations.filter((reg) => reg.confirmed === true);
+		} else {
+			selectingAll = true;
+			try {
+				const snap = await getDocs(query(applicationsCol(year), where('confirmed', '==', true)));
+				confirmedRegs = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+			} catch (err) {
+				console.error('Error loading confirmed registrations:', err);
+				alert('Failed to select confirmed registrations. Please try again.');
+				return;
+			} finally {
+				selectingAll = false;
+			}
+		}
+
+		if (confirmedRegs.length === 0) {
+			alert('No confirmed registrations to select');
+			return;
+		}
+
+		selectedIds = new Set(confirmedRegs.map((reg) => reg.id));
+		selectedRegs = new Map(confirmedRegs.map((reg) => [reg.id, reg]));
+		allConfirmedIds = new Set(selectedIds);
 	}
 
 	async function getNextSerialNumber(count) {
@@ -203,54 +242,62 @@
 		error = null;
 
 		try {
-			const selectedRegs = registrations.filter((reg) => selectedIds.has(reg.id));
-			const { startSerial, cacheRef } = await getNextSerialNumber(selectedRegs.length);
+			const regsToMove = [...selectedIds].map((id) => selectedRegs.get(id)).filter(Boolean);
+			const { startSerial, cacheRef } = await getNextSerialNumber(regsToMove.length);
 
-			const batch = writeBatch(db);
+			// Firestore batches are capped at 500 writes; each registration takes 2
+			// (set + delete) plus 1 for the cache, so commit in chunks. The cache is
+			// updated with every chunk so a partial failure doesn't reuse serials.
+			const CHUNK_SIZE = 200;
+			for (let offset = 0; offset < regsToMove.length; offset += CHUNK_SIZE) {
+				const chunk = regsToMove.slice(offset, offset + CHUNK_SIZE);
+				const batch = writeBatch(db);
 
-			selectedRegs.forEach((reg, index) => {
-				const serial = String(startSerial + index).padStart(5, '0');
+				chunk.forEach((reg, i) => {
+					const index = offset + i;
+					const serial = String(startSerial + index).padStart(5, '0');
 
-				const offlineData = {
-					serial: serial,
-					institutionType: reg.institutionType || null,
-					gender: reg.gender || null,
-					name: reg.name || '',
-					fatherName: reg.fatherName || '',
-					institution: reg.institution || '',
-					class: reg.class || '',
-					section: reg.section || '',
-					classRoll: reg.classRoll || '',
-					mobile: reg.mobile || '',
-					presentAddress: reg.presentAddress || '',
-					creationTime: reg.creationTime || '',
-					branch: ONLINE_BRANCH_CODE,
-					ward: ''
-				};
+					const offlineData = {
+						serial: serial,
+						institutionType: reg.institutionType || null,
+						gender: reg.gender || null,
+						name: reg.name || '',
+						fatherName: reg.fatherName || '',
+						institution: reg.institution || '',
+						class: reg.class || '',
+						section: reg.section || '',
+						classRoll: reg.classRoll || '',
+						mobile: reg.mobile || '',
+						presentAddress: reg.presentAddress || '',
+						creationTime: reg.creationTime || '',
+						branch: ONLINE_BRANCH_CODE,
+						ward: ''
+					};
 
-				// Add to offline collection
-				const offlineRef = doc(offlineCol(year));
-				batch.set(offlineRef, offlineData);
+					// Add to offline collection
+					const offlineRef = doc(offlineCol(year));
+					batch.set(offlineRef, offlineData);
 
-				// Delete from applications
-				const onlineRef = applicationDocRef(year, reg.id);
-				batch.delete(onlineRef);
-			});
+					// Delete from applications
+					const onlineRef = applicationDocRef(year, reg.id);
+					batch.delete(onlineRef);
+				});
 
-			// Update cache with last serial number
-			const lastSerial = startSerial + selectedRegs.length - 1;
-			batch.set(cacheRef, { lastSerial }, { merge: true });
+				// Update cache with last serial number
+				const lastSerial = startSerial + offset + chunk.length - 1;
+				batch.set(cacheRef, { lastSerial }, { merge: true });
 
-			await batch.commit();
+				await batch.commit();
+			}
 
 			// Remove from local array
-			registrations = registrations.filter((reg) => !selectedIds.has(reg.id));
-			totalItems -= selectedIds.size;
+			const movedIds = new Set(regsToMove.map((reg) => reg.id));
+			registrations = registrations.filter((reg) => !movedIds.has(reg.id));
+			totalItems -= movedIds.size;
 			filterRegistrations();
-			selectedIds.clear();
-			selectedIds = selectedIds; // Trigger reactivity
+			clearSelection();
 
-			alert(`Successfully moved ${selectedRegs.length} registration(s) to offline`);
+			alert(`Successfully moved ${regsToMove.length} registration(s) to offline`);
 		} catch (err) {
 			console.error('Error moving registrations:', err);
 			error = 'Failed to move registrations. Please try again.';
@@ -266,6 +313,8 @@
 		registrations = registrations.filter((reg) => reg.id !== id);
 		totalItems--;
 		selectedIds.delete(id);
+		selectedRegs.delete(id);
+		allConfirmedIds.delete(id);
 		selectedIds = selectedIds;
 		filterRegistrations();
 	}
@@ -339,8 +388,8 @@
 	}
 
 	$: allSelected =
-		filteredRegistrations.length > 0 && selectedIds.size === filteredRegistrations.length;
-	$: someSelected = selectedIds.size > 0 && selectedIds.size < filteredRegistrations.length;
+		allConfirmedIds.size > 0 && [...allConfirmedIds].every((id) => selectedIds.has(id));
+	$: someSelected = selectedIds.size > 0 && !allSelected;
 </script>
 
 <svelte:head>
@@ -401,6 +450,8 @@
 									checked={allSelected}
 									indeterminate={someSelected}
 									on:change={toggleSelectAll}
+									disabled={selectingAll}
+									title="Select all confirmed registrations"
 									class="w-4 h-4 cursor-pointer"
 								/>
 							</th>
@@ -419,7 +470,7 @@
 									<input
 										type="checkbox"
 										checked={selectedIds.has(registration.id)}
-										on:change={() => toggleSelection(registration.id)}
+										on:change={() => toggleSelection(registration)}
 										class="w-4 h-4 cursor-pointer"
 									/>
 								</td>

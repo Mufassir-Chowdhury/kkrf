@@ -12,6 +12,7 @@
 		SEED_2025
 	} from '$lib/siteData';
 	import { cloneDefaultBranches } from '$lib/branches';
+	import { admitCardOf } from '$lib/admitCard';
 
 	let loading = true;
 	let saving = false;
@@ -22,6 +23,8 @@
 	// Form state (structured copies, edited then saved explicitly)
 	let form = { ...EMPTY_SCHOLARSHIP };
 	let examRulesText = '';
+	let admitCard = admitCardOf(null);
+	let admitRulesText = '';
 
 	// New year form
 	let newYear = '';
@@ -34,6 +37,8 @@
 	function loadFormFromScholarship(s) {
 		form = { ...EMPTY_SCHOLARSHIP, ...s };
 		examRulesText = (form.examRules || []).join('\n');
+		admitCard = JSON.parse(JSON.stringify(admitCardOf(s)));
+		admitRulesText = admitCard.rules.join('\n');
 		form.syllabus = (form.syllabus || []).map((c) => ({
 			class: c.class || '',
 			subjects: (c.subjects || []).map((sub) => ({
@@ -169,8 +174,62 @@
 		form.syllabus = form.syllabus;
 	}
 
+	function addCenter() {
+		const used = new Set(admitCard.centers.map((c) => String(c.number)));
+		const next = ['1', '2', '3', '4', '5', '6', '7', '8', '9'].find((n) => !used.has(n)) || '';
+		admitCard.centers = [...admitCard.centers, { number: next, name: '' }];
+	}
+	function removeCenter(index) {
+		admitCard.centers = admitCard.centers.filter((_, i) => i !== index);
+	}
+	function addSession() {
+		admitCard.sessions = [...admitCard.sessions, { time: '', subjects: '' }];
+	}
+	function removeSession(index) {
+		admitCard.sessions = admitCard.sessions.filter((_, i) => i !== index);
+	}
+
+	// Returns the cleaned admit card settings, or null (after alerting) if invalid.
+	function buildAdmitCard() {
+		const centers = admitCard.centers
+			.map((c) => ({ number: String(c.number ?? '').trim(), name: (c.name || '').trim() }))
+			.filter((c) => c.number || c.name);
+		if (centers.length === 0) {
+			alert('অন্তত একটি পরীক্ষা কেন্দ্র যোগ করুন।');
+			return null;
+		}
+		// The center number is the first digit of every roll, so it must be a single digit 1-9.
+		if (centers.some((c) => !/^[1-9]$/.test(c.number))) {
+			alert('কেন্দ্র নম্বর অবশ্যই ১ থেকে ৯ এর মধ্যে একটি অংক (1-9) হতে হবে।');
+			return null;
+		}
+		if (new Set(centers.map((c) => c.number)).size !== centers.length) {
+			alert('একই কেন্দ্র নম্বর একাধিকবার ব্যবহার করা যাবে না।');
+			return null;
+		}
+		if (centers.some((c) => !c.name)) {
+			alert('প্রতিটি কেন্দ্রের নাম লিখুন।');
+			return null;
+		}
+		return {
+			centers,
+			date: (admitCard.date || '').trim(),
+			day: (admitCard.day || '').trim(),
+			sessions: admitCard.sessions
+				.map((s) => ({ time: (s.time || '').trim(), subjects: (s.subjects || '').trim() }))
+				.filter((s) => s.time || s.subjects),
+			rules: admitRulesText
+				.split('\n')
+				.map((r) => r.trim())
+				.filter(Boolean)
+		};
+	}
+
 	async function handleSaveScholarship() {
 		if (!activeScholarship) return;
+
+		const cleanedAdmitCard = buildAdmitCard();
+		if (!cleanedAdmitCard) return;
 
 		const cleanedSyllabus = (form.syllabus || [])
 			.map((c) => ({
@@ -191,7 +250,8 @@
 				.map((r) => r.trim())
 				.filter(Boolean),
 			offices: (form.offices || []).filter((o) => o.name || o.address || o.phone),
-			syllabus: cleanedSyllabus
+			syllabus: cleanedSyllabus,
+			admitCard: cleanedAdmitCard
 		};
 		delete payload.id;
 		// Branches are edited on /admin/branches; don't overwrite them with the copy loaded here.
@@ -510,6 +570,131 @@
 						{#if !(form.syllabus || []).length}
 							<p class="text-sm text-gray-400">কোনো শ্রেণি যোগ করা হয়নি।</p>
 						{/if}
+					</div>
+				</div>
+
+				<div class="border-t border-gray-200 pt-6 space-y-4">
+					<div>
+						<h3 class="text-base font-semibold text-gray-800">প্রবেশপত্র (এডমিট কার্ড)</h3>
+						<p class="text-xs text-gray-400 mt-0.5">
+							পরীক্ষা কেন্দ্র, সময়সূচী ও নিয়মাবলী এই বছরের সকল প্রবেশপত্রে দেখানো হবে।
+						</p>
+					</div>
+
+					<div>
+						<div class="flex justify-between items-center mb-2">
+							<div>
+								<label class="block text-sm font-medium text-gray-700">পরীক্ষা কেন্দ্রসমূহ</label>
+								<p class="text-xs text-gray-400 mt-0.5">
+									কেন্দ্র নম্বর (1-9) রোল নম্বরের প্রথম অংক হিসেবে ব্যবহৃত হয়। রোল দেওয়ার পর কোনো কেন্দ্রের নম্বর পরিবর্তন করবেন না।
+								</p>
+							</div>
+							<button
+								on:click={addCenter}
+								class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
+							>
+								+ কেন্দ্র যোগ করুন
+							</button>
+						</div>
+						<div class="space-y-2">
+							{#each admitCard.centers as center, i}
+								<div class="grid grid-cols-[5rem_1fr_auto] gap-2 items-start">
+									<input
+										type="text"
+										inputmode="numeric"
+										maxlength="1"
+										bind:value={center.number}
+										placeholder="নং"
+										class="border border-gray-300 rounded-md p-2 text-sm text-center focus:ring-primary-500 focus:border-primary-500"
+									/>
+									<input
+										type="text"
+										bind:value={center.name}
+										placeholder="কেন্দ্রের নাম ও ঠিকানা"
+										class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+									/>
+									<button
+										on:click={() => removeCenter(i)}
+										class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+										title="মুছে ফেলুন"
+									>
+										✕
+									</button>
+								</div>
+							{/each}
+							{#if !admitCard.centers.length}
+								<p class="text-sm text-gray-400">কোনো কেন্দ্র যোগ করা হয়নি।</p>
+							{/if}
+						</div>
+					</div>
+
+					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-1">প্রবেশপত্রে পরীক্ষার তারিখ</label>
+							<input
+								type="text"
+								bind:value={admitCard.date}
+								class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
+								placeholder="১ নভেম্বর, ২০২৬"
+							/>
+						</div>
+						<div>
+							<label class="block text-sm font-medium text-gray-700 mb-1">বার</label>
+							<input
+								type="text"
+								bind:value={admitCard.day}
+								class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
+								placeholder="শনিবার"
+							/>
+						</div>
+					</div>
+
+					<div>
+						<div class="flex justify-between items-center mb-2">
+							<label class="block text-sm font-medium text-gray-700">পরীক্ষার সময়সূচী</label>
+							<button
+								on:click={addSession}
+								class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
+							>
+								+ সময় যোগ করুন
+							</button>
+						</div>
+						<div class="space-y-2">
+							{#each admitCard.sessions as session, i}
+								<div class="grid grid-cols-1 sm:grid-cols-[10rem_1fr_auto] gap-2 items-start">
+									<input
+										type="text"
+										bind:value={session.time}
+										placeholder="১০:০০-১১:০০"
+										class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+									/>
+									<input
+										type="text"
+										bind:value={session.subjects}
+										placeholder="বিষয় (যেমনঃ বাংলা ও ইংরেজি)"
+										class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+									/>
+									<button
+										on:click={() => removeSession(i)}
+										class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+										title="মুছে ফেলুন"
+									>
+										✕
+									</button>
+								</div>
+							{/each}
+						</div>
+					</div>
+
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">
+							প্রবেশপত্রের নিয়মাবলী (প্রতি লাইনে একটি)
+						</label>
+						<textarea
+							bind:value={admitRulesText}
+							rows="5"
+							class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+						></textarea>
 					</div>
 				</div>
 
