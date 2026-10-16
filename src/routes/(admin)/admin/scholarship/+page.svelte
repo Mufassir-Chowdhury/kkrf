@@ -30,6 +30,18 @@
 	let newYear = '';
 	let cloneFromActive = true;
 
+	// The editor tabs need an active scholarship; "years" is always available.
+	const TABS = [
+		{ id: 'general', label: 'সাধারণ তথ্য', needsActive: true },
+		{ id: 'offices', label: 'ঠিকানা', needsActive: true },
+		{ id: 'syllabus', label: 'সিলেবাস', needsActive: true },
+		{ id: 'admit', label: 'প্রবেশপত্র', needsActive: true },
+		{ id: 'years', label: 'বৃত্তি বছরসমূহ', needsActive: false }
+	];
+	let activeTab = 'general';
+	$: visibleTabs = TABS.filter((t) => !t.needsActive || activeScholarship);
+	$: if (!loading && !visibleTabs.some((t) => t.id === activeTab)) activeTab = 'years';
+
 	function toYearString(y) {
 		return String(y).trim();
 	}
@@ -117,6 +129,7 @@
 			await saveScholarship(year, newData);
 			await setActiveScholarshipId(year);
 			await loadAll();
+			activeTab = 'general';
 			alert(`"${year}" সালের বৃত্তি পরীক্ষা তৈরি হয়েছে এবং সক্রিয় করা হয়েছে।`);
 		} catch (err) {
 			console.error('Error creating scholarship:', err);
@@ -229,7 +242,10 @@
 		if (!activeScholarship) return;
 
 		const cleanedAdmitCard = buildAdmitCard();
-		if (!cleanedAdmitCard) return;
+		if (!cleanedAdmitCard) {
+			activeTab = 'admit';
+			return;
+		}
 
 		const cleanedSyllabus = (form.syllabus || [])
 			.map((c) => ({
@@ -297,73 +313,65 @@
 {#if loading}
 	<div class="text-center py-12 text-gray-500">Loading...</div>
 {:else}
-	<div class="space-y-8 mt-6">
-		<!-- Start New Scholarship Year -->
-		<div class="card">
-			<h2 class="section-title mb-1">নতুন বৃত্তি পরীক্ষা শুরু করুন</h2>
-			<p class="text-gray-500 text-sm mb-4">
-				একটি নতুন বছরের জন্য বৃত্তি পরীক্ষা তৈরি করুন। এটি স্বয়ংক্রিয়ভাবে ওয়েবসাইটের সক্রিয় বৃত্তি হয়ে যাবে।
-			</p>
-			<div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+	<div class="space-y-6 mt-6">
+		{#if activeScholarship}
+			<!-- Active Scholarship Header -->
+			<div class="card flex flex-col sm:flex-row justify-between sm:items-center gap-4">
 				<div>
-					<label for="newYear" class="block text-sm font-medium text-gray-700 mb-1">বছর</label>
-					<input
-						id="newYear"
-						type="text"
-						bind:value={newYear}
-						class="border border-gray-300 rounded-md p-2 w-40 focus:ring-primary-500 focus:border-primary-500"
-						placeholder="২০২৬"
-					/>
+					<span class="section-eyebrow">সক্রিয় বৃত্তি</span>
+					<h2 class="section-title">কিশোরকণ্ঠ মেধাবৃত্তি - {activeScholarship.year}</h2>
 				</div>
-				<label class="inline-flex items-center gap-2 text-sm text-gray-700 mb-2 sm:mb-2.5">
-					<input
-						type="checkbox"
-						bind:checked={cloneFromActive}
-						disabled={!activeScholarship}
-						class="rounded border-gray-300 text-primary-700 focus:ring-primary-500"
-					/>
-					বর্তমান সক্রিয় বৃত্তি থেকে তথ্য কপি করুন (নিয়মাবলী, ঠিকানা, সিলেবাস)
-				</label>
+
 				<button
-					on:click={handleCreateScholarship}
-					disabled={saving}
-					class="btn-primary disabled:opacity-50"
+					on:click={handleToggleRegistration}
+					class="flex items-center gap-3 px-4 py-2 rounded-md border {form.registrationOpen
+						? 'border-primary-300 bg-primary-50'
+						: 'border-gray-300 bg-gray-50'} transition-colors"
 				>
-					নতুন বৃত্তি তৈরি করুন
+					<span
+						class="relative inline-block w-11 h-6 rounded-full transition-colors {form.registrationOpen
+							? 'bg-primary-700'
+							: 'bg-gray-300'}"
+					>
+						<span
+							class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform {form.registrationOpen
+								? 'translate-x-5'
+								: ''}"
+						></span>
+					</span>
+					<span class="text-sm font-semibold {form.registrationOpen ? 'text-primary-800' : 'text-gray-600'}">
+						রেজিস্ট্রেশন {form.registrationOpen ? 'খোলা আছে' : 'বন্ধ আছে'}
+					</span>
 				</button>
+			</div>
+		{/if}
+
+		<!-- Tabs -->
+		<div class="bg-white rounded-lg p-2 shadow-sm">
+			<div class="flex space-x-2 overflow-x-auto" aria-label="Tabs" role="tablist">
+				{#each visibleTabs as tab}
+					<button
+						role="tab"
+						aria-selected={activeTab === tab.id}
+						on:click={() => (activeTab = tab.id)}
+						class="{activeTab === tab.id
+							? 'bg-primary-100 text-primary-900'
+							: 'text-gray-500 hover:text-gray-700 hover:bg-gray-100'} whitespace-nowrap px-4 py-2 rounded-md font-medium text-sm transition-colors flex-1 text-center"
+					>
+						{tab.label}
+					</button>
+				{/each}
 			</div>
 		</div>
 
-		{#if activeScholarship}
-			<!-- Active Scholarship Editor -->
+		{#if activeTab === 'general' && activeScholarship}
+			<!-- General Info -->
 			<div class="card space-y-6">
-				<div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
-					<div>
-						<span class="section-eyebrow">সক্রিয় বৃত্তি</span>
-						<h2 class="section-title">কিশোরকণ্ঠ মেধাবৃত্তি - {activeScholarship.year}</h2>
-					</div>
-
-					<button
-						on:click={handleToggleRegistration}
-						class="flex items-center gap-3 px-4 py-2 rounded-md border {form.registrationOpen
-							? 'border-primary-300 bg-primary-50'
-							: 'border-gray-300 bg-gray-50'} transition-colors"
-					>
-						<span
-							class="relative inline-block w-11 h-6 rounded-full transition-colors {form.registrationOpen
-								? 'bg-primary-700'
-								: 'bg-gray-300'}"
-						>
-							<span
-								class="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform {form.registrationOpen
-									? 'translate-x-5'
-									: ''}"
-							></span>
-						</span>
-						<span class="text-sm font-semibold {form.registrationOpen ? 'text-primary-800' : 'text-gray-600'}">
-							রেজিস্ট্রেশন {form.registrationOpen ? 'খোলা আছে' : 'বন্ধ আছে'}
-						</span>
-					</button>
+				<div>
+					<h3 class="text-base font-semibold text-gray-800">সাধারণ তথ্য</h3>
+					<p class="text-xs text-gray-400 mt-0.5">
+						পরীক্ষার তারিখ, বৃত্তির পরিমাণ, রেজিস্ট্রেশন ফি ও নিয়মাবলী।
+					</p>
 				</div>
 
 				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -448,40 +456,182 @@
 						class="w-full border border-gray-300 rounded-md p-2 font-mono text-sm focus:ring-primary-500 focus:border-primary-500"
 					></textarea>
 				</div>
+			</div>
+		{:else if activeTab === 'offices' && activeScholarship}
+			<!-- Offices -->
+			<div class="card space-y-4">
+				<div class="flex justify-between items-center gap-4">
+					<div>
+						<h3 class="text-base font-semibold text-gray-800">ফর্ম প্রাপ্তি ও জমা দেওয়ার ঠিকানা</h3>
+						<p class="text-xs text-gray-400 mt-0.5">
+							যেসব প্রতিষ্ঠান থেকে ফর্ম সংগ্রহ ও জমা দেওয়া যাবে।
+						</p>
+					</div>
+					<button
+						on:click={addOffice}
+						class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
+					>
+						+ ঠিকানা যোগ করুন
+					</button>
+				</div>
+				<div class="space-y-3">
+					{#each form.offices || [] as office, i}
+						<div class="grid grid-cols-1 sm:grid-cols-[1fr_1.5fr_1fr_auto] gap-2 items-start">
+							<input
+								type="text"
+								bind:value={office.name}
+								placeholder="প্রতিষ্ঠানের নাম"
+								class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+							/>
+							<input
+								type="text"
+								bind:value={office.address}
+								placeholder="ঠিকানা"
+								class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+							/>
+							<input
+								type="text"
+								bind:value={office.phone}
+								placeholder="ফোন"
+								class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+							/>
+							<button
+								on:click={() => removeOffice(i)}
+								class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+								title="মুছে ফেলুন"
+							>
+								✕
+							</button>
+						</div>
+					{/each}
+					{#if !(form.offices || []).length}
+						<p class="text-sm text-gray-400">কোনো ঠিকানা যোগ করা হয়নি।</p>
+					{/if}
+				</div>
+			</div>
+		{:else if activeTab === 'syllabus' && activeScholarship}
+			<!-- Syllabus -->
+			<div class="card space-y-4">
+				<div class="flex justify-between items-center gap-4">
+					<div>
+						<h3 class="text-base font-semibold text-gray-800">সিলেবাস</h3>
+						<p class="text-xs text-gray-400 mt-0.5">
+							প্রতিটি শ্রেণির জন্য একটি বক্স যোগ করুন, তারপর সেই শ্রেণির প্রতিটি বিষয় ও তার টপিকগুলো লিখুন।
+						</p>
+					</div>
+					<button
+						on:click={addSyllabusClass}
+						class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
+					>
+						+ শ্রেণি যোগ করুন
+					</button>
+				</div>
+
+				<div class="space-y-4">
+					{#each form.syllabus || [] as classData, ci}
+						<div class="border border-gray-200 rounded-lg p-4 bg-gray-50/50 space-y-3">
+							<div class="flex items-center gap-2">
+								<input
+									type="text"
+									bind:value={classData.class}
+									placeholder="শ্রেণির নাম (যেমনঃ ১০ম শ্রেণি (স্কুল/মাদরাসা))"
+									class="flex-1 border border-gray-300 rounded-md p-2 text-sm font-semibold focus:ring-primary-500 focus:border-primary-500"
+								/>
+								<button
+									on:click={() => removeSyllabusClass(ci)}
+									class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+									title="শ্রেণি মুছে ফেলুন"
+								>
+									✕
+								</button>
+							</div>
+
+							<div class="space-y-3 pl-2 border-l-2 border-primary-100">
+								{#each classData.subjects || [] as subject, si}
+									<div class="grid grid-cols-1 sm:grid-cols-[1fr_2fr_auto] gap-2 items-start pl-2">
+										<input
+											type="text"
+											bind:value={subject.name}
+											placeholder="বিষয়ের নাম (যেমনঃ বাংলা)"
+											class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+										/>
+										<textarea
+											value={(subject.topics || []).join('\n')}
+											on:input={(e) => updateTopics(ci, si, e.target.value)}
+											rows="3"
+											placeholder="টপিকসমূহ (প্রতি লাইনে একটি)"
+											class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+										></textarea>
+										<button
+											on:click={() => removeSubject(ci, si)}
+											class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+											title="বিষয় মুছে ফেলুন"
+										>
+											✕
+										</button>
+									</div>
+								{/each}
+								{#if !(classData.subjects || []).length}
+									<p class="text-sm text-gray-400 pl-2">কোনো বিষয় যোগ করা হয়নি।</p>
+								{/if}
+								<button
+									on:click={() => addSubject(ci)}
+									class="text-sm font-medium text-primary-700 hover:text-primary-900 pl-2"
+								>
+									+ বিষয় যোগ করুন
+								</button>
+							</div>
+						</div>
+					{/each}
+					{#if !(form.syllabus || []).length}
+						<p class="text-sm text-gray-400">কোনো শ্রেণি যোগ করা হয়নি।</p>
+					{/if}
+				</div>
+			</div>
+		{:else if activeTab === 'admit' && activeScholarship}
+			<!-- Admit Card -->
+			<div class="card space-y-6">
+				<div>
+					<h3 class="text-base font-semibold text-gray-800">প্রবেশপত্র (এডমিট কার্ড)</h3>
+					<p class="text-xs text-gray-400 mt-0.5">
+						পরীক্ষা কেন্দ্র, সময়সূচী ও নিয়মাবলী এই বছরের সকল প্রবেশপত্রে দেখানো হবে।
+					</p>
+				</div>
 
 				<div>
-					<div class="flex justify-between items-center mb-2">
-						<label class="block text-sm font-medium text-gray-700">ফর্ম প্রাপ্তি ও জমা দেওয়ার ঠিকানা</label>
+					<div class="flex justify-between items-center mb-2 gap-4">
+						<div>
+							<label class="block text-sm font-medium text-gray-700">পরীক্ষা কেন্দ্রসমূহ</label>
+							<p class="text-xs text-gray-400 mt-0.5">
+								কেন্দ্র নম্বর (1-9) রোল নম্বরের প্রথম অংক হিসেবে ব্যবহৃত হয়। রোল দেওয়ার পর কোনো কেন্দ্রের নম্বর পরিবর্তন করবেন না।
+							</p>
+						</div>
 						<button
-							on:click={addOffice}
-							class="text-sm font-medium text-primary-700 hover:text-primary-900"
+							on:click={addCenter}
+							class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
 						>
-							+ ঠিকানা যোগ করুন
+							+ কেন্দ্র যোগ করুন
 						</button>
 					</div>
-					<div class="space-y-3">
-						{#each form.offices || [] as office, i}
-							<div class="grid grid-cols-1 sm:grid-cols-[1fr_1.5fr_1fr_auto] gap-2 items-start">
+					<div class="space-y-2">
+						{#each admitCard.centers as center, i}
+							<div class="grid grid-cols-[5rem_1fr_auto] gap-2 items-start">
 								<input
 									type="text"
-									bind:value={office.name}
-									placeholder="প্রতিষ্ঠানের নাম"
-									class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+									inputmode="numeric"
+									maxlength="1"
+									bind:value={center.number}
+									placeholder="নং"
+									class="border border-gray-300 rounded-md p-2 text-sm text-center focus:ring-primary-500 focus:border-primary-500"
 								/>
 								<input
 									type="text"
-									bind:value={office.address}
-									placeholder="ঠিকানা"
-									class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-								/>
-								<input
-									type="text"
-									bind:value={office.phone}
-									placeholder="ফোন"
+									bind:value={center.name}
+									placeholder="কেন্দ্রের নাম ও ঠিকানা"
 									class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
 								/>
 								<button
-									on:click={() => removeOffice(i)}
+									on:click={() => removeCenter(i)}
 									class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
 									title="মুছে ফেলুন"
 								>
@@ -489,265 +639,177 @@
 								</button>
 							</div>
 						{/each}
-						{#if !(form.offices || []).length}
-							<p class="text-sm text-gray-400">কোনো ঠিকানা যোগ করা হয়নি।</p>
+						{#if !admitCard.centers.length}
+							<p class="text-sm text-gray-400">কোনো কেন্দ্র যোগ করা হয়নি।</p>
 						{/if}
+					</div>
+				</div>
+
+				<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">প্রবেশপত্রে পরীক্ষার তারিখ</label>
+						<input
+							type="text"
+							bind:value={admitCard.date}
+							class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
+							placeholder="১ নভেম্বর, ২০২৬"
+						/>
+					</div>
+					<div>
+						<label class="block text-sm font-medium text-gray-700 mb-1">বার</label>
+						<input
+							type="text"
+							bind:value={admitCard.day}
+							class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
+							placeholder="শনিবার"
+						/>
 					</div>
 				</div>
 
 				<div>
 					<div class="flex justify-between items-center mb-2">
-						<div>
-							<label class="block text-sm font-medium text-gray-700">সিলেবাস</label>
-							<p class="text-xs text-gray-400 mt-0.5">
-								প্রতিটি শ্রেণির জন্য একটি বক্স যোগ করুন, তারপর সেই শ্রেণির প্রতিটি বিষয় ও তার টপিকগুলো লিখুন।
-							</p>
-						</div>
+						<label class="block text-sm font-medium text-gray-700">পরীক্ষার সময়সূচী</label>
 						<button
-							on:click={addSyllabusClass}
+							on:click={addSession}
 							class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
 						>
-							+ শ্রেণি যোগ করুন
+							+ সময় যোগ করুন
 						</button>
 					</div>
-
-					<div class="space-y-4">
-						{#each form.syllabus || [] as classData, ci}
-							<div class="border border-gray-200 rounded-lg p-4 bg-gray-50/50 space-y-3">
-								<div class="flex items-center gap-2">
-									<input
-										type="text"
-										bind:value={classData.class}
-										placeholder="শ্রেণির নাম (যেমনঃ ১০ম শ্রেণি (স্কুল/মাদরাসা))"
-										class="flex-1 border border-gray-300 rounded-md p-2 text-sm font-semibold focus:ring-primary-500 focus:border-primary-500"
-									/>
-									<button
-										on:click={() => removeSyllabusClass(ci)}
-										class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
-										title="শ্রেণি মুছে ফেলুন"
-									>
-										✕
-									</button>
-								</div>
-
-								<div class="space-y-3 pl-2 border-l-2 border-primary-100">
-									{#each classData.subjects || [] as subject, si}
-										<div class="grid grid-cols-1 sm:grid-cols-[1fr_2fr_auto] gap-2 items-start pl-2">
-											<input
-												type="text"
-												bind:value={subject.name}
-												placeholder="বিষয়ের নাম (যেমনঃ বাংলা)"
-												class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-											/>
-											<textarea
-												value={(subject.topics || []).join('\n')}
-												on:input={(e) => updateTopics(ci, si, e.target.value)}
-												rows="3"
-												placeholder="টপিকসমূহ (প্রতি লাইনে একটি)"
-												class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-											></textarea>
-											<button
-												on:click={() => removeSubject(ci, si)}
-												class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
-												title="বিষয় মুছে ফেলুন"
-											>
-												✕
-											</button>
-										</div>
-									{/each}
-									{#if !(classData.subjects || []).length}
-										<p class="text-sm text-gray-400 pl-2">কোনো বিষয় যোগ করা হয়নি।</p>
-									{/if}
-									<button
-										on:click={() => addSubject(ci)}
-										class="text-sm font-medium text-primary-700 hover:text-primary-900 pl-2"
-									>
-										+ বিষয় যোগ করুন
-									</button>
-								</div>
+					<div class="space-y-2">
+						{#each admitCard.sessions as session, i}
+							<div class="grid grid-cols-1 sm:grid-cols-[10rem_1fr_auto] gap-2 items-start">
+								<input
+									type="text"
+									bind:value={session.time}
+									placeholder="১০:০০-১১:০০"
+									class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+								/>
+								<input
+									type="text"
+									bind:value={session.subjects}
+									placeholder="বিষয় (যেমনঃ বাংলা ও ইংরেজি)"
+									class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+								/>
+								<button
+									on:click={() => removeSession(i)}
+									class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
+									title="মুছে ফেলুন"
+								>
+									✕
+								</button>
 							</div>
 						{/each}
-						{#if !(form.syllabus || []).length}
-							<p class="text-sm text-gray-400">কোনো শ্রেণি যোগ করা হয়নি।</p>
-						{/if}
 					</div>
 				</div>
 
-				<div class="border-t border-gray-200 pt-6 space-y-4">
-					<div>
-						<h3 class="text-base font-semibold text-gray-800">প্রবেশপত্র (এডমিট কার্ড)</h3>
-						<p class="text-xs text-gray-400 mt-0.5">
-							পরীক্ষা কেন্দ্র, সময়সূচী ও নিয়মাবলী এই বছরের সকল প্রবেশপত্রে দেখানো হবে।
-						</p>
-					</div>
-
-					<div>
-						<div class="flex justify-between items-center mb-2">
-							<div>
-								<label class="block text-sm font-medium text-gray-700">পরীক্ষা কেন্দ্রসমূহ</label>
-								<p class="text-xs text-gray-400 mt-0.5">
-									কেন্দ্র নম্বর (1-9) রোল নম্বরের প্রথম অংক হিসেবে ব্যবহৃত হয়। রোল দেওয়ার পর কোনো কেন্দ্রের নম্বর পরিবর্তন করবেন না।
-								</p>
-							</div>
-							<button
-								on:click={addCenter}
-								class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
-							>
-								+ কেন্দ্র যোগ করুন
-							</button>
-						</div>
-						<div class="space-y-2">
-							{#each admitCard.centers as center, i}
-								<div class="grid grid-cols-[5rem_1fr_auto] gap-2 items-start">
-									<input
-										type="text"
-										inputmode="numeric"
-										maxlength="1"
-										bind:value={center.number}
-										placeholder="নং"
-										class="border border-gray-300 rounded-md p-2 text-sm text-center focus:ring-primary-500 focus:border-primary-500"
-									/>
-									<input
-										type="text"
-										bind:value={center.name}
-										placeholder="কেন্দ্রের নাম ও ঠিকানা"
-										class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-									/>
-									<button
-										on:click={() => removeCenter(i)}
-										class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
-										title="মুছে ফেলুন"
-									>
-										✕
-									</button>
-								</div>
-							{/each}
-							{#if !admitCard.centers.length}
-								<p class="text-sm text-gray-400">কোনো কেন্দ্র যোগ করা হয়নি।</p>
-							{/if}
-						</div>
-					</div>
-
-					<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">প্রবেশপত্রে পরীক্ষার তারিখ</label>
-							<input
-								type="text"
-								bind:value={admitCard.date}
-								class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-								placeholder="১ নভেম্বর, ২০২৬"
-							/>
-						</div>
-						<div>
-							<label class="block text-sm font-medium text-gray-700 mb-1">বার</label>
-							<input
-								type="text"
-								bind:value={admitCard.day}
-								class="w-full border border-gray-300 rounded-md p-2 focus:ring-primary-500 focus:border-primary-500"
-								placeholder="শনিবার"
-							/>
-						</div>
-					</div>
-
-					<div>
-						<div class="flex justify-between items-center mb-2">
-							<label class="block text-sm font-medium text-gray-700">পরীক্ষার সময়সূচী</label>
-							<button
-								on:click={addSession}
-								class="text-sm font-medium text-primary-700 hover:text-primary-900 whitespace-nowrap"
-							>
-								+ সময় যোগ করুন
-							</button>
-						</div>
-						<div class="space-y-2">
-							{#each admitCard.sessions as session, i}
-								<div class="grid grid-cols-1 sm:grid-cols-[10rem_1fr_auto] gap-2 items-start">
-									<input
-										type="text"
-										bind:value={session.time}
-										placeholder="১০:০০-১১:০০"
-										class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-									/>
-									<input
-										type="text"
-										bind:value={session.subjects}
-										placeholder="বিষয় (যেমনঃ বাংলা ও ইংরেজি)"
-										class="border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-									/>
-									<button
-										on:click={() => removeSession(i)}
-										class="text-red-500 hover:text-red-700 text-sm px-2 py-2"
-										title="মুছে ফেলুন"
-									>
-										✕
-									</button>
-								</div>
-							{/each}
-						</div>
-					</div>
-
-					<div>
-						<label class="block text-sm font-medium text-gray-700 mb-1">
-							প্রবেশপত্রের নিয়মাবলী (প্রতি লাইনে একটি)
-						</label>
-						<textarea
-							bind:value={admitRulesText}
-							rows="5"
-							class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
-						></textarea>
-					</div>
-				</div>
-
-				<div class="flex justify-end">
-					<button on:click={handleSaveScholarship} disabled={saving} class="btn-primary disabled:opacity-50">
-						{saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
-					</button>
+				<div>
+					<label class="block text-sm font-medium text-gray-700 mb-1">
+						প্রবেশপত্রের নিয়মাবলী (প্রতি লাইনে একটি)
+					</label>
+					<textarea
+						bind:value={admitRulesText}
+						rows="5"
+						class="w-full border border-gray-300 rounded-md p-2 text-sm focus:ring-primary-500 focus:border-primary-500"
+					></textarea>
 				</div>
 			</div>
 		{:else}
-			<div class="card text-center text-gray-500">
-				এখনো কোনো সক্রিয় বৃত্তি পরীক্ষা নেই। উপরের ফর্ম দিয়ে প্রথম বৃত্তি পরীক্ষা তৈরি করুন।
+			<!-- Scholarship Years -->
+			<div class="card">
+				<h2 class="section-title mb-1">নতুন বৃত্তি পরীক্ষা শুরু করুন</h2>
+				<p class="text-gray-500 text-sm mb-4">
+					একটি নতুন বছরের জন্য বৃত্তি পরীক্ষা তৈরি করুন। এটি স্বয়ংক্রিয়ভাবে ওয়েবসাইটের সক্রিয় বৃত্তি হয়ে যাবে।
+				</p>
+				<div class="flex flex-col sm:flex-row items-start sm:items-end gap-4">
+					<div>
+						<label for="newYear" class="block text-sm font-medium text-gray-700 mb-1">বছর</label>
+						<input
+							id="newYear"
+							type="text"
+							bind:value={newYear}
+							class="border border-gray-300 rounded-md p-2 w-40 focus:ring-primary-500 focus:border-primary-500"
+							placeholder="২০২৬"
+						/>
+					</div>
+					<label class="inline-flex items-center gap-2 text-sm text-gray-700 mb-2 sm:mb-2.5">
+						<input
+							type="checkbox"
+							bind:checked={cloneFromActive}
+							disabled={!activeScholarship}
+							class="rounded border-gray-300 text-primary-700 focus:ring-primary-500"
+						/>
+						বর্তমান সক্রিয় বৃত্তি থেকে তথ্য কপি করুন (নিয়মাবলী, ঠিকানা, সিলেবাস)
+					</label>
+					<button
+						on:click={handleCreateScholarship}
+						disabled={saving}
+						class="btn-primary disabled:opacity-50"
+					>
+						নতুন বৃত্তি তৈরি করুন
+					</button>
+				</div>
 			</div>
+
+			{#if !activeScholarship}
+				<div class="card text-center text-gray-500">
+					এখনো কোনো সক্রিয় বৃত্তি পরীক্ষা নেই। উপরের ফর্ম দিয়ে প্রথম বৃত্তি পরীক্ষা তৈরি করুন।
+				</div>
+			{/if}
+
+			{#if allScholarships.length}
+				<div class="card">
+					<h2 class="section-title mb-4">সকল বৃত্তি পরীক্ষা</h2>
+					<div class="overflow-x-auto">
+						<table class="w-full text-sm text-left">
+							<thead class="text-xs text-gray-500 uppercase border-b">
+								<tr>
+									<th class="py-2 pr-4">বছর</th>
+									<th class="py-2 pr-4">রেজিস্ট্রেশন</th>
+									<th class="py-2 pr-4"></th>
+								</tr>
+							</thead>
+							<tbody>
+								{#each allScholarships as s}
+									<tr class="border-b border-gray-100">
+										<td class="py-2 pr-4 font-medium text-gray-900">{s.year}</td>
+										<td class="py-2 pr-4">
+											<span class={s.registrationOpen ? 'text-green-600' : 'text-gray-400'}>
+												{s.registrationOpen ? 'খোলা' : 'বন্ধ'}
+											</span>
+										</td>
+										<td class="py-2 pr-4 text-right">
+											{#if generalSettings.activeScholarshipId === s.id}
+												<span class="text-xs font-semibold text-primary-700 uppercase">সক্রিয়</span>
+											{:else}
+												<button
+													on:click={() => handleSetActive(s.id)}
+													class="text-sm font-medium text-primary-700 hover:text-primary-900"
+												>
+													সক্রিয় করুন
+												</button>
+											{/if}
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			{/if}
 		{/if}
 
-		{#if allScholarships.length > 1}
-			<div class="card">
-				<h2 class="section-title mb-4">পূর্ববর্তী বৃত্তি পরীক্ষাসমূহ</h2>
-				<div class="overflow-x-auto">
-					<table class="w-full text-sm text-left">
-						<thead class="text-xs text-gray-500 uppercase border-b">
-							<tr>
-								<th class="py-2 pr-4">বছর</th>
-								<th class="py-2 pr-4">রেজিস্ট্রেশন</th>
-								<th class="py-2 pr-4"></th>
-							</tr>
-						</thead>
-						<tbody>
-							{#each allScholarships as s}
-								<tr class="border-b border-gray-100">
-									<td class="py-2 pr-4 font-medium text-gray-900">{s.year}</td>
-									<td class="py-2 pr-4">
-										<span class={s.registrationOpen ? 'text-green-600' : 'text-gray-400'}>
-											{s.registrationOpen ? 'খোলা' : 'বন্ধ'}
-										</span>
-									</td>
-									<td class="py-2 pr-4 text-right">
-										{#if generalSettings.activeScholarshipId === s.id}
-											<span class="text-xs font-semibold text-primary-700 uppercase">সক্রিয়</span>
-										{:else}
-											<button
-												on:click={() => handleSetActive(s.id)}
-												class="text-sm font-medium text-primary-700 hover:text-primary-900"
-											>
-												সক্রিয় করুন
-											</button>
-										{/if}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
+		{#if activeScholarship && activeTab !== 'years'}
+			<!-- Shared save bar: one save covers every editor tab -->
+			<div
+				class="sticky bottom-0 z-10 bg-white border border-gray-200 rounded-lg shadow-md px-4 py-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+			>
+				<p class="text-xs text-gray-500">
+					সাধারণ তথ্য, ঠিকানা, সিলেবাস ও প্রবেশপত্র — সকল ট্যাবের পরিবর্তন একসাথে সংরক্ষিত হবে।
+				</p>
+				<button on:click={handleSaveScholarship} disabled={saving} class="btn-primary disabled:opacity-50">
+					{saving ? 'সংরক্ষণ হচ্ছে...' : 'সংরক্ষণ করুন'}
+				</button>
 			</div>
 		{/if}
 	</div>
