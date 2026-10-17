@@ -5,7 +5,8 @@
     import { page } from '$app/stores';
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import InstitutionInput from '$lib/components/InstitutionInput.svelte';
-	import ScanFormButton from '$lib/components/ScanFormButton.svelte';
+	// AI form scan is disabled for now; re-enable this import and the <ScanFormButton> below to bring it back.
+	// import ScanFormButton from '$lib/components/ScanFormButton.svelte';
 	import { getActiveScholarship } from '$lib/siteData';
 	import { offlineCol } from '$lib/yearScope';
 	import { loadInstitutions, addInstitutionIfMissing } from '$lib/institutions';

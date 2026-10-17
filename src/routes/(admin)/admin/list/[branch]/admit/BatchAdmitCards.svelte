@@ -4,6 +4,8 @@
   import { onMount } from 'svelte';
   import { getScholarship } from '$lib/siteData';
   import { admitCardOf, admitCardTitle, centerNameForRoll } from '$lib/admitCard';
+  import html2canvas from 'html2canvas';
+  import { jsPDF } from 'jspdf';
 
   // 'allRegistrations' will hold the master list from Firestore
   let allRegistrations = [];
@@ -66,6 +68,54 @@
     return passesStart && passesEnd;
   });
   // --- END NEW ---
+
+  // Two admit cards per A4 page
+  $: pages = Array.from({ length: Math.ceil(csvData.length / 2) }, (_, i) =>
+    csvData.slice(i * 2, i * 2 + 2)
+  );
+
+  let pageEls = [];
+  let downloading = false;
+  let progress = 0;
+
+  async function downloadPDF() {
+    if (downloading || pages.length === 0) return;
+    downloading = true;
+    progress = 0;
+    // html2canvas measures font baselines with a tiny inline gif in this document;
+    // Tailwind's `img { display: block }` breaks that and shifts all text down.
+    const metricsFix = document.createElement('style');
+    metricsFix.textContent = 'img[src^="data:image/gif"] { display: inline !important; }';
+    document.head.appendChild(metricsFix);
+    try {
+      await document.fonts.ready;
+      const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
+      const els = pageEls.slice(0, pages.length);
+      for (let i = 0; i < els.length; i++) {
+        // Each page is rendered on its own, so nothing can spill onto the next page
+        const canvas = await html2canvas(els[i], {
+          scale: 2,
+          useCORS: true,
+          logging: false,
+          backgroundColor: '#ffffff'
+        });
+        if (i > 0) pdf.addPage('a4', 'p');
+        pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
+        canvas.width = canvas.height = 0;
+        progress = i + 1;
+        // Let the browser repaint the progress between pages
+        await new Promise((resolve) => setTimeout(resolve, 0));
+      }
+      const range = serialStart || serialEnd ? `-${serialStart || 'start'}-${serialEnd || 'end'}` : '';
+      pdf.save(`admit-cards-${branch}-${year}${range}.pdf`);
+    } catch (err) {
+      console.error('PDF generation failed:', err);
+      alert('PDF তৈরি করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
+    } finally {
+      metricsFix.remove();
+      downloading = false;
+    }
+  }
 </script>
 
 {#if error}
@@ -75,8 +125,16 @@
 {/if}
 <div class="print:hidden w-full flex justify-center items-center flex-wrap">
   <div class="toggle-container">
-    <button class="m-8 bg-primary-900 rounded-md text-white px-4 py-2 hover:bg-primary-800 transition-colors shadow-card" on:click={() => window.print()}>
-      Print
+    <button
+      class="m-8 bg-primary-900 rounded-md text-white px-4 py-2 hover:bg-primary-800 transition-colors shadow-card disabled:opacity-60 disabled:cursor-not-allowed"
+      on:click={downloadPDF}
+      disabled={downloading || pages.length === 0}
+    >
+      {#if downloading}
+        PDF তৈরি হচ্ছে... ({progress}/{pages.length})
+      {:else}
+        Download PDF
+      {/if}
     </button>
   </div>
 
@@ -100,15 +158,14 @@
   </div>
   </div>
 <div class="print:hidden mb-4">
-  - প্রিন্ট বাটনে ক্লিক করার পর ব্রাউজার কিছুক্ষণ এর জন্য ফ্রিজ হতে পারে। ধৈর্য ধরুন এবং সম্পূর্ণ প্রিন্ট হওয়ার পরেই ব্রাউজার বন্ধ করুন।<br />
-  - ডিরেক্ট ওয়েবপেজ থেকে প্রিন্ট না করে Print to PDF করে পরে PDF থেকে প্রিন্ট করুন। এতে করে ফরম্যাটিং ঠিক থাকবে।<br />
-  - প্রতিটি এডমিট কার্ড একটি A4 সাইজ পেজে প্রিন্ট হবে।<br />
-  - প্রিন্ট করার সময় পেজ সেটিংসে 'print backgrounds' অপশন সিলেক্ট করুন।<br />
+  - মোট {csvData.length} টি এডমিট কার্ড, {pages.length} টি A4 পেজ (প্রতি পেজে ২ টি এডমিট কার্ড)।<br />
+  - PDF তৈরি হওয়া পর্যন্ত এই পেজ বন্ধ করবেন না। কার্ড বেশি হলে কিছুটা সময় লাগতে পারে।<br />
+  - ডাউনলোড করা PDF সরাসরি A4 পেজে প্রিন্ট করুন (Scale: 100% / Actual size)।<br />
 </div>
-<div>
-    <div class="a4-page">
-      <div class="flex flex-col">
-        {#each csvData as card}
+<div class="pages">
+  {#each pages as pageCards, pageIndex}
+    <div class="a4-page" bind:this={pageEls[pageIndex]}>
+        {#each pageCards as card}
           <div class="admit-card">
 
             <div class="bg-white text-sm">
@@ -226,7 +283,7 @@
                 </div>
               </div>
             </div>
-            <div class="flex flex-col justify-around bg-white text-sm p-4">
+            <div class="flex flex-col justify-around bg-white text-sm px-4 pt-2">
               <div>
                 <div class="text-center text-lg">পরীক্ষা সংক্রান্ত নিয়মাবলী</div>
                 <div>
@@ -238,7 +295,7 @@
               <div class="text-primary-800">
                 <span>ঠিকানাঃ {card.presentAddress}</span>
               </div>
-              <div class="mt-4 flex justify-between">
+              <div class="mt-2 flex justify-between">
                 <div class=" mx-4 border-2 border-primary-800 pt-2 px-8">
                   <div>
                     <div class="font-semibold">অফিস কর্তৃক পূরণীয়</div>
@@ -255,17 +312,27 @@
             </div>
           </div>
         {/each}
-      </div>
     </div>
+  {/each}
 </div>
 
 <style>
+  .pages {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8mm;
+    padding-bottom: 8mm;
+  }
   .a4-page {
+    /* Exactly one A4 sheet; each page is captured separately into the PDF */
     width: 210mm;
-    min-height: 297mm;
-    padding: 10mm;
-    margin: 0 auto;
+    height: 297mm;
+    box-sizing: border-box;
+    overflow: hidden;
+    flex-shrink: 0;
     background-color: white;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.2);
   }
   .error {
     color: red;
@@ -276,19 +343,13 @@
   }
 
   .admit-card {
-    height: 148.5mm; /* Approximately 1/2 of A4 height minus some space for margins */
+    /* Half of A4 height, padding included, so two cards always fit */
+    height: 148.5mm;
+    box-sizing: border-box;
+    padding: 4mm 7mm;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
   }
-  @media print {
-    .a4-page {
-      width: 210mm;
-      min-height: 297mm;
-      padding: 4mm;
-      margin: 0;
-    }
-    @page {
-      size: A4;
-      margin: 0;
-    }
-  }
-
 </style>
