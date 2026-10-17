@@ -34,7 +34,7 @@
 
 {#if loggedIn}
     <div class="min-h-screen bg-gray-50">
-        <header class="bg-primary-900 text-white sticky top-0 z-40 shadow-card">
+        <header class="bg-primary-900 text-white sticky top-0 z-40 shadow-card print:hidden">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
                 <a href="/admin" class="flex items-center space-x-3">
                     <img class="h-8 w-8" src="/favicon.png" alt="কিশোরকণ্ঠ Logo">
