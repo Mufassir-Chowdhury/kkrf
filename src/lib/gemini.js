@@ -1,6 +1,12 @@
 // Runs in the browser. The key is deliberately public: it is inlined at build time from
 // PUBLIC_GEMINI_API_KEY (a Cloudflare Pages environment variable, or .env locally).
-import { PUBLIC_GEMINI_API_KEY as API_KEY } from '$env/static/public';
+//
+// DISABLED: the AI form scan is turned off. The static import below fails the build whenever
+// PUBLIC_GEMINI_API_KEY is not set, so it is commented out. To re-enable: set the env var,
+// restore this import, delete the placeholder, and uncomment ScanFormButton in
+// src/routes/offline/[branch]/+page.svelte (and the AI Usage card on /admin).
+// import { PUBLIC_GEMINI_API_KEY as API_KEY } from '$env/static/public';
+const API_KEY = '';
 import { AI_MODELS } from './aiQuota';
 import { recordUsage } from './aiUsage';
 

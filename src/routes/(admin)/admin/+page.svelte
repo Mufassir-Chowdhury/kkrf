@@ -35,12 +35,14 @@
 			</div>
 		</a>
 
+		<!-- AI form scan is disabled for now.
 		<a href="/admin/ai-usage" class="block group">
 			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-900">
 				<h3 class="text-lg font-semibold text-primary-900 mb-1">AI Usage</h3>
 				<p class="text-gray-500 text-sm">Form-scan token usage and Gemini rate limits</p>
 			</div>
 		</a>
+		-->
 
 		<a href="/admin/list" class="block group">
 			<div class="card p-6 hover:shadow-card-lg hover:-translate-y-0.5 transition-all border-t-4 border-t-primary-700">
