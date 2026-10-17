@@ -4,7 +4,7 @@
   import { onMount } from 'svelte';
   import { getScholarship } from '$lib/siteData';
   import { admitCardOf, admitCardTitle, centerNameForRoll } from '$lib/admitCard';
-  import html2canvas from 'html2canvas';
+  import { toCanvas, getFontEmbedCSS } from 'html-to-image';
   import { jsPDF } from 'jspdf';
 
   // 'allRegistrations' will hold the master list from Firestore
@@ -82,22 +82,22 @@
     if (downloading || pages.length === 0) return;
     downloading = true;
     progress = 0;
-    // html2canvas measures font baselines with a tiny inline gif in this document;
-    // Tailwind's `img { display: block }` breaks that and shifts all text down.
-    const metricsFix = document.createElement('style');
-    metricsFix.textContent = 'img[src^="data:image/gif"] { display: inline !important; }';
-    document.head.appendChild(metricsFix);
     try {
       await document.fonts.ready;
       const pdf = new jsPDF({ orientation: 'p', unit: 'mm', format: 'a4', compress: true });
       const els = pageEls.slice(0, pages.length);
+      // Embed the fonts once instead of re-fetching them for every page
+      const fontEmbedCSS = await getFontEmbedCSS(els[0]);
       for (let i = 0; i < els.length; i++) {
-        // Each page is rendered on its own, so nothing can spill onto the next page
-        const canvas = await html2canvas(els[i], {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff'
+        // Radio state is a DOM property, which the clone wouldn't carry over
+        els[i].querySelectorAll('input[type="radio"]').forEach((r) => r.toggleAttribute('checked', r.checked));
+        // Each page is drawn by the browser itself (SVG foreignObject), so the PDF
+        // matches the on-screen layout, and nothing can spill onto the next page
+        const canvas = await toCanvas(els[i], {
+          pixelRatio: 2,
+          backgroundColor: '#ffffff',
+          fontEmbedCSS,
+          style: { margin: '0', boxShadow: 'none' }
         });
         if (i > 0) pdf.addPage('a4', 'p');
         pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG', 0, 0, 210, 297, undefined, 'FAST');
@@ -112,7 +112,6 @@
       console.error('PDF generation failed:', err);
       alert('PDF তৈরি করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।');
     } finally {
-      metricsFix.remove();
       downloading = false;
     }
   }
