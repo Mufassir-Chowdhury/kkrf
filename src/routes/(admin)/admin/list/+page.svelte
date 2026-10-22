@@ -4,6 +4,8 @@
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { selectedYear, loadAdminYear, offlineCol } from '$lib/yearScope';
 	import { getBranches } from '$lib/branches';
+	import { getScholarship } from '$lib/siteData';
+	import { admitCardOf, centerNameForRoll } from '$lib/admitCard';
 
 	let branchesWithCounts = [];
 	let total = 0;
@@ -45,7 +47,29 @@
 	async function handleExportCSV() {
 		const q = query(offlineCol(year), orderBy('creationTime', 'desc'));
 		const querySnapshot = await getDocs(q);
-		let registrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+		const [branches, scholarship] = await Promise.all([getBranches(year), getScholarship(String(year))]);
+		const branchNames = new Map(branches.map((b) => [String(b.code), b.name]));
+		const admitCard = admitCardOf(scholarship);
+		let registrations = querySnapshot.docs.map((doc) => {
+			const data = doc.data();
+			// Nested maps (e.g. permanentAddress) would otherwise export as "[object Object]".
+			const flat = {};
+			for (const [key, value] of Object.entries(data)) {
+				if (value && typeof value === 'object' && !Array.isArray(value) && !value.toDate) {
+					for (const [subKey, subValue] of Object.entries(value)) flat[`${key}.${subKey}`] = subValue;
+				} else {
+					flat[key] = value;
+				}
+			}
+			return {
+				id: doc.id,
+				roll: data.roll ?? '',
+				center: data.roll ? String(data.roll)[0] : '',
+				centerName: centerNameForRoll(admitCard, data.roll),
+				thana: branchNames.get(String(data.branch)) ?? '',
+				...flat
+			};
+		});
 		if (!registrations || registrations.length === 0) {
 			console.warn('No registrations to export');
 			return;
