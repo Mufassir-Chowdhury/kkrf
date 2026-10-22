@@ -4,8 +4,7 @@
 	import BreadCrumb from '$lib/components/BreadCrumb.svelte';
 	import { selectedYear, loadAdminYear, offlineCol } from '$lib/yearScope';
 	import { getBranches } from '$lib/branches';
-	import { getScholarship } from '$lib/siteData';
-	import { admitCardOf, centerNameForRoll } from '$lib/admitCard';
+	import { exportRegistrationsCSV } from '$lib/exportCsv';
 
 	let branchesWithCounts = [];
 	let total = 0;
@@ -47,75 +46,8 @@
 	async function handleExportCSV() {
 		const q = query(offlineCol(year), orderBy('creationTime', 'desc'));
 		const querySnapshot = await getDocs(q);
-		const [branches, scholarship] = await Promise.all([getBranches(year), getScholarship(String(year))]);
-		const branchNames = new Map(branches.map((b) => [String(b.code), b.name]));
-		const admitCard = admitCardOf(scholarship);
-		let registrations = querySnapshot.docs.map((doc) => {
-			const data = doc.data();
-			// Nested maps (e.g. permanentAddress) would otherwise export as "[object Object]".
-			const flat = {};
-			for (const [key, value] of Object.entries(data)) {
-				if (value && typeof value === 'object' && !Array.isArray(value) && !value.toDate) {
-					for (const [subKey, subValue] of Object.entries(value)) flat[`${key}.${subKey}`] = subValue;
-				} else {
-					flat[key] = value;
-				}
-			}
-			return {
-				id: doc.id,
-				roll: data.roll ?? '',
-				center: data.roll ? String(data.roll)[0] : '',
-				centerName: centerNameForRoll(admitCard, data.roll),
-				thana: branchNames.get(String(data.branch)) ?? '',
-				...flat
-			};
-		});
-		if (!registrations || registrations.length === 0) {
-			console.warn('No registrations to export');
-			return;
-		}
-
-		// Collect all unique field names from all registrations
-		const allFields = new Set();
-		registrations.forEach((reg) => {
-			Object.keys(reg).forEach((key) => allFields.add(key));
-		});
-
-		const headers = Array.from(allFields);
-
-		// Create CSV content
-		const csvContent = [
-			headers.join(','),
-			...registrations.map((reg) =>
-				headers
-					.map((field) => {
-						const value = reg[field];
-						// Handle missing fields as empty strings
-						const fieldValue = value !== undefined && value !== null ? String(value) : '';
-						// Escape quotes and wrap in quotes
-						return `"${fieldValue.replace(/"/g, '""')}"`;
-					})
-					.join(',')
-			)
-		].join('\n');
-
-		// Add BOM for proper Excel UTF-8 encoding
-		const BOM = '\uFEFF';
-		const csvContentWithBOM = BOM + csvContent;
-
-		// Create and download the file
-		const blob = new Blob([csvContentWithBOM], { type: 'text/csv;charset=utf-8;' });
-		const link = document.createElement('a');
-		if (link.download !== undefined) {
-			const url = URL.createObjectURL(blob);
-			link.setAttribute('href', url);
-			link.setAttribute('download', 'scholarship_applications.csv');
-			link.style.visibility = 'hidden';
-			document.body.appendChild(link);
-			link.click();
-			document.body.removeChild(link);
-			URL.revokeObjectURL(url); // Clean up the URL object
-		}
+		const registrations = querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+		await exportRegistrationsCSV(registrations, year);
 	}
 </script>
 

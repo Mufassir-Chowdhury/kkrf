@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
-	import { handleExportCSV } from './util';
+	import { exportRegistrationsCSV } from '$lib/exportCsv';
 	import { encodeRoll } from '$lib/hash';
 	import {
 		loadRegistrations,
@@ -639,7 +639,7 @@
 				</a>
 
 				<button
-					on:click={() => handleExportCSV(registrations)}
+					on:click={() => exportRegistrationsCSV(registrations, year)}
 					class="inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium h-10 px-4 py-2 text-gray-800 hover:bg-gray-100 hover:text-gray-900 transition-colors"
 					title="Export CSV"
 				>
